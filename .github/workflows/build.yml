@@ -33,7 +33,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt install binfmt-support
-        sudo apt install qemu qemu-user-static
+        sudo apt install qemu-system qemu-user-static
         sudo update-binfmts --enable
 
     # Build image with docker
