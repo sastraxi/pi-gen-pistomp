@@ -69,11 +69,6 @@ bash -c "sed -i 's/exit 0//' ${ROOTFS_DIR}/etc/rc.local"
 cat >> ${ROOTFS_DIR}/etc/rc.local <<EOF
 logger --priority info --tag rc.local "rc.local start..."
 sudo iw dev wlan0 set power_save off
-if test -f "/var/lib/alsa/asound.state"
-then
-    logger --priority info --tag rc.local "restoring asound.state"
-    sudo alsactl --no-ucm restore -f /var/lib/alsa/asound.state
-fi
 (sleep 10;/usr/lib/pistomp-wifi/wifi_check.sh) &
 logger --priority info --tag rc.local "rc.local completed successfully"
 exit 0
