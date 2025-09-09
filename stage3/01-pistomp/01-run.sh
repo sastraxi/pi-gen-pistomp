@@ -12,23 +12,11 @@ on_chroot << EOF
 git clone -b beta-bookworm-dev https://github.com/treefallsound/pi-stomp.git /home/${FIRST_USER_NAME}/pi-stomp
 
 # data dir
-mkdir -p /home/${FIRST_USER_NAME}/data/user-files
 mkdir -p /home/${FIRST_USER_NAME}/data/config
 mkdir -p /usr/mod/scripts
-mkdir -p "/home/${FIRST_USER_NAME}/data/user-files/Speaker Cabinets IRs"
-mkdir -p "/home/${FIRST_USER_NAME}/data/user-files/Reverb IRs"
-mkdir -p "/home/${FIRST_USER_NAME}/data/user-files/Audio Loops"
-mkdir -p "/home/${FIRST_USER_NAME}/data/user-files/Audio Recordings"
-mkdir -p "/home/${FIRST_USER_NAME}/data/user-files/Audio Samples"
-mkdir -p "/home/${FIRST_USER_NAME}/data/user-files/Audio Tracks"
-mkdir -p "/home/${FIRST_USER_NAME}/data/user-files/MIDI Clips"
-mkdir -p "/home/${FIRST_USER_NAME}/data/user-files/MIDI Songs"
-mkdir -p "/home/${FIRST_USER_NAME}/data/user-files/Hydrogen Drumkits"
-mkdir -p "/home/${FIRST_USER_NAME}/data/user-files/SF2 Instruments"
-mkdir -p "/home/${FIRST_USER_NAME}/data/user-files/SFZ Instruments"
-mkdir -p "/home/${FIRST_USER_NAME}/data/user-files/Amplifier Profiles"
-mkdir -p "/home/${FIRST_USER_NAME}/data/user-files/Aida DSP Models"
-mkdir -p "/home/${FIRST_USER_NAME}/data/user-files/NAM Models"
+
+# pi-Stomp user-files
+git clone --recurse-submodules https://github.com/TreeFallSound/pi-stomp-user-files.git /home/${FIRST_USER_NAME}/data/user-files
 
 install -m 644 /home/${FIRST_USER_NAME}/pi-stomp/setup/config_templates/default_config.yml /home/${FIRST_USER_NAME}/data/config/
 install -m 644 /home/${FIRST_USER_NAME}/pi-stomp/setup/config_templates/default-hardware-descriptor.json /home/${FIRST_USER_NAME}/data/config/
