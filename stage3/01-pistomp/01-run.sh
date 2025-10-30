@@ -20,6 +20,7 @@ git clone --recurse-submodules https://github.com/TreeFallSound/pi-stomp-user-fi
 
 install -m 644 /home/${FIRST_USER_NAME}/pi-stomp/setup/config_templates/default_config.yml /home/${FIRST_USER_NAME}/data/config/
 install -m 644 /home/${FIRST_USER_NAME}/pi-stomp/setup/config_templates/default-hardware-descriptor.json /home/${FIRST_USER_NAME}/data/config/
+install -m 644 files/banks.json /home/${FIRST_USER_NAME}/data/
 
 # Pedalboards
 rm -rf /home/${FIRST_USER_NAME}/data/.pedalboards

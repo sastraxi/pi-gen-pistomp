@@ -1,0 +1,40 @@
+[
+    {
+        "title": "Experimental",
+        "pedalboards": [
+            {
+                "bundle": "/home/pistomp/data/.pedalboards/RemainCalm.pedalboard",
+                "title": "RemainCalm"
+            },
+            {
+                "bundle": "/home/pistomp/data/.pedalboards/Playgnd.pedalboard",
+                "title": "Playgnd"
+            },
+            {
+                "bundle": "/home/pistomp/data/.pedalboards/NAM.pedalboard",
+                "title": "NAM"
+            }
+        ]
+    },
+    {
+        "title": "SetlistA",
+        "pedalboards": [
+            {
+                "bundle": "/home/pistomp/data/.pedalboards/Rush_n.pedalboard",
+                "title": "Rush'n"
+            },
+            {
+                "bundle": "/home/pistomp/data/.pedalboards/Floyd.pedalboard",
+                "title": "Floyd"
+            },
+            {
+                "bundle": "/home/pistomp/data/.pedalboards/Edgy.pedalboard",
+                "title": "Edgy"
+            },
+            {
+                "bundle": "/home/pistomp/data/.pedalboards/Grungy.pedalboard",
+                "title": "Grungy"
+            }
+        ]
+    }
+]
