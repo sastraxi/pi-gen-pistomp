@@ -31,7 +31,7 @@ fi
 
 # Run compression
 echo "Compressing $SRC_FILE → $DEST ..."
-xz -7 -T0 --memlimit-compress=2GiB -v -c "$SRC_FILE" > "$DEST"
+xz -7e -T0 --memlimit-compress=2GiB --lzma2=dict=48MiB,nice=192,depth=64 -v -c "$SRC_FILE" > "$DEST"
 
 echo "Done: $DEST"
 
