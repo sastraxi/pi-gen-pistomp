@@ -1,4 +1,4 @@
-# pi-gen
+# pi-gen-pipstomp
 
 Tool used to create pi-Stomp OS images.
 
@@ -7,9 +7,11 @@ then modified to build the unique pi-Stomp dependencies (JACK, MOD, etc.)
 and finally the pi-Stomp software itself.
 
 If building on a pi, a disk of at least 20GB is required so choose a 32GB or 64GB if
-you plan to keep multiple images
+you plan to keep multiple images.  Class 10 card or better recommended.
 
-On a pi5, expect a full build with compression to take about an hour.
+On a pi5, expect a full build with compression to take about an hour (or more).
+
+The resulting compressed image should be just under 2GB
 
 ## Quick Start
 The build process currently has 5 stages.  Each stage builds upon the previous
@@ -38,7 +40,6 @@ typically match the stage(s) you're building.
 ./image.sh compress
 ```
 This creates a compressed (.xz) version of the image making it easier to transfer.
-
 
 ## Dependencies
 
