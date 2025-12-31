@@ -13,11 +13,11 @@ On a pi5, expect a full build with compression to take about an hour.
 
 ## Quick Start
 The build process currently has 5 stages.  Each stage builds upon the previous
-stage0 : The base OS
-stage1 : Firmware and overlays
-stage2 : Supporting software (JACK, MOD, etc.)
-stage3 : pi-Stomp software
-export-image : The final image
+* stage0 : The base OS
+* stage1 : Firmware and overlays
+* stage2 : Supporting software (JACK, MOD, etc.)
+* stage3 : pi-Stomp software
+* export-image : The final image
 
 A convience script is available to make the 3 main actions easy:
 ```bash
