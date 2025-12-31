@@ -1,10 +1,39 @@
 # pi-gen
 
-Tool used to create Raspberry Pi OS images, and custom images based on Raspberry Pi OS,
-which was in turn derived from the Raspbian project.
+Tool used to create pi-Stomp OS images.
 
-**Note**: Raspberry Pi OS 32 bit images are based primarily on Raspbian, while
-Raspberry Pi OS 64 bit images are based primarily on Debian.
+This is based on https://github.com/RPi-Distro/pi-gen,
+then modified to build the unique pi-Stomp dependencies (JACK, MOD, etc.)
+and finally the pi-Stomp software itself.
+
+## Quick Start
+The build process currently has 5 stages.  Each stage builds upon the previous
+stage0 : The base OS
+stage1 : Firmware and overlays
+stage2 : Supporting software (JACK, MOD, etc.)
+stage3 : pi-Stomp software
+export-image : The final image
+
+A convience script is available to make the 3 main actions easy:
+```bash
+./image.sh build <stage>
+```
+This builds stages from the specified level and up.
+0 will build everything (0, 1, 2, 3, export-image).  Start with that.
+3 will (re)build just pi-stomp and the final image
+2 should be used if the supporting software needs rebuilding
+ 
+```bash
+./image.sh clean <stage>
+```
+This cleans up the work output directory before a re-build.  The stage specified should
+typically match the stage(s) you're building.
+
+```bash
+./image.sh compress
+```
+This creates a compressed (.xz) version of the image making it easier to transfer.
+
 
 ## Dependencies
 
