@@ -14,11 +14,35 @@ On a pi5, expect a full build with compression to take about an hour (or more).
 The resulting compressed image should be just under 2GB
 
 ## Quick Start
+Just the minimal info to get you building pi-Stomp.  Later documentation is the boilerplate README
+from the original pi-gen repo which goes deeper into the inner workings of the pi-gen build system.
+
+### Setup
+* Flash 64-bit bookworm lite onto your SD card.  Via Raspberry Pi Imager, for the OS, choose "Raspberry Pi OS (other)", then "Raspberry PI OS (LEGACY, 64-BIT) Lite"
+* Boot it
+* ssh to it
+* Install Git
+```bash
+sudo apt-get install -y git
+```
+* Clone this repo
+```bash
+git clone https://github.com/TreeFallSound/pi-gen-pistomp.git
+```
+```bash
+cd pi-gen-pistomp
+```
+* Install dependencies
+```bash
+sed 's/^[^:]*://' depends | xargs sudo apt-get install -y
+```
+
+### Build
 The build process currently has 5 stages.  Each stage builds upon the previous
 * stage0 : The base OS
 * stage1 : Firmware and overlays
 * stage2 : Supporting software (JACK, MOD, etc.)
-* stage3 : pi-Stomp software
+* stage3 : pi-Stomp software, LV2 plugins, Example pedalboards, etc.
 * export-image : The final image
 
 A convience script is available to make the 3 main actions easy:
