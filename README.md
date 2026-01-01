@@ -60,6 +60,8 @@ This builds stages from the specified level and up.
 This cleans up the work output directory before a re-build.  The stage specified should
 typically match the stage(s) you're building.
 
+Tip: Only clean/rebuild the stages you are modifying.  If just pi-Stomp specific code: 3, if supporting software: 2, if firmware: 1.
+
 ```bash
 ./image.sh compress
 ```
