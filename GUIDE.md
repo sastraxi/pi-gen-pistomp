@@ -55,7 +55,7 @@ Result: `deploy/image_...pistompOS-lite.img.xz`
 ## Development
 
 ### Fast Iteration (Live Device)
-Update components on a running pi-Stomp via `builder/deploy.sh`.
+Update components on a running pi-Stomp (`pistomp@pistomp.local` by default) via `builder/deploy.sh`.
 
 ```bash
 # Deploy local directory
