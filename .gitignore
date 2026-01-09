@@ -8,3 +8,5 @@ SKIP_IMAGES
 builder/**/*.pyc
 builder/**/__pycache__/
 **/*.egg-info
+builder/dist/
+builder/.venv/

@@ -19,43 +19,43 @@ export FIRST_USER_NAME="${FIRST_USER_NAME}"
 chmod +x deploy.sh
 
 echo "----------------------------------------------------------------"
-echo "Installing Hylia via pistomp-builder..."
+echo "Installing Hylia..."
 ./deploy.sh falkTX/Hylia
 
 echo "----------------------------------------------------------------"
-echo "Installing jack2 via pistomp-builder..."
+echo "Installing jack2..."
 ./deploy.sh micahvdm/jack2
 
 echo "----------------------------------------------------------------"
-echo "Installing browsepy via pistomp-builder..."
+echo "Installing browsepy..."
 ./deploy.sh micahvdm/browsepy
 
 echo "----------------------------------------------------------------"
-echo "Installing mod-host via pistomp-builder..."
+echo "Installing mod-host..."
 ./deploy.sh micahvdm/mod-host
 
 echo "----------------------------------------------------------------"
-echo "Installing mod-ui via pistomp-builder..."
+echo "Installing mod-ui..."
 ./deploy.sh TreeFallSound/mod-ui
 
 echo "----------------------------------------------------------------"
-echo "Installing amidithru via pistomp-builder..."
+echo "Installing amidithru..."
 ./deploy.sh BlokasLabs/amidithru
 
 echo "----------------------------------------------------------------"
-echo "Installing touchosc2midi via pistomp-builder..."
+echo "Installing touchosc2midi..."
 ./deploy.sh micahvdm/touchosc2midi
 
 echo "----------------------------------------------------------------"
-echo "Installing mod-midi-merger via pistomp-builder..."
+echo "Installing mod-midi-merger..."
 ./deploy.sh micahvdm/mod-midi-merger
 
 echo "----------------------------------------------------------------"
-echo "Installing mod-ttymidi via pistomp-builder..."
+echo "Installing mod-ttymidi..."
 ./deploy.sh moddevices/mod-ttymidi
 
 echo "----------------------------------------------------------------"
-echo "Installing lilv via pistomp-builder..."
+echo "Installing lilv..."
 ./deploy.sh http://download.drobilla.net/lilv-0.24.12.tar.bz2
 
 EOF

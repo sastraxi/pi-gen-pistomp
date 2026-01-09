@@ -59,13 +59,13 @@ Update components on a running pi-Stomp via `builder/deploy.sh`.
 
 ```bash
 # Deploy local directory
-./builder/deploy.sh . --ssh pistomp@pistomp.local
+./builder/deploy.sh . --ssh
 
 # Deploy GitHub repo/branch
-./builder/deploy.sh TreeFallSound/mod-ui#pistomp-v3 --ssh pistomp@pistomp.local
+./builder/deploy.sh TreeFallSound/mod-ui#pistomp-v3 --ssh
 
 # Deploy named component (uses default repo)
-./builder/deploy.sh mod-ui --ssh pistomp@pistomp.local
+./builder/deploy.sh mod-ui --ssh
 ```
 
 **Supported Components:** `mod-ui`, `mod-host`, `jack2`, `hylia`, `lilv`, `browsepy`, `amidithru`, `mod-midi-merger`, `mod-ttymidi`, `touchosc2midi`.

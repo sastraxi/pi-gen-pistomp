@@ -2,25 +2,34 @@
 
 A Python-based deployment tool for pi-Stomp components.
 
+## Usage
+
+Use the wrapper script `deploy.sh`:
+
+```bash
+# Deploy to local directory
+./deploy.sh <target>
+
+# Deploy to remote device (defaults to pistomp@pistomp.local)
+./deploy.sh <target> --ssh [user@host]
+```
+
+**Targets:**
+- Component name: `mod-ui`
+- Git URL: `https://github.com/TreeFallSound/mod-ui.git`
+- GitHub shorthand: `TreeFallSound/mod-ui` (supports `#branch`)
+- Local path: `.`
+
 ## Development
 
-This project uses `uv` for dependency management.
+Managed via `uv`.
 
-### Linting and Type Checking
+### Checks
 
-To run the linter (Ruff):
 ```bash
-uv run ruff check .
-```
-
-To run the type checker (Ty):
-```bash
+# Type Check
 uv run ty .
-```
 
-### Adding dependencies
-
-```bash
-uv add <package>
-uv add --dev <dev-package>
+# Lint
+uv run ruff check .
 ```

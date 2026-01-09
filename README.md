@@ -379,22 +379,26 @@ If you wish to build further configurations upon (for example) the lite
 system, you can also delete the contents of `./stage3` and `./stage4` and
 replace with your own contents in the same format.
 
+## Builder Tool
 
-## Skipping stages to speed up development
+This project includes `pistomp-builder`, a Python-based utility located in `builder/` for managing component deployment.
 
-If you're working on a specific stage the recommended development process is as
-follows:
+**Key Features:**
+- **Deploy Components:** install software to local directory or remote pi-Stomp via SSH.
+- **Flexible Targets:** Supports component names (e.g., `mod-ui`), git URLs, local directories, and tarballs.
+- **Branch Support:** Append `#branch-name` to targets (e.g., `TreeFallSound/mod-ui#pistomp-v3`).
+- **Remote Execution:** Use `--ssh [user@host]` to run commands on a connected device (defaults to `pistomp@pistomp.local`).
 
- * Add a file called SKIP_IMAGES into the directories containing EXPORT_* files
-   (currently stage2, stage4 and stage5)
- * Add SKIP files to the stages you don't want to build. For example, if you're
-   basing your image on the lite image you would add these to stages 3, 4 and 5.
- * Run build.sh to build all stages
- * Add SKIP files to the earlier successfully built stages
- * Modify the last stage
- * Rebuild just the last stage using ```sudo CLEAN=1 ./build.sh```
- * Once you're happy with the image you can remove the SKIP_IMAGES files and
-   export your image to test
+**Usage:**
+```bash
+# Deploy local changes to default remote
+./builder/deploy.sh . --ssh
+
+# Deploy specific component branch
+./builder/deploy.sh TreeFallSound/mod-ui#pistomp-v3 --ssh
+```
+
+The builder is integrated into the OS build process (Stages 2 & 3) to install core audio software.
 
 # Troubleshooting
 
