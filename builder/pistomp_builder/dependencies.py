@@ -22,7 +22,6 @@ class Hylia(Component):
     services = ["mod-ui"]
 
     def build_and_install(self, source_dir: Path):
-        # INSPIRATION.sh sets export NOOPT=true
         env = {"NOOPT": "true"}
         run_cmd("make", cwd=source_dir, env=env)
         with superuser():

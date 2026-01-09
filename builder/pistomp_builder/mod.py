@@ -26,9 +26,8 @@ class ModUI(Component):
         run_cmd("make clean", cwd=utils_dir, check=False, shell=True)
         run_cmd("make", cwd=utils_dir)
 
-        # Install
+        # Reinstall
         with superuser():
-            # Uninstall old if exists? INSPIRATION.sh does `sudo pip3 uninstall -y mod-ui`
             run_cmd("pip3 uninstall -y mod-ui", check=False, shell=True)
             run_cmd("python3 setup.py install", cwd=source_dir, shell=True)
 
@@ -59,12 +58,16 @@ class ModUI(Component):
             # Find tornado path on target
             # We use python3 on target to find it
             proc = run_cmd(
-                ['python3', '-c', 'import tornado, os; print(os.path.dirname(tornado.__file__))'],
+                [
+                    "python3",
+                    "-c",
+                    "import tornado, os; print(os.path.dirname(tornado.__file__))",
+                ],
                 capture_output=True,
                 text=True,
-                check=False
+                check=False,
             )
-            
+
             if proc.returncode == 0 and proc.stdout.strip():
                 tornado_path = Path(proc.stdout.strip())
                 httputil = tornado_path / "httputil.py"

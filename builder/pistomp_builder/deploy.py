@@ -6,9 +6,9 @@ import tempfile
 from .model import TargetType
 from .resolver import parse_target
 from .components import COMPONENT_MAP
-from .service import is_chroot, manage_service, stop_services, start_services, daemon_reload
+from .service import is_chroot, stop_services, start_services, daemon_reload
 from .source import prepare_git_source, prepare_tarball_source, sync_local_source
-from .executor import _ssh_target, run_cmd
+from .executor import _ssh_target
 
 def deploy_component(target: Optional[str], branch: Optional[str], restart: bool):
     # Determine if we should really restart (check chroot)
