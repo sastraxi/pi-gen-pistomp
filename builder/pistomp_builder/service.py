@@ -8,7 +8,7 @@ def is_chroot() -> bool:
     """
     try:
         run_cmd(
-            "systemctl list-units --no-legend --max=0",
+            "systemctl list-units --no-legend | head -n 1",
             check=True,
             shell=True,
             capture_output=True,
