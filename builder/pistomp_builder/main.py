@@ -8,7 +8,7 @@ import re
 import tempfile
 from enum import Enum
 from .components import COMPONENT_MAP
-from .base import Component
+from .base import Component, manage_service, is_chroot
 
 app = typer.Typer()
 
@@ -190,6 +190,9 @@ def deploy(
     branch: Optional[str] = typer.Option(
         None, help="Git branch to checkout (overrides target#branch)"
     ),
+    restart: bool = typer.Option(
+        True, help="Restart associated services after installation"
+    ),
 ):
     """
     Deploy a component to the system (local or remote).
@@ -201,6 +204,10 @@ def deploy(
             cmd_args.append(shlex.quote(target))
         if branch:
             cmd_args.extend(["--branch", shlex.quote(branch)])
+        
+        # Propagate restart flag
+        if not restart:
+            cmd_args.append("--no-restart")
 
         remote_cmd = " ".join(cmd_args)
         ssh_cmd = f"ssh {ssh} -t '{remote_cmd}'"
@@ -209,6 +216,10 @@ def deploy(
         sys.exit(ret)
 
     # Local execution
+    # Determine if we should really restart (check chroot)
+    should_restart = restart and not is_chroot()
+    if restart and not should_restart:
+        print("Chroot detected (or systemd inactive), suppressing service restarts.")
 
     # 1. Determine Target Type
     if target is None:
@@ -237,6 +248,12 @@ def deploy(
     component = COMPONENT_MAP[component_name]
     print(f"Deploying {component.name}...")
 
+    # Stop services if we are going to restart them later (or if we need to release locks)
+    # INSPIRATION.sh logic: stop before install.
+    if should_restart:
+        for svc in reversed(component.services):
+            manage_service(svc, "stop")
+
     # 3. Fetch/Prepare Source
     source_dir: Optional[Path] = None
     tmp_context: Optional[tempfile.TemporaryDirectory] = None  # To keep temp dir alive
@@ -256,7 +273,7 @@ def deploy(
             if not component.repo_url:
                 if component.name == "lilv":
                     url = "http://download.drobilla.net/lilv-0.24.12.tar.bz2"
-                    deploy(target=url, ssh=None, branch=target_branch)
+                    deploy(target=url, ssh=None, branch=target_branch, restart=restart)
                     return
                 else:
                     print(f"No repository URL defined for {component.name}")
@@ -303,6 +320,9 @@ def deploy(
         if tmp_context and hasattr(tmp_context, "cleanup"):
             tmp_context.cleanup()
 
-
-if __name__ == "__main__":
-    app()
+    # Restart services
+    if should_restart:
+        for svc in component.services:
+            manage_service(svc, "start")
+            # Maybe check status?
+            # manage_service(svc, "status") # Optional, might produce too much output

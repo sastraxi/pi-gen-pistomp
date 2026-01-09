@@ -8,6 +8,7 @@ class PiStomp(Component):
     name = "pi-stomp"
     repo_url = "https://github.com/treefallsound/pi-stomp.git"
     default_branch = "pistomp-v3"
+    services = ["mod-ala-pi-stomp"]
 
     @property
     def persistent_repo_path(self):

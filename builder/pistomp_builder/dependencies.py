@@ -7,6 +7,7 @@ from .base import Component, run_cmd, superuser
 class Jack2(Component):
     name = "jack2"
     repo_url = "https://github.com/micahvdm/jack2.git"
+    services = ["jack", "mod-host", "mod-ui"]
 
     def build_and_install(self, source_dir: Path):
         run_cmd("./waf configure", cwd=source_dir, shell=True)
@@ -18,6 +19,7 @@ class Jack2(Component):
 class Hylia(Component):
     name = "hylia"
     repo_url = "https://github.com/falkTX/Hylia.git"
+    services = ["mod-ui"]
 
     def build_and_install(self, source_dir: Path):
         # INSPIRATION.sh sets export NOOPT=true
@@ -86,6 +88,7 @@ class ModTtyMidi(Component):
 class Lilv(Component):
     name = "lilv"
     # No repo_url, uses tarball
+    services = ["mod-host", "mod-ui"]
 
     def build_and_install(self, source_dir: Path):
         # Logic for lilv waf

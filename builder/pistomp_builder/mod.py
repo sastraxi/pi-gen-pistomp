@@ -11,6 +11,7 @@ class ModUI(Component):
     name = "mod-ui"
     repo_url = "https://github.com/TreeFallSound/mod-ui.git"
     default_branch = "pistomp-v3"  # inferred/assumed
+    services = ["mod-ui"]
 
     @override
     def build_and_install(self, source_dir: Path):
@@ -76,6 +77,7 @@ class ModUI(Component):
 class ModHost(Component):
     name = "mod-host"
     repo_url = "https://github.com/micahvdm/mod-host.git"
+    services = ["mod-host", "mod-ui"]
 
     def build_and_install(self, source_dir: Path):
         run_cmd("make", cwd=source_dir)
