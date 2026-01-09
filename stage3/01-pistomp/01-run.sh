@@ -14,38 +14,20 @@ install -m 644 files/alsa-base.conf ${ROOTFS_DIR}/etc/modprobe.d
 
 on_chroot << EOF
 
-# pi-Stomp code
-git clone -b pistomp-v3 https://github.com/treefallsound/pi-stomp.git /home/${FIRST_USER_NAME}/pi-stomp
-
-# data dir
-mkdir -p /home/${FIRST_USER_NAME}/data/config
-mkdir -p /usr/mod/scripts
+# Install pi-stomp via builder
+echo "Installing pi-stomp via pistomp-builder..."
+export FIRST_USER_NAME="${FIRST_USER_NAME}"
+uv run --project /opt/pistomp-builder pistomp-builder deploy treefallsound/pi-stomp
 
 # pi-Stomp user-files
+# Note: user-files are not yet a component in builder, keeping manual clone
+echo "Cloning pi-stomp-user-files..."
 git clone --recurse-submodules https://github.com/TreeFallSound/pi-stomp-user-files.git /home/${FIRST_USER_NAME}/data/user-files
+chown -R ${FIRST_USER_NAME}:${FIRST_USER_NAME} /home/${FIRST_USER_NAME}/data/user-files
 
-install -m 644 /home/${FIRST_USER_NAME}/pi-stomp/setup/config_templates/default_config.yml /home/${FIRST_USER_NAME}/data/config/
-install -m 644 /home/${FIRST_USER_NAME}/pi-stomp/setup/config_templates/default-hardware-descriptor.json /home/${FIRST_USER_NAME}/data/config/
-
-# Pedalboards
-rm -rf /home/${FIRST_USER_NAME}/data/.pedalboards
-git clone https://github.com/TreeFallSound/pi-stomp-pedalboards.git /home/${FIRST_USER_NAME}/data/.pedalboards
-ln -s /home/${FIRST_USER_NAME}/data/.pedalboards /home/${FIRST_USER_NAME}/.pedalboards
-
-# Services
-ln -sf /usr/lib/systemd/system/mod-ala-pi-stomp.service /etc/systemd/system/multi-user.target.wants
-
-install -m 755 /home/${FIRST_USER_NAME}/pi-stomp/setup/mod-tweaks/start_touchosc2midi.sh /usr/mod/scripts/
-
-mkdir -p /usr/lib/pistomp-wifi
-install -m 755 /home/${FIRST_USER_NAME}/pi-stomp/setup/services/hotspot/usr/lib/pistomp-wifi/disable_wifi_hotspot.sh /usr/lib/pistomp-wifi
-install -m 755 /home/${FIRST_USER_NAME}/pi-stomp/setup/services/hotspot/usr/lib/pistomp-wifi/enable_wifi_hotspot.sh /usr/lib/pistomp-wifi
-install -m 755 /home/${FIRST_USER_NAME}/pi-stomp/setup/services/wifi_check.sh /usr/lib/pistomp-wifi
-install -m 644 /home/${FIRST_USER_NAME}/pi-stomp/setup/services/hotspot/usr/lib/systemd/system/wifi-hotspot.service /usr/lib/systemd/system
-chown -R ${FIRST_USER_NAME}:${FIRST_USER_NAME} /usr/lib/pistomp-wifi
-
-# USB automounter
-sudo dpkg -i /home/${FIRST_USER_NAME}/pi-stomp/setup/services/usbmount.deb
+# Install pedalboards via builder
+echo "Installing pi-stomp-pedalboards via pistomp-builder..."
+uv run --project /opt/pistomp-builder pistomp-builder deploy TreeFallSound/pi-stomp-pedalboards
 
 # Plugins
 mkdir -p /home/${FIRST_USER_NAME}/tmp
