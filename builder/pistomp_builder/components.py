@@ -1,4 +1,3 @@
-from .base import Component
 from .pistomp import PiStomp, PiStompPedalboards
 from .mod import ModUI, ModHost
 from .dependencies import (
@@ -9,7 +8,7 @@ from .dependencies import (
     TouchOsc2Midi,
     ModMidiMerger,
     ModTtyMidi,
-    Lilv
+    Lilv,
 )
 
 COMPONENT_MAP = {
