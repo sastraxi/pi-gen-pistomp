@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
 import getpass
-from .base import Component, run_cmd, superuser
+from .base import Component, run_cmd, superuser, fs
 
 
 class PiStomp(Component):
@@ -23,16 +23,14 @@ class PiStomp(Component):
         # --- User Space Operations ---
 
         # Ensure directories
-        (user_home / "data/config").mkdir(parents=True, exist_ok=True)
-        (user_home / "data/user-files").mkdir(
-            parents=True, exist_ok=True
-        )  # Usually separate clone
+        fs.mkdir(user_home / "data/config", parents=True)
+        fs.mkdir(user_home / "data/user-files", parents=True) # Usually separate clone
 
         # Install Config Templates
         config_dir = user_home / "data/config"
 
         target_config = config_dir / "default_config.yml"
-        if not target_config.exists():
+        if not fs.exists(target_config):
             run_cmd(
                 f"install -m 644 {source_dir}/setup/config_templates/default_config.yml {config_dir}/",
                 shell=True,
@@ -41,7 +39,7 @@ class PiStomp(Component):
             print(f"Config {target_config} exists. Skipping overwrite.")
 
         target_hw = config_dir / "default-hardware-descriptor.json"
-        if not target_hw.exists():
+        if not fs.exists(target_hw):
             run_cmd(
                 f"install -m 644 {source_dir}/setup/config_templates/default-hardware-descriptor.json {config_dir}/",
                 shell=True,
@@ -116,7 +114,7 @@ class PiStomp(Component):
 
             # USB Mount
             deb_path = source_dir / "setup/services/usbmount.deb"
-            if deb_path.exists():
+            if fs.exists(deb_path):
                 run_cmd(f"dpkg -i {deb_path}", shell=True)
 
             # Permissions (ensure pi-stomp repo is owned by user)
@@ -143,7 +141,7 @@ class PiStompPedalboards(Component):
         link = user_home / ".pedalboards"
         target = user_home / "data" / ".pedalboards"
 
-        if not link.exists():
+        if not fs.exists(link):
             run_cmd(f"ln -s {target} {link}", shell=True)
 
         with superuser():

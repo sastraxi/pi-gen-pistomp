@@ -1,7 +1,5 @@
 from pathlib import Path
-import os
-import subprocess
-from .base import Component, run_cmd, superuser
+from .base import Component, run_cmd, superuser, fs, get_env_var
 
 
 class Jack2(Component):
@@ -23,8 +21,7 @@ class Hylia(Component):
 
     def build_and_install(self, source_dir: Path):
         # INSPIRATION.sh sets export NOOPT=true
-        env = os.environ.copy()
-        env["NOOPT"] = "true"
+        env = {"NOOPT": "true"}
         run_cmd("make", cwd=source_dir, env=env)
         with superuser():
             run_cmd("make install", cwd=source_dir, shell=True)
@@ -44,11 +41,6 @@ class AmidiThru(Component):
     repo_url = "https://github.com/BlokasLabs/amidithru.git"
 
     def build_and_install(self, source_dir: Path):
-        # sed -i 's/CXX=g++.*/CXX=g++/' Makefile
-        # run_cmd("sed -i 's/CXX=g++.*/CXX=g++/' Makefile", cwd=source_dir, shell=True)
-        # Assuming we don't need sudo for editing the makefile in the source dir (owned by user)
-        # If we do (e.g. root clone), run_cmd might fail if we are pistomp. 
-        # But source_dir is usually prepared by the builder.
         run_cmd("sed -i 's/CXX=g++.*/CXX=g++/' Makefile", cwd=source_dir, shell=True)
         with superuser():
             run_cmd("make install", cwd=source_dir, shell=True)
@@ -69,7 +61,7 @@ class ModMidiMerger(Component):
 
     def build_and_install(self, source_dir: Path):
         build_dir = source_dir / "build"
-        build_dir.mkdir(exist_ok=True)
+        fs.mkdir(build_dir)
         run_cmd("cmake ..", cwd=build_dir, shell=True)
         run_cmd("make", cwd=build_dir)
         with superuser():
@@ -92,13 +84,23 @@ class Lilv(Component):
 
     def build_and_install(self, source_dir: Path):
         # Logic for lilv waf
-        import sys
+        
+        # Determine Python version on TARGET
+        res = run_cmd(
+            ['python3', '-c', 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")'],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        py_ver = res.stdout.strip()
 
-        py_ver = f"{sys.version_info.major}.{sys.version_info.minor}"
-
-        env = os.environ.copy()
-        env["CFLAGS"] = env.get("CFLAGS", "") + " -fPIC"
-        env["CXXFLAGS"] = env.get("CXXFLAGS", "") + " -fPIC"
+        cflags = get_env_var("CFLAGS")
+        cxxflags = get_env_var("CXXFLAGS")
+        
+        env = {
+            "CFLAGS": (cflags + " -fPIC").strip(),
+            "CXXFLAGS": (cxxflags + " -fPIC").strip()
+        }
 
         # waf configure
         # --pythondir=/usr/local/lib/python{py_ver}/dist-packages
@@ -114,9 +116,9 @@ class Lilv(Component):
             "--no-bash-completion",
             f"--pythondir=/usr/local/lib/python{py_ver}/dist-packages",
         ]
-        # Using subprocess directly to pass env
-        print(f"Running: {' '.join(cmd)} in {source_dir}")
-        subprocess.run(cmd, cwd=source_dir, check=True, env=env)
+        
+        # Use run_cmd to support remote execution and env injection
+        run_cmd(cmd, cwd=source_dir, check=True, env=env)
 
         run_cmd("./waf build", cwd=source_dir, shell=True)
         with superuser():
