@@ -29,6 +29,17 @@ def manage_service(service: str, action: str):
     with superuser():
         run_cmd(f"systemctl {action} {service}", check=False, shell=True)
 
+def daemon_reload():
+    """
+    Reload systemd manager configuration.
+    """
+    if is_chroot():
+        return
+
+    print("Reloading systemd daemon...")
+    with superuser():
+        run_cmd("systemctl daemon-reload", check=True, shell=True)
+
 def stop_services(component: Component):
     if not component.services:
         return

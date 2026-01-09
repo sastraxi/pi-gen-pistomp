@@ -6,9 +6,9 @@ import tempfile
 from .model import TargetType
 from .resolver import parse_target
 from .components import COMPONENT_MAP
-from .service import is_chroot, stop_services, start_services
+from .service import is_chroot, manage_service, stop_services, start_services, daemon_reload
 from .source import prepare_git_source, prepare_tarball_source, sync_local_source
-from .executor import _ssh_target
+from .executor import _ssh_target, run_cmd
 
 def deploy_component(target: Optional[str], branch: Optional[str], restart: bool):
     # Determine if we should really restart (check chroot)
@@ -54,7 +54,12 @@ def deploy_component(target: Optional[str], branch: Optional[str], restart: bool
         if target_type == TargetType.DIR:
             local_source = cast(Path, value)
             print(f"Building from local directory: {local_source}")
-            source_dir, is_remote_temp = sync_local_source(local_source)
+            
+            excludes = []
+            if component.name == "pi-stomp":
+                excludes.append("setup/sys")
+                
+            source_dir, is_remote_temp = sync_local_source(local_source, excludes=excludes)
             
             component.build_and_install(source_dir)
 
@@ -116,4 +121,5 @@ def deploy_component(target: Optional[str], branch: Optional[str], restart: bool
 
     # Restart services
     if should_restart:
+        daemon_reload()
         start_services(component)

@@ -118,7 +118,7 @@ def prepare_git_source(
 
         return remote_tmp, None
 
-def sync_local_source(local_source: Path) -> Tuple[Path, bool]:
+def sync_local_source(local_source: Path, excludes: Optional[list[str]] = None) -> Tuple[Path, bool]:
     """
     Syncs local directory to remote temp directory using rsync.
     Returns (remote_path, is_temp).
@@ -146,11 +146,18 @@ def sync_local_source(local_source: Path) -> Tuple[Path, bool]:
             "-avz",
             "--exclude=.git",
             "--exclude=__pycache__",
+        ]
+        
+        if excludes:
+            for pattern in excludes:
+                rsync_cmd.extend(["--exclude", pattern])
+
+        rsync_cmd.extend([
             "-e",
             f"ssh -S {ssh_ctx.control_path}",
             src_str,
             dst_str,
-        ]
+        ])
         subprocess.run(rsync_cmd, check=True)
 
         return remote_source, True
