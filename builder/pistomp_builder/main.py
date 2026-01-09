@@ -302,3 +302,7 @@ def deploy(
     finally:
         if tmp_context and hasattr(tmp_context, "cleanup"):
             tmp_context.cleanup()
+
+
+if __name__ == "__main__":
+    app()

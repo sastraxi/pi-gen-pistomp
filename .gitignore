@@ -5,3 +5,6 @@ SKIP
 SKIP_IMAGES
 .pc
 *-pc
+builder/**/*.pyc
+builder/**/__pycache__/
+**/*.egg-info
