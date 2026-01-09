@@ -3,7 +3,9 @@ from typing_extensions import override
 from pathlib import Path
 import os
 import getpass
-from .base import Component, run_cmd, superuser, fs
+from .model import Component
+from .executor import run_cmd, superuser
+from .filesystem import fs
 
 
 @final

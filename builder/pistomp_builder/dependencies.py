@@ -1,5 +1,7 @@
 from pathlib import Path
-from .base import Component, run_cmd, superuser, fs, get_env_var
+from .model import Component
+from .executor import run_cmd, superuser, get_env_var
+from .filesystem import fs
 
 
 class Jack2(Component):
@@ -84,22 +86,26 @@ class Lilv(Component):
 
     def build_and_install(self, source_dir: Path):
         # Logic for lilv waf
-        
+
         # Determine Python version on TARGET
         res = run_cmd(
-            ['python3', '-c', 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")'],
+            [
+                "python3",
+                "-c",
+                'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")',
+            ],
             capture_output=True,
             text=True,
-            check=True
+            check=True,
         )
         py_ver = res.stdout.strip()
 
         cflags = get_env_var("CFLAGS")
         cxxflags = get_env_var("CXXFLAGS")
-        
+
         env = {
             "CFLAGS": (cflags + " -fPIC").strip(),
-            "CXXFLAGS": (cxxflags + " -fPIC").strip()
+            "CXXFLAGS": (cxxflags + " -fPIC").strip(),
         }
 
         # waf configure
@@ -116,7 +122,7 @@ class Lilv(Component):
             "--no-bash-completion",
             f"--pythondir=/usr/local/lib/python{py_ver}/dist-packages",
         ]
-        
+
         # Use run_cmd to support remote execution and env injection
         run_cmd(cmd, cwd=source_dir, check=True, env=env)
 
