@@ -17,7 +17,7 @@ on_chroot << EOF
 # Install pi-stomp via builder
 echo "Installing pi-stomp via pistomp-builder..."
 export FIRST_USER_NAME="${FIRST_USER_NAME}"
-uv run --project /opt/pistomp-builder pistomp-builder deploy treefallsound/pi-stomp
+/opt/pistomp-builder/deploy.sh treefallsound/pi-stomp
 
 # pi-Stomp user-files
 # Note: user-files are not yet a component in builder, keeping manual clone
@@ -27,7 +27,7 @@ chown -R ${FIRST_USER_NAME}:${FIRST_USER_NAME} /home/${FIRST_USER_NAME}/data/use
 
 # Install pedalboards via builder
 echo "Installing pi-stomp-pedalboards via pistomp-builder..."
-uv run --project /opt/pistomp-builder pistomp-builder deploy TreeFallSound/pi-stomp-pedalboards
+/opt/pistomp-builder/deploy.sh TreeFallSound/pi-stomp-pedalboards
 
 # Plugins
 mkdir -p /home/${FIRST_USER_NAME}/tmp

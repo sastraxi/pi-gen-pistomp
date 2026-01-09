@@ -16,44 +16,46 @@ cd /opt/pistomp-builder
 export FIRST_USER_NAME="${FIRST_USER_NAME}"
 
 # Install components
+chmod +x deploy.sh
+
 echo "----------------------------------------------------------------"
 echo "Installing Hylia via pistomp-builder..."
-uv run --project . pistomp-builder deploy falkTX/Hylia
+./deploy.sh falkTX/Hylia
 
 echo "----------------------------------------------------------------"
 echo "Installing jack2 via pistomp-builder..."
-uv run --project . pistomp-builder deploy micahvdm/jack2
+./deploy.sh micahvdm/jack2
 
 echo "----------------------------------------------------------------"
 echo "Installing browsepy via pistomp-builder..."
-uv run --project . pistomp-builder deploy micahvdm/browsepy
+./deploy.sh micahvdm/browsepy
 
 echo "----------------------------------------------------------------"
 echo "Installing mod-host via pistomp-builder..."
-uv run --project . pistomp-builder deploy micahvdm/mod-host
+./deploy.sh micahvdm/mod-host
 
 echo "----------------------------------------------------------------"
 echo "Installing mod-ui via pistomp-builder..."
-uv run --project . pistomp-builder deploy TreeFallSound/mod-ui
+./deploy.sh TreeFallSound/mod-ui
 
 echo "----------------------------------------------------------------"
 echo "Installing amidithru via pistomp-builder..."
-uv run --project . pistomp-builder deploy BlokasLabs/amidithru
+./deploy.sh BlokasLabs/amidithru
 
 echo "----------------------------------------------------------------"
 echo "Installing touchosc2midi via pistomp-builder..."
-uv run --project . pistomp-builder deploy micahvdm/touchosc2midi
+./deploy.sh micahvdm/touchosc2midi
 
 echo "----------------------------------------------------------------"
 echo "Installing mod-midi-merger via pistomp-builder..."
-uv run --project . pistomp-builder deploy micahvdm/mod-midi-merger
+./deploy.sh micahvdm/mod-midi-merger
 
 echo "----------------------------------------------------------------"
 echo "Installing mod-ttymidi via pistomp-builder..."
-uv run --project . pistomp-builder deploy moddevices/mod-ttymidi
+./deploy.sh moddevices/mod-ttymidi
 
 echo "----------------------------------------------------------------"
 echo "Installing lilv via pistomp-builder..."
-uv run --project . pistomp-builder deploy http://download.drobilla.net/lilv-0.24.12.tar.bz2
+./deploy.sh http://download.drobilla.net/lilv-0.24.12.tar.bz2
 
 EOF
