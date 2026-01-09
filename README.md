@@ -385,16 +385,18 @@ This project includes `pistomp-builder`, a Python-based utility located in `buil
 
 **Key Features:**
 - **Deploy Components:** install software to local directory or remote pi-Stomp via SSH.
-- **Flexible Targets:** Supports component names (e.g., `mod-ui`), git URLs, local directories, and tarballs.
+- **Flexible Targets:** Supports component names (e.g., `mod-ui`), HTTPS git URLs, local directories, and tarballs.
 - **Branch Support:** Append `#branch-name` to targets (e.g., `TreeFallSound/mod-ui#pistomp-v3`).
 - **Remote Execution:** Use `--ssh [user@host]` to run commands on a connected device (defaults to `pistomp@pistomp.local`).
 
+*Note: Only HTTPS git URLs are supported; SSH-style URLs (`git@...`) are not currently handled.*
+
 **Usage:**
 ```bash
-# Deploy local changes to default remote
+# Deploy local changes (e.g. in checked-out pi-stomp, mod-ui repo) to pistomp@pistomp.local
 ./builder/deploy.sh . --ssh
 
-# Deploy specific component branch
+# Deploy specific component branch from github
 ./builder/deploy.sh TreeFallSound/mod-ui#pistomp-v3 --ssh
 ```
 

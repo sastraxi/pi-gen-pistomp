@@ -16,8 +16,9 @@ Use the wrapper script `deploy.sh`:
 
 **Targets:**
 - Component name: `mod-ui`
-- Git URL: `https://github.com/TreeFallSound/mod-ui.git`
-- GitHub shorthand: `TreeFallSound/mod-ui` (supports `#branch`)
+- Git URL: `https://github.com/TreeFallSound/mod-ui.git` (HTTPS only)
+- Tarball: `http://download.drobilla.net/lilv-0.24.12.tar.bz2`
+- GitHub shorthand: `TreeFallSound/mod-ui` (HTTPS; supports `#branch`)
 - Local path: `.`
 
 ## Development
