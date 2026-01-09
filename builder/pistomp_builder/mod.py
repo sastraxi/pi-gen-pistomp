@@ -40,12 +40,11 @@ class ModUI(Component):
             import tornado
             tornado_path = Path(tornado.__file__).parent
             httputil = tornado_path / "httputil.py"
-            if httputil.exists():
-                content = httputil.read_text()
-                if "collections.MutableMapping" in content and "collections.abc.MutableMapping" not in content:
-                    new_content = content.replace("collections.MutableMapping", "collections.abc.MutableMapping")
-                    httputil.write_text(new_content)
-                    print("Applied fix to httputil.py")
+            
+            # Use sudo sed to handle permissions. 
+            # If the file doesn't exist, sed will fail and we'll catch the error.
+            run_cmd(f"sudo sed -i -e 's/collections.MutableMapping/collections.abc.MutableMapping/g' {httputil}", shell=True)
+            print("Applied fix to httputil.py (via sed)")
         except ImportError:
             print("Tornado not found, skipping fix.")
         except Exception as e:
