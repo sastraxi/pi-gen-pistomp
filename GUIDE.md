@@ -55,23 +55,20 @@ Result: `deploy/image_...pistompOS-lite.img.xz`
 ## Development
 
 ### Fast Iteration (Live Device)
-Do not rebuild image for component updates. Use `scripts/builder/INSPIRATION.sh` (acts as `reinstall.sh`) to update specific components on a running pi-Stomp.
+Update components on a running pi-Stomp via `builder/deploy.sh`.
 
 ```bash
-# On the pi-stomp device
-./INSPIRATION.sh mod-ui      # Reinstall/Update mod-ui
-./INSPIRATION.sh mod-host    # Reinstall/Update mod-host
-./INSPIRATION.sh all         # Rebuild all audio components
+# Deploy local directory
+./builder/deploy.sh . --ssh pistomp@pistomp.local
+
+# Deploy GitHub repo/branch
+./builder/deploy.sh TreeFallSound/mod-ui#pistomp-v3 --ssh pistomp@pistomp.local
+
+# Deploy named component (uses default repo)
+./builder/deploy.sh mod-ui --ssh pistomp@pistomp.local
 ```
 
-**Supported Components:**
--   `mod-ui` (MOD Web Interface)
--   `mod-host` (LV2 Host)
--   `jack2` (Audio Engine)
--   `hylia` (Ableton Link)
--   `lilv` (LV2 Library)
--   `browsepy` (File Manager)
--   `amidithru`, `mod-midi-merger`, `mod-ttymidi`, `touchosc2midi`
+**Supported Components:** `mod-ui`, `mod-host`, `jack2`, `hylia`, `lilv`, `browsepy`, `amidithru`, `mod-midi-merger`, `mod-ttymidi`, `touchosc2midi`.
 
 ### System/Kernel Updates
 Requires full image rebuild.

@@ -1,79 +1,59 @@
 #!/bin/bash -e
 
-echo "Installing MOD software"
+echo "Installing MOD software via pistomp-builder"
+
+# Copy builder tool to image
+mkdir -p "${ROOTFS_DIR}/opt/pistomp-builder"
+cp -r "${BASE_DIR}/builder/"* "${ROOTFS_DIR}/opt/pistomp-builder/"
+
 on_chroot << EOF
 
-mkdir -p /home/${FIRST_USER_NAME}/tmp
-cd /home/${FIRST_USER_NAME}/tmp
+cd /opt/pistomp-builder
 
-export NOOPT=true
-git clone --recursive https://github.com/falkTX/Hylia.git
-cd Hylia
-make
-make install
-cd ..
+# Install dependencies (sh, typer) using uv
+# We rely on uv run to handle this.
 
-git clone https://github.com/micahvdm/jack2.git
-cd jack2
-./waf configure
-./waf build
-./waf install
-cd ..
+export FIRST_USER_NAME="${FIRST_USER_NAME}"
 
-git clone https://github.com/micahvdm/browsepy.git
-cd browsepy
-pip3 install ./
-cd ..
+# Install components
+echo "----------------------------------------------------------------"
+echo "Installing Hylia via pistomp-builder..."
+uv run --project . pistomp-builder deploy falkTX/Hylia
 
-git clone https://github.com/micahvdm/mod-host.git
-cd mod-host
-make
-make install
-cd ..
+echo "----------------------------------------------------------------"
+echo "Installing jack2 via pistomp-builder..."
+uv run --project . pistomp-builder deploy micahvdm/jack2
 
-git clone https://github.com/TreeFallSound/mod-ui.git
-cd mod-ui
-chmod +x setup.py
-cd utils
-make
-cd ..
-./setup.py install
-cp -r default.pedalboard /home/${FIRST_USER_NAME}/data/.pedalboards
-sed -i -e 's/collections.MutableMapping/collections.abc.MutableMapping/' /usr/local/lib/python3.11/dist-packages/tornado/httputil.py
-cd ..
+echo "----------------------------------------------------------------"
+echo "Installing browsepy via pistomp-builder..."
+uv run --project . pistomp-builder deploy micahvdm/browsepy
 
-git clone https://github.com/BlokasLabs/amidithru.git
-cd amidithru
-sed -i 's/CXX=g++.*/CXX=g++/' Makefile
-make install
-cd ..
+echo "----------------------------------------------------------------"
+echo "Installing mod-host via pistomp-builder..."
+uv run --project . pistomp-builder deploy micahvdm/mod-host
 
-git clone https://github.com/micahvdm/touchosc2midi.git
-cd touchosc2midi
-pip3 install ./
-cd ..
+echo "----------------------------------------------------------------"
+echo "Installing mod-ui via pistomp-builder..."
+uv run --project . pistomp-builder deploy TreeFallSound/mod-ui
 
-git clone https://github.com/micahvdm/mod-midi-merger.git
-cd mod-midi-merger
-mkdir build && cd build
-cmake ..
-make
-make install
-cd ..
+echo "----------------------------------------------------------------"
+echo "Installing amidithru via pistomp-builder..."
+uv run --project . pistomp-builder deploy BlokasLabs/amidithru
 
-git clone https://github.com/moddevices/mod-ttymidi.git
-cd mod-ttymidi
-make install
-cd ..
+echo "----------------------------------------------------------------"
+echo "Installing touchosc2midi via pistomp-builder..."
+uv run --project . pistomp-builder deploy micahvdm/touchosc2midi
 
-wget http://download.drobilla.net/lilv-0.24.12.tar.bz2
-tar xvf lilv-0.24.12.tar.bz2
-cd lilv-0.24.12
+echo "----------------------------------------------------------------"
+echo "Installing mod-midi-merger via pistomp-builder..."
+uv run --project . pistomp-builder deploy micahvdm/mod-midi-merger
 
-./waf configure --prefix=/usr/local  --static --static-progs --no-shared --no-utils --no-bash-completion --pythondir=/usr/local/lib/python3.11/dist-packages
-./waf build
-./waf install
-cd ..
+echo "----------------------------------------------------------------"
+echo "Installing mod-ttymidi via pistomp-builder..."
+uv run --project . pistomp-builder deploy moddevices/mod-ttymidi
+
+echo "----------------------------------------------------------------"
+echo "Installing lilv via pistomp-builder..."
+uv run --project . pistomp-builder deploy http://download.drobilla.net/lilv-0.24.12.tar.bz2
 
 EOF
-

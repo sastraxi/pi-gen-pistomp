@@ -5,6 +5,8 @@ on_chroot << EOF
 
 rm -rf /usr/lib/python3.11/EXTERNALLY-MANAGED
 
+pip3 install uv
+pip3 install ruff ty
 pip3 install pyserial==3.0 pystache==0.5.4 aggdraw==1.3.11 scandir backports.shutil-get-terminal-size
 pip3 install pycryptodomex
 pip3 install tornado==4.3

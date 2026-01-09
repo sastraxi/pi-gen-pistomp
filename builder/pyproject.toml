@@ -1,0 +1,19 @@
+[project]
+name = "pistomp-builder"
+version = "0.1.0"
+description = "Builder for pi-Stomp components"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "typer>=0.9.0",
+    "sh>=2.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff",
+    "ty",
+]
+
+[project.scripts]
+pistomp-builder = "pistomp_builder.main:app"
