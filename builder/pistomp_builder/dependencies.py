@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
 import subprocess
-from .base import Component, run_cmd
+from .base import Component, run_cmd, superuser
 
 
 class Jack2(Component):
@@ -11,7 +11,8 @@ class Jack2(Component):
     def build_and_install(self, source_dir: Path):
         run_cmd("./waf configure", cwd=source_dir, shell=True)
         run_cmd("./waf build", cwd=source_dir, shell=True)
-        run_cmd("sudo ./waf install", cwd=source_dir, shell=True)
+        with superuser():
+            run_cmd("./waf install", cwd=source_dir, shell=True)
 
 
 class Hylia(Component):
@@ -23,7 +24,8 @@ class Hylia(Component):
         env = os.environ.copy()
         env["NOOPT"] = "true"
         run_cmd("make", cwd=source_dir, env=env)
-        run_cmd("sudo make install", cwd=source_dir, shell=True)
+        with superuser():
+            run_cmd("make install", cwd=source_dir, shell=True)
 
 
 class BrowsePy(Component):
@@ -31,7 +33,8 @@ class BrowsePy(Component):
     repo_url = "https://github.com/micahvdm/browsepy.git"
 
     def build_and_install(self, source_dir: Path):
-        run_cmd("sudo pip3 install ./", cwd=source_dir, shell=True)
+        with superuser():
+            run_cmd("pip3 install ./", cwd=source_dir, shell=True)
 
 
 class AmidiThru(Component):
@@ -40,14 +43,13 @@ class AmidiThru(Component):
 
     def build_and_install(self, source_dir: Path):
         # sed -i 's/CXX=g++.*/CXX=g++/' Makefile
-        makefile = source_dir / "Makefile"
-        content = makefile.read_text()
-        content = content.replace("CXX=g++", "CXX=g++")  # Verify replacement pattern
-        # The script says sed -i 's/CXX=g++.*/CXX=g++/' which implies replacing CXX=g++<something> with CXX=g++
-        # It's probably to remove cross-compiler prefix if any, or force g++.
-        # Let's just run sed
+        # run_cmd("sed -i 's/CXX=g++.*/CXX=g++/' Makefile", cwd=source_dir, shell=True)
+        # Assuming we don't need sudo for editing the makefile in the source dir (owned by user)
+        # If we do (e.g. root clone), run_cmd might fail if we are pistomp. 
+        # But source_dir is usually prepared by the builder.
         run_cmd("sed -i 's/CXX=g++.*/CXX=g++/' Makefile", cwd=source_dir, shell=True)
-        run_cmd("sudo make install", cwd=source_dir, shell=True)
+        with superuser():
+            run_cmd("make install", cwd=source_dir, shell=True)
 
 
 class TouchOsc2Midi(Component):
@@ -55,7 +57,8 @@ class TouchOsc2Midi(Component):
     repo_url = "https://github.com/micahvdm/touchosc2midi.git"
 
     def build_and_install(self, source_dir: Path):
-        run_cmd("sudo pip3 install ./", cwd=source_dir, shell=True)
+        with superuser():
+            run_cmd("pip3 install ./", cwd=source_dir, shell=True)
 
 
 class ModMidiMerger(Component):
@@ -67,7 +70,8 @@ class ModMidiMerger(Component):
         build_dir.mkdir(exist_ok=True)
         run_cmd("cmake ..", cwd=build_dir, shell=True)
         run_cmd("make", cwd=build_dir)
-        run_cmd("sudo make install", cwd=build_dir, shell=True)
+        with superuser():
+            run_cmd("make install", cwd=build_dir, shell=True)
 
 
 class ModTtyMidi(Component):
@@ -75,7 +79,8 @@ class ModTtyMidi(Component):
     repo_url = "https://github.com/moddevices/mod-ttymidi.git"
 
     def build_and_install(self, source_dir: Path):
-        run_cmd("sudo make install", cwd=source_dir, shell=True)
+        with superuser():
+            run_cmd("make install", cwd=source_dir, shell=True)
 
 
 class Lilv(Component):
@@ -111,4 +116,5 @@ class Lilv(Component):
         subprocess.run(cmd, cwd=source_dir, check=True, env=env)
 
         run_cmd("./waf build", cwd=source_dir, shell=True)
-        run_cmd("sudo ./waf install", cwd=source_dir, shell=True)
+        with superuser():
+            run_cmd("./waf install", cwd=source_dir, shell=True)
