@@ -13,11 +13,21 @@ make
 make install
 cd ..
 
-[ ! -d jack2 ] && git clone https://github.com/micahvdm/jack2.git
+[ ! -d jack2 ] && git clone --branch v1.9.22 https://github.com/jackaudio/jack2.git
 cd jack2
 ./waf configure
 ./waf build
 ./waf install
+cd ..
+
+# jack-example-tools provides jack_load/jack_unload v4
+# Alternative source:
+#[ ! -d jack-example-tools ] && git clone --branch 4 https://github.com/jackaudio/jack-example-tools.git
+[ ! -d jack-example-tools ] && git clone --branch debian/4-4 https://salsa.debian.org/multimedia-team/jack-example-tools.git
+cd jack-example-tools
+meson setup --prefix=/usr/local build
+ninja -C build
+meson install -C build
 cd ..
 
 # debian 13 will include python3-lilv liblilv-dev
@@ -35,8 +45,10 @@ cd browsepy
 pip3 install ./
 cd ..
 
-[ ! -d mod-host ] && git clone https://github.com/micahvdm/mod-host.git
+[ ! -d mod-host ] && git clone https://github.com/mod-audio/mod-host
 cd mod-host
+# This project has no tags - using the repo head from 2025-12-27
+git checkout af11901d9d3ab02631b463853bd16d7881c4e7ca
 make
 make install
 cd ..
@@ -58,15 +70,19 @@ sed -i 's/CXX=g++.*/CXX=g++/' Makefile
 make install
 cd ..
 
-[ ! -d touchosc2midi ] && git clone https://github.com/micahvdm/touchosc2midi.git
+[ ! -d touchosc2midi ] && git clone https://github.com/BlokasLabs/touchosc2midi.git
 cd touchosc2midi
 pip3 install ./
 cd ..
 
-[ ! -d mod-midi-merger ] && git clone https://github.com/micahvdm/mod-midi-merger.git
+[ ! -d mod-midi-merger ] && git clone https://github.com/mod-audio/mod-midi-merger
 cd mod-midi-merger
+# This project's cmake forces the install prefix to /usr for some reason, so disable that
+# so that CMAKE_INSTALL_PREFIX can be used.
+sed -i 's/^[[:space:]]*set(CMAKE_INSTALL_PREFIX[[:space:]]*\/usr)/# &/' CMakeLists.txt
+[ -d build ] && rm -rf build
 mkdir build && cd build
-cmake ..
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
 make
 make install
 cd ../..
@@ -76,4 +92,3 @@ cd mod-ttymidi
 make install
 cd ..
 EOF
-
