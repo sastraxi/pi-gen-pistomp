@@ -78,14 +78,138 @@ class ModTtyMidi(Component):
             run_cmd("make install", cwd=source_dir, shell=True)
 
 
+class Serd(Component):
+    name = "serd"
+    # No repo_url, uses tarball
+    services = []
+
+    def build_and_install(self, source_dir: Path):
+        # Serd uses meson
+        cflags = get_env_var("CFLAGS")
+        cxxflags = get_env_var("CXXFLAGS")
+
+        env = {
+            "CFLAGS": (cflags + " -fPIC").strip(),
+            "CXXFLAGS": (cxxflags + " -fPIC").strip(),
+        }
+
+        # Setup
+        run_cmd(
+            [
+                "meson", "setup", "build",
+                "--prefix=/usr/local",
+                "--default-library=static",
+                "-Dtests=disabled",
+                "-Ddocs=disabled",
+                "-Dtools=disabled",
+            ],
+            cwd=source_dir,
+            check=True,
+            env=env,
+        )
+
+        # Compile
+        run_cmd("meson compile -C build", cwd=source_dir, shell=True)
+
+        # Install
+        with superuser():
+            run_cmd("meson install -C build", cwd=source_dir, shell=True)
+
+
+class Sord(Component):
+    name = "sord"
+    # No repo_url, uses tarball
+    services = []
+
+    def build_and_install(self, source_dir: Path):
+        # Sord uses meson
+        cflags = get_env_var("CFLAGS")
+        cxxflags = get_env_var("CXXFLAGS")
+
+        env = {
+            "CFLAGS": (cflags + " -fPIC").strip(),
+            "CXXFLAGS": (cxxflags + " -fPIC").strip(),
+        }
+
+        # Setup
+        run_cmd(
+            [
+                "meson", "setup", "build",
+                "--prefix=/usr/local",
+                "--default-library=static",
+                "-Dtests=disabled",
+                "-Ddocs=disabled",
+                "-Dtools=disabled",
+            ],
+            cwd=source_dir,
+            check=True,
+            env=env,
+        )
+
+        # Compile
+        run_cmd("meson compile -C build", cwd=source_dir, shell=True)
+
+        # Install
+        with superuser():
+            run_cmd("meson install -C build", cwd=source_dir, shell=True)
+
+
+class Zix(Component):
+    name = "zix"
+    # No repo_url, uses tarball
+    services = []  # No services depend directly on zix
+
+    def build_and_install(self, source_dir: Path):
+        # Zix uses meson
+        cflags = get_env_var("CFLAGS")
+        cxxflags = get_env_var("CXXFLAGS")
+
+        env = {
+            "CFLAGS": (cflags + " -fPIC").strip(),
+            "CXXFLAGS": (cxxflags + " -fPIC").strip(),
+        }
+
+        # Setup - minimal build
+        run_cmd(
+            [
+                "meson", "setup", "build",
+                "--prefix=/usr/local",
+                "--default-library=static",
+                "-Dtests=disabled",
+                "-Ddocs=disabled",
+                "-Dbenchmarks=disabled",
+            ],
+            cwd=source_dir,
+            check=True,
+            env=env,
+        )
+
+        # Compile
+        run_cmd("meson compile -C build", cwd=source_dir, shell=True)
+
+        # Install
+        with superuser():
+            run_cmd("meson install -C build", cwd=source_dir, shell=True)
+
+
 class Lilv(Component):
     name = "lilv"
     # No repo_url, uses tarball
     services = ["mod-host", "mod-ui"]
 
     def build_and_install(self, source_dir: Path):
-        # Logic for lilv waf
+        # Detect build system (waf or meson)
+        has_waf = fs.exists(source_dir / "waf")
+        has_meson = fs.exists(source_dir / "meson.build")
 
+        if has_meson:
+            self._build_with_meson(source_dir)
+        elif has_waf:
+            self._build_with_waf(source_dir)
+        else:
+            raise RuntimeError("No supported build system (waf or meson) found")
+
+    def _build_with_waf(self, source_dir: Path):
         # Determine Python version on TARGET
         res = run_cmd(
             [
@@ -107,9 +231,6 @@ class Lilv(Component):
             "CXXFLAGS": (cxxflags + " -fPIC").strip(),
         }
 
-        # waf configure
-        # --pythondir=/usr/local/lib/python{py_ver}/dist-packages
-        # We need to ensure we run waf with the right environment
         cmd = [
             "./waf",
             "configure",
@@ -122,9 +243,41 @@ class Lilv(Component):
             f"--pythondir=/usr/local/lib/python{py_ver}/dist-packages",
         ]
 
-        # Use run_cmd to support remote execution and env injection
         run_cmd(cmd, cwd=source_dir, check=True, env=env)
-
         run_cmd("./waf build", cwd=source_dir, shell=True)
         with superuser():
             run_cmd("./waf install", cwd=source_dir, shell=True)
+
+    def _build_with_meson(self, source_dir: Path):
+        # Based on INSTALL.md from lilv 0.26.x
+        cflags = get_env_var("CFLAGS")
+        cxxflags = get_env_var("CXXFLAGS")
+
+        env = {
+            "CFLAGS": (cflags + " -fPIC").strip(),
+            "CXXFLAGS": (cxxflags + " -fPIC").strip(),
+        }
+
+        # Setup - minimal build without tools, tests, docs, bindings
+        run_cmd(
+            [
+                "meson", "setup", "build",
+                "--prefix=/usr/local",
+                "--default-library=static",
+                "-Dtools=disabled",
+                "-Dtests=disabled",
+                "-Ddocs=disabled",
+                "-Dbindings_py=disabled",
+                "-Dbindings_cpp=disabled",
+            ],
+            cwd=source_dir,
+            check=True,
+            env=env,
+        )
+
+        # Compile
+        run_cmd("meson compile -C build", cwd=source_dir, shell=True)
+
+        # Install
+        with superuser():
+            run_cmd("meson install -C build", cwd=source_dir, shell=True)

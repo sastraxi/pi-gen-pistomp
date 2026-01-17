@@ -68,7 +68,16 @@ Update components on a running pi-Stomp (`pistomp@pistomp.local` by default) via
 ./builder/deploy.sh mod-ui --ssh
 ```
 
-**Supported Components:** `mod-ui`, `mod-host`, `jack2`, `hylia`, `lilv`, `browsepy`, `amidithru`, `mod-midi-merger`, `mod-ttymidi`, `touchosc2midi`.
+### Supported Components
+
+* `mod-ui` and `mod-host`
+* `jack2`
+* `hylia`
+* `lilv`, `serd`, `sord`, `zix`
+* `browsepy`
+* `amidithru`
+* `mod-midi-merger` and `mod-ttymidi`
+* `touchosc2midi`
 
 ### System/Kernel Updates
 Requires full image rebuild.

@@ -3,12 +3,15 @@ from enum import Enum
 from pathlib import Path
 from typing import List, Optional
 
+class UnknownTargetError(Exception):
+    """Raised when a target string cannot be parsed into a known type."""
+    pass
+
 class TargetType(str, Enum):
     DIR = "dir"
     GIT = "git"
     TARBALL = "tarball"
     COMPONENT = "component"
-    UNKNOWN = "unknown"
 
 class Component(ABC):
     name: str

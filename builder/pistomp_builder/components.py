@@ -8,6 +8,9 @@ from .dependencies import (
     TouchOsc2Midi,
     ModMidiMerger,
     ModTtyMidi,
+    Serd,
+    Sord,
+    Zix,
     Lilv,
 )
 
@@ -21,6 +24,9 @@ COMPONENT_MAP = {
     "touchosc2midi": TouchOsc2Midi(),
     "mod-midi-merger": ModMidiMerger(),
     "mod-ttymidi": ModTtyMidi(),
+    "serd": Serd(),
+    "sord": Sord(),
+    "zix": Zix(),
     "lilv": Lilv(),
     "pi-stomp": PiStomp(),
     "pi-stomp-pedalboards": PiStompPedalboards(),

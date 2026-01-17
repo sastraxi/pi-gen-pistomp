@@ -4,7 +4,7 @@ from typing import Optional, cast
 import tempfile
 
 from .model import TargetType
-from .resolver import parse_target
+from .target import Target
 from .components import COMPONENT_MAP
 from .service import is_chroot, stop_services, start_services, daemon_reload
 from .source import prepare_git_source, prepare_tarball_source, sync_local_source
@@ -20,25 +20,27 @@ def deploy_component(target: Optional[str], branch: Optional[str], restart: bool
     if target is None:
         # CWD
         cwd = Path.cwd()
-        target_type = TargetType.DIR
-        value = cwd
-        target_branch = None
-        component_name = cwd.name
+        parsed_target = Target(
+            type=TargetType.DIR,
+            value=cwd,
+            branch=None,
+            component_name=cwd.name
+        )
     else:
-        target_type, value, target_branch, component_name = parse_target(target)
+        parsed_target = Target.parse(target)
 
     # Override branch if provided via flag
     if branch:
-        target_branch = branch
+        parsed_target.branch = branch
 
     # 2. Validate Component
-    if component_name not in COMPONENT_MAP:
+    if parsed_target.component_name not in COMPONENT_MAP:
         print(f"Error: Could not determine supported component for '{target}'.")
-        print(f"Detected/Inferred name: {component_name}")
+        print(f"Detected/Inferred name: {parsed_target.component_name}")
         print(f"Supported components: {', '.join(COMPONENT_MAP.keys())}")
         sys.exit(1)
 
-    component = COMPONENT_MAP[component_name]
+    component = COMPONENT_MAP[parsed_target.component_name]
     print(f"Deploying {component.name}...")
 
     # Stop services
@@ -51,19 +53,19 @@ def deploy_component(target: Optional[str], branch: Optional[str], restart: bool
     is_remote_temp = False
 
     try:
-        if target_type == TargetType.DIR:
-            local_source = cast(Path, value)
+        if parsed_target.type == TargetType.DIR:
+            local_source = cast(Path, parsed_target.value)
             print(f"Building from local directory: {local_source}")
-            
+
             excludes = []
             if component.name == "pi-stomp":
                 excludes.append("setup/sys")
-                
+
             source_dir, is_remote_temp = sync_local_source(local_source, excludes=excludes)
-            
+
             component.build_and_install(source_dir)
 
-        elif target_type == TargetType.COMPONENT:
+        elif parsed_target.type == TargetType.COMPONENT:
             # Default Git Repo
             if not component.repo_url:
                 if component.name == "lilv":
@@ -74,30 +76,30 @@ def deploy_component(target: Optional[str], branch: Optional[str], restart: bool
                      source_dir, tmp_context = prepare_tarball_source(url)
                      # For remote tarball, tmp_context is None, but we might want to track it
                      if _ssh_target.get():
-                         is_remote_temp = True 
+                         is_remote_temp = True
                      component.build_and_install(source_dir)
                 else:
                     print(f"No repository URL defined for {component.name}")
                     sys.exit(1)
             else:
                 source_dir, tmp_context = prepare_git_source(
-                    cast(str, component.repo_url), target_branch, component
+                    cast(str, component.repo_url), parsed_target.branch, component
                 )
                 if tmp_context is None and not component.persistent_repo_path and _ssh_target.get():
                      # Ephemeral git clone on remote
                      is_remote_temp = True
-                
+
                 component.build_and_install(source_dir)
 
-        elif target_type == TargetType.GIT:
-            url = cast(str, value)
-            source_dir, tmp_context = prepare_git_source(url, target_branch, component)
+        elif parsed_target.type == TargetType.GIT:
+            url = cast(str, parsed_target.value)
+            source_dir, tmp_context = prepare_git_source(url, parsed_target.branch, component)
             if tmp_context is None and not component.persistent_repo_path and _ssh_target.get():
                  is_remote_temp = True
             component.build_and_install(source_dir)
 
-        elif target_type == TargetType.TARBALL:
-            url = cast(str, value)
+        elif parsed_target.type == TargetType.TARBALL:
+            url = cast(str, parsed_target.value)
             source_dir, tmp_context = prepare_tarball_source(url)
             if tmp_context is None and _ssh_target.get():
                  is_remote_temp = True
