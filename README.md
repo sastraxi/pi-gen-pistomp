@@ -379,6 +379,22 @@ If you wish to build further configurations upon (for example) the lite
 system, you can also delete the contents of `./stage3` and `./stage4` and
 replace with your own contents in the same format.
 
+## Skipping stages to speed up development
+
+If you're working on a specific stage the recommended development process is as
+follows:
+
+ * Add a file called SKIP_IMAGES into the directories containing EXPORT_* files
+   (currently stage2, stage4 and stage5)
+ * Add SKIP files to the stages you don't want to build. For example, if you're
+   basing your image on the lite image you would add these to stages 3, 4 and 5.
+ * Run build.sh to build all stages
+ * Add SKIP files to the earlier successfully built stages
+ * Modify the last stage
+ * Rebuild just the last stage using ```sudo CLEAN=1 ./build.sh```
+ * Once you're happy with the image you can remove the SKIP_IMAGES files and
+   export your image to test
+
 ## Builder Tool
 
 This project includes `pistomp-builder`, a Python-based utility located in `builder/` for managing component deployment.
