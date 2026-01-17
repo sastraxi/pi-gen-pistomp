@@ -15,6 +15,13 @@ class Target:
     branch: Optional[str]
     component_name: Optional[str]
 
+    @staticmethod
+    def _normalize_component_name(name: Optional[str]) -> Optional[str]:
+        """Normalize inferred component names to match known components."""
+        if name and "pedalboards" in name.lower():
+            return "pi-stomp-pedalboards"
+        return name
+
     @classmethod
     def parse(cls, target: str) -> "Target":
         """
@@ -35,6 +42,7 @@ class Target:
                 # Try to infer component name from URL
                 name_match = re.search(r"/([^/]+)\.git$", target)
                 component_name = name_match.group(1) if name_match else None
+                component_name = cls._normalize_component_name(component_name)
                 return cls(TargetType.GIT, target, branch, component_name)
             else:
                 # Assume tarball
@@ -45,17 +53,20 @@ class Target:
                     if name in filename:
                         component_name = name
                         break
+                component_name = cls._normalize_component_name(component_name)
                 return cls(TargetType.TARBALL, target, branch, component_name)
 
         # Local Directory
         if Path(target).is_dir():
             path = Path(target)
-            return cls(TargetType.DIR, path.absolute(), branch, path.name)
+            component_name = cls._normalize_component_name(path.name)
+            return cls(TargetType.DIR, path.absolute(), branch, component_name)
 
         # GitHub shorthand (user/repo)
         if re.match(r"^[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+$", target):
             url = f"https://github.com/{target}.git"
             component_name = target.split("/")[-1]
+            component_name = cls._normalize_component_name(component_name)
             return cls(TargetType.GIT, url, branch, component_name)
 
         # Known Component Name
