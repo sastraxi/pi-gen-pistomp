@@ -10,6 +10,10 @@ from .service import is_chroot, stop_services, start_services, daemon_reload
 from .source import prepare_git_source, prepare_tarball_source, sync_local_source
 from .executor import _ssh_target
 
+
+def _is_tarball_url(url: str) -> bool:
+    return url.endswith(('.tar.gz', '.tar.bz2', '.tar.xz', '.tgz'))
+
 def deploy_component(target: Optional[str], branch: Optional[str], restart: bool):
     # Determine if we should really restart (check chroot)
     should_restart = restart and not is_chroot()
@@ -66,30 +70,22 @@ def deploy_component(target: Optional[str], branch: Optional[str], restart: bool
             component.build_and_install(source_dir)
 
         elif parsed_target.type == TargetType.COMPONENT:
-            # Default Git Repo
-            if not component.repo_url:
-                if component.name == "lilv":
-                     # Special case for lilv tarball
-                     # TODO: Ideally Component should have a method to get source or properties defining source type
-                     # For now, hardcoding lilv fallback url if repo_url is missing but we know it's lilv
-                     url = "http://download.drobilla.net/lilv-0.24.12.tar.bz2"
-                     source_dir, tmp_context = prepare_tarball_source(url)
-                     # For remote tarball, tmp_context is None, but we might want to track it
-                     if _ssh_target.get():
-                         is_remote_temp = True
-                     component.build_and_install(source_dir)
-                else:
-                    print(f"No repository URL defined for {component.name}")
-                    sys.exit(1)
-            else:
-                source_dir, tmp_context = prepare_git_source(
-                    cast(str, component.repo_url), parsed_target.branch, component
-                )
-                if tmp_context is None and not component.persistent_repo_path and _ssh_target.get():
-                     # Ephemeral git clone on remote
-                     is_remote_temp = True
+            if not component.url:
+                print(f"No URL defined for {component.name}")
+                sys.exit(1)
 
-                component.build_and_install(source_dir)
+            url = cast(str, component.url)
+
+            if _is_tarball_url(url):
+                source_dir, tmp_context = prepare_tarball_source(url)
+                if tmp_context is None and _ssh_target.get():
+                    is_remote_temp = True
+            else:
+                source_dir, tmp_context = prepare_git_source(url, parsed_target.branch, component)
+                if tmp_context is None and not component.persistent_repo_path and _ssh_target.get():
+                    is_remote_temp = True
+
+            component.build_and_install(source_dir)
 
         elif parsed_target.type == TargetType.GIT:
             url = cast(str, parsed_target.value)

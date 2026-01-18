@@ -5,6 +5,7 @@ from .executor import ssh_connection
 
 app = typer.Typer()
 
+
 @app.command()
 def deploy(
     target: Optional[str] = typer.Argument(
@@ -30,6 +31,7 @@ def deploy(
             deploy_component(target, branch, restart)
     else:
         deploy_component(target, branch, restart)
+
 
 if __name__ == "__main__":
     app()

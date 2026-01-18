@@ -10,8 +10,13 @@ from .dependencies import (
     ModTtyMidi,
     Serd,
     Sord,
+    Sratom,
     Zix,
     Lilv,
+    Sfizz,
+)
+from .effects import (
+    ZynAddSubFX,
 )
 
 COMPONENT_MAP = {
@@ -26,8 +31,11 @@ COMPONENT_MAP = {
     "mod-ttymidi": ModTtyMidi(),
     "serd": Serd(),
     "sord": Sord(),
+    "sratom": Sratom(),
     "zix": Zix(),
     "lilv": Lilv(),
+    "sfizz": Sfizz(),
+    "zynaddsubfx": ZynAddSubFX(),
     "pi-stomp": PiStomp(),
     "pi-stomp-pedalboards": PiStompPedalboards(),
 }

@@ -15,7 +15,7 @@ class TargetType(str, Enum):
 
 class Component(ABC):
     name: str
-    repo_url: Optional[str] = None
+    url: Optional[str] = None
     default_branch: Optional[str] = None
     persistent_repo_path: Optional[Path] = None
     services: List[str] = []

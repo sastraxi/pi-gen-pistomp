@@ -18,9 +18,13 @@ class Target:
     @staticmethod
     def _normalize_component_name(name: Optional[str]) -> Optional[str]:
         """Normalize inferred component names to match known components."""
-        if name and "pedalboards" in name.lower():
+        if not name:
+            return None
+
+        if "pedalboards" in name.lower():
             return "pi-stomp-pedalboards"
-        return name
+
+        return name.lower()
 
     @classmethod
     def parse(cls, target: str) -> "Target":
@@ -58,7 +62,7 @@ class Target:
 
         # Local Directory
         if Path(target).is_dir():
-            path = Path(target)
+            path = Path(target).absolute()
             component_name = cls._normalize_component_name(path.name)
             return cls(TargetType.DIR, path.absolute(), branch, component_name)
 

@@ -11,7 +11,7 @@ from typing import Optional, List, Union
 
 # Context Variables
 _is_superuser = contextvars.ContextVar("is_superuser", default=False)
-_ssh_target: ContextVar["SshContext" | None] = contextvars.ContextVar(
+_ssh_target: ContextVar["SshContext | None"] = contextvars.ContextVar(
     "ssh_target", default=None
 )
 

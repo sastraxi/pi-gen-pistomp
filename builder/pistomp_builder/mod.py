@@ -4,15 +4,15 @@ from pathlib import Path
 import os
 import getpass
 from .model import Component
-from .executor import run_cmd, superuser
+from .executor import run_cmd, superuser, get_env_var
 from .filesystem import fs
 
 
 @final
 class ModUI(Component):
     name = "mod-ui"
-    repo_url = "https://github.com/TreeFallSound/mod-ui.git"
-    default_branch = "pistomp-v3"  # inferred/assumed
+    url = "https://github.com/TreeFallSound/mod-ui.git"
+    default_branch = "ps-1.13"
     services = ["mod-ui"]
 
     @override
@@ -88,10 +88,19 @@ class ModUI(Component):
 
 class ModHost(Component):
     name = "mod-host"
-    repo_url = "https://github.com/micahvdm/mod-host.git"
+    # url = "https://github.com/micahvdm/mod-host.git"
+    url = "https://github.com/mod-audio/mod-host.git"
     services = ["mod-host", "mod-ui"]
 
     def build_and_install(self, source_dir: Path):
-        run_cmd("make", cwd=source_dir)
+        cflags = get_env_var("CFLAGS")
+        cxxflags = get_env_var("CXXFLAGS")
+
+        env = {
+            "CFLAGS": (cflags + " -mcpu=cortex-a76 -mtune=cortex-a76").strip(),
+            "CXXFLAGS": (cxxflags + " -mcpu=cortex-a76 -mtune=cortex-a76").strip(),
+        }
+
+        run_cmd("make", cwd=source_dir, env=env)
         with superuser():
-            run_cmd("make install", cwd=source_dir, shell=True)
+            run_cmd("make install", cwd=source_dir, shell=True, env=env)

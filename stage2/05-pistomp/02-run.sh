@@ -10,9 +10,6 @@ on_chroot << EOF
 
 cd /opt/pistomp-builder
 
-# Install dependencies (sh, typer) using uv
-# We rely on uv run to handle this.
-
 export FIRST_USER_NAME="${FIRST_USER_NAME}"
 
 # Install components
@@ -24,7 +21,15 @@ echo "Installing Hylia..."
 
 echo "----------------------------------------------------------------"
 echo "Installing jack2..."
-./deploy.sh micahvdm/jack2
+./deploy.sh jackaudio/jack2#1.9.22
+
+echo "----------------------------------------------------------------"
+echo "Installing lilv and dependencies..."
+./deploy.sh zix
+./deploy.sh serd
+./deploy.sh sord
+./deploy.sh sratom
+./deploy.sh lilv
 
 echo "----------------------------------------------------------------"
 echo "Installing browsepy..."
@@ -36,7 +41,7 @@ echo "Installing mod-host..."
 
 echo "----------------------------------------------------------------"
 echo "Installing mod-ui..."
-./deploy.sh TreeFallSound/mod-ui
+./deploy.sh TreeFallSound/mod-ui#ps-1.13
 
 echo "----------------------------------------------------------------"
 echo "Installing amidithru..."
@@ -53,9 +58,5 @@ echo "Installing mod-midi-merger..."
 echo "----------------------------------------------------------------"
 echo "Installing mod-ttymidi..."
 ./deploy.sh moddevices/mod-ttymidi
-
-echo "----------------------------------------------------------------"
-echo "Installing lilv..."
-./deploy.sh http://download.drobilla.net/lilv-0.24.12.tar.bz2
 
 EOF

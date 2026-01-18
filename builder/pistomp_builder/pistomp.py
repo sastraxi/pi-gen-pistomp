@@ -8,7 +8,7 @@ from .filesystem import fs
 
 class PiStomp(Component):
     name = "pi-stomp"
-    repo_url = "https://github.com/treefallsound/pi-stomp.git"
+    url = "https://github.com/treefallsound/pi-stomp.git"
     default_branch = "pistomp-v3"
     services = ["mod-ala-pi-stomp"]
 
@@ -127,7 +127,7 @@ class PiStomp(Component):
 
 class PiStompPedalboards(Component):
     name = "pi-stomp-pedalboards"
-    repo_url = "https://github.com/TreeFallSound/pi-stomp-pedalboards.git"
+    url = "https://github.com/TreeFallSound/pi-stomp-pedalboards.git"
 
     @property
     def persistent_repo_path(self):
