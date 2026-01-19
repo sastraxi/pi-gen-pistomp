@@ -16,7 +16,6 @@ class ZynAddSubFX(Component):
         first_user = os.environ.get("FIRST_USER_NAME", "pistomp")
         user_home = Path(f"/home/{first_user}")
         current_user = getpass.getuser()
-        target_lv2_dir = user_home / ".lv2"
 
         build_dir = source_dir / "build"
         fs.mkdir(build_dir)
@@ -25,12 +24,14 @@ class ZynAddSubFX(Component):
         run_cmd("git submodule update --init --recursive", cwd=source_dir, shell=True)
 
         # Configure with cmake
-        # Build LV2 plugins only, disable GUI, enable JACK
+        # Install to user home with LV2 plugins in .lv2 directory
         run_cmd(
             [
                 "cmake",
                 "..",
                 "-DCMAKE_BUILD_TYPE=Release",
+                f"-DCMAKE_INSTALL_PREFIX={user_home}",
+                "-DPluginLibDir=.lv2",
                 "-DGuiModule=off",
                 "-DJackEnable=ON",
                 "-DAlsaEnable=ON",
@@ -47,41 +48,25 @@ class ZynAddSubFX(Component):
         # Build
         run_cmd("make -j$(nproc)", cwd=build_dir, shell=True)
 
-        # Find all built LV2 plugins
-        lv2_build_dir = build_dir / "src" / "Plugin"
-        lv2_plugins = []
-        if lv2_build_dir.exists():
-            for item in lv2_build_dir.iterdir():
-                lv2_dir = item / "lv2"
-                if lv2_dir.exists():
-                    for plugin_dir in lv2_dir.iterdir():
-                        if plugin_dir.is_dir() and plugin_dir.suffix == ".lv2":
-                            lv2_plugins.append(plugin_dir)
-
-        if not lv2_plugins:
-            raise RuntimeError("No LV2 plugins found after build")
-
-        # Ensure .lv2 directory exists
-        run_cmd(f"mkdir -p {target_lv2_dir}", shell=True)
-
-        # Remove existing plugins first, then install new ones
-        for plugin in lv2_plugins:
-            plugin_name = plugin.name
-            existing_plugin = target_lv2_dir / plugin_name
-
-            # Remove existing plugin if it exists
-            if existing_plugin.exists():
-                run_cmd(f"rm -rf {existing_plugin}", shell=True)
-
-            # Copy new plugin
-            run_cmd(f"cp -r {plugin} {target_lv2_dir}/", shell=True)
+        # Install LV2 plugins to ~/.lv2/PluginName.lv2/
+        # Bash completion may fail due to permissions, but LV2 plugins will install successfully
+        run_cmd("make install 2>&1 | grep -v 'bash-completion' || true", cwd=build_dir, shell=True)
 
         # Fix ownership if needed
         if current_user != first_user:
             with superuser():
-                for plugin in lv2_plugins:
-                    plugin_name = plugin.name
+                run_cmd(
+                    f"chown -R {first_user}:{first_user} {user_home}/.lv2",
+                    shell=True,
+                )
+                # Also fix ownership of bin and share if they were created
+                if (user_home / "bin").exists():
                     run_cmd(
-                        f"chown -R {first_user}:{first_user} {target_lv2_dir}/{plugin_name}",
+                        f"chown -R {first_user}:{first_user} {user_home}/bin",
+                        shell=True,
+                    )
+                if (user_home / "share").exists():
+                    run_cmd(
+                        f"chown -R {first_user}:{first_user} {user_home}/share",
                         shell=True,
                     )

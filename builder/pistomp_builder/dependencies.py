@@ -1,6 +1,6 @@
 from pathlib import Path
 from .model import Component
-from .executor import run_cmd, superuser, get_env_var
+from .executor import run_cmd, superuser, get_env_var, get_python_version, get_python_site_packages
 from .filesystem import fs
 
 
@@ -263,18 +263,7 @@ class Lilv(Component):
             raise RuntimeError("No supported build system found")
 
     def _build_with_waf(self, source_dir: Path):
-        res = run_cmd(
-            [
-                "python3",
-                "-c",
-                'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")',
-            ],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        py_ver = res.stdout.strip()
-
+        py_site = get_python_site_packages()
         cflags = get_env_var("CFLAGS")
         cxxflags = get_env_var("CXXFLAGS")
 
@@ -289,7 +278,7 @@ class Lilv(Component):
             "--prefix=/usr/local",
             "--no-utils",
             "--no-bash-completion",
-            f"--pythondir=/usr/local/lib/python{py_ver}/dist-packages",
+            f"--pythondir={py_site}",
         ]
 
         run_cmd(cmd, cwd=source_dir, check=True, env=env)
@@ -298,6 +287,8 @@ class Lilv(Component):
             run_cmd("./waf install", cwd=source_dir, shell=True)
 
     def _build_with_meson(self, source_dir: Path):
+        py_site = get_python_site_packages()
+
         run_cmd(
             [
                 "meson",
@@ -312,6 +303,8 @@ class Lilv(Component):
                 "-Ddocs=disabled",
                 "-Dbindings_py=enabled",
                 "-Dbindings_cpp=enabled",
+                f"-Dpython.purelibdir={py_site}",
+                f"-Dpython.platlibdir={py_site}",
             ],
             cwd=source_dir,
             check=True,
@@ -321,4 +314,6 @@ class Lilv(Component):
 
         with superuser():
             run_cmd("rm -f /usr/local/lib/liblilv-0.a", shell=True)
+            run_cmd(f"rm -f {py_site}/lilv.py", shell=True)
+            run_cmd(f"rm -f {py_site}/lilv.*.so", shell=True)
             run_cmd("meson install -C build", cwd=source_dir, shell=True)

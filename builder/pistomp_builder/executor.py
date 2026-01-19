@@ -168,3 +168,24 @@ def get_env_var(name: str, default: str = "") -> str:
     else:
         # Local
         return os.environ.get(name, default)
+
+
+def get_python_version() -> str:
+    """Get Python version as 'major.minor' string."""
+    result = run_cmd(
+        [
+            "python3",
+            "-c",
+            'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")',
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return result.stdout.strip()
+
+
+def get_python_site_packages() -> str:
+    """Get Python dist-packages path for current Python version."""
+    py_ver = get_python_version()
+    return f"/usr/local/lib/python{py_ver}/dist-packages"

@@ -8,11 +8,24 @@ from .target import Target
 from .components import COMPONENT_MAP
 from .service import is_chroot, stop_services, start_services, daemon_reload
 from .source import prepare_git_source, prepare_tarball_source, sync_local_source
-from .executor import _ssh_target
+from .executor import _ssh_target, run_cmd
 
 
 def _is_tarball_url(url: str) -> bool:
     return url.endswith(('.tar.gz', '.tar.bz2', '.tar.xz', '.tgz'))
+
+def _get_temp_root(path: Path) -> Path:
+    if path.parent.name.startswith("pistomp_"):
+        return path.parent
+    return path
+
+def _cleanup_remote_temp(source_dir: Path):
+    cleanup_path = _get_temp_root(source_dir)
+    print(f"Cleaning up {cleanup_path}")
+    try:
+        run_cmd(f"rm -rf {cleanup_path}", shell=True)
+    except Exception as e:
+        print(f"Warning: cleanup failed - {e}")
 
 def deploy_component(target: Optional[str], branch: Optional[str], restart: bool):
     # Determine if we should really restart (check chroot)
@@ -108,14 +121,8 @@ def deploy_component(target: Optional[str], branch: Optional[str], restart: bool
     finally:
         if tmp_context:
             tmp_context.cleanup()
-
         if is_remote_temp and source_dir:
-            # Simple cleanup for remote temps if we created them
-            # We assume if it's remote temp, we can delete the parent or the dir
-            # source.py creates /tmp/pistomp_*
-            # If source_dir is inside that, we should delete the root of that temp
-            # This is a bit loose.
-            pass
+            _cleanup_remote_temp(source_dir)
 
     # Restart services
     if should_restart:
