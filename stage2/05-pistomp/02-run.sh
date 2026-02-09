@@ -37,7 +37,7 @@ echo "Installing mod-host..."
 
 echo "----------------------------------------------------------------"
 echo "Installing mod-ui..."
-./deploy.sh deploy TreeFallSound/mod-ui#ps-1.13
+./deploy.sh deploy sastraxi/mod-ui#fix/effect-parameter-from-snapshot
 
 echo "----------------------------------------------------------------"
 echo "Installing amidithru..."
