@@ -193,59 +193,6 @@ class Zix(Component):
             run_cmd("meson install -C build", cwd=source_dir, shell=True)
 
 
-class Sfizz(Component):
-    name = "sfizz"
-    url = "https://github.com/sfztools/sfizz-ui.git"
-    services = []
-
-    def build_and_install(self, source_dir: Path):
-        import os
-        import getpass
-
-        first_user = os.environ.get("FIRST_USER_NAME", "pistomp")
-        user_home = Path(f"/home/{first_user}")
-        current_user = getpass.getuser()
-
-        build_dir = source_dir / "build"
-        fs.mkdir(build_dir)
-
-        # Configure with cmake - build LV2 plugin only
-        run_cmd(
-            [
-                "cmake",
-                "..",
-                "-DCMAKE_BUILD_TYPE=Release",
-                "-DPLUGIN_LV2=ON",
-                "-DPLUGIN_VST3=OFF",
-                "-DPLUGIN_AU=OFF",
-                "-DPLUGIN_PUREDATA=OFF",
-            ],
-            cwd=build_dir,
-            check=True,
-        )
-
-        # Build - single threaded to avoid issues
-        run_cmd("make -j2", cwd=build_dir, shell=True)
-
-        # Install to user's .lv2 directory
-        lv2_plugin = build_dir / "sfizz.lv2"
-        target_lv2_dir = user_home / ".lv2"
-
-        # Ensure .lv2 directory exists
-        run_cmd(f"mkdir -p {target_lv2_dir}", shell=True)
-
-        # Copy plugin
-        run_cmd(f"cp -r {lv2_plugin} {target_lv2_dir}/", shell=True)
-
-        # Fix ownership if needed
-        if current_user != first_user:
-            with superuser():
-                run_cmd(
-                    f"chown -R {first_user}:{first_user} {target_lv2_dir}/sfizz.lv2",
-                    shell=True,
-                )
-
-
 class Lilv(Component):
     name = "lilv"
     url = "https://download.drobilla.net/lilv-0.24.26.tar.xz"

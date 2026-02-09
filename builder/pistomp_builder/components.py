@@ -13,10 +13,11 @@ from .dependencies import (
     Sratom,
     Zix,
     Lilv,
-    Sfizz,
 )
 from .effects import (
     ZynAddSubFX,
+    Sfizz,
+    LiquidSFZ,
 )
 
 COMPONENT_MAP = {
@@ -36,6 +37,7 @@ COMPONENT_MAP = {
     "lilv": Lilv(),
     "sfizz": Sfizz(),
     "zynaddsubfx": ZynAddSubFX(),
+    "liquidsfz": LiquidSFZ(),
     "pi-stomp": PiStomp(),
     "pi-stomp-pedalboards": PiStompPedalboards(),
 }
