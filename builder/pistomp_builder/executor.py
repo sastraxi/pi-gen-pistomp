@@ -98,11 +98,10 @@ def run_cmd(
         if not cmd_str.strip().lstrip().startswith("sudo"):
             cmd_str = f"sudo {cmd_str}"
 
-    # Handle CWD (inject cd)
-    if cwd:
-        cmd_str = f"cd {cwd} && {cmd_str}"
-
     if ssh_ctx:
+        # Handle CWD (inject cd) - only needed for remote execution
+        if cwd:
+            cmd_str = f"cd {cwd} && {cmd_str}"
         # Remote Execution
         full_cmd = ssh_ctx.get_cmd_prefix() + [cmd_str]
         print(f"Remote ({ssh_ctx.host}): {cmd_str}")

@@ -1,12 +1,12 @@
 from pathlib import Path
 from .model import Component
-from .executor import run_cmd, superuser, get_env_var, get_python_version, get_python_site_packages
+from .executor import run_cmd, superuser, get_python_site_packages
 from .filesystem import fs
 
 
 class Jack2(Component):
     name = "jack2"
-    url = "https://github.com/jackaudio/jack2.git#1.9.22"
+    url = "https://github.com/jackaudio/jack2.git#v1.9.22"
     services = ["jack", "mod-host", "mod-ui"]
 
     def build_and_install(self, source_dir: Path):
@@ -78,189 +78,43 @@ class ModTtyMidi(Component):
             run_cmd("make install", cwd=source_dir, shell=True)
 
 
-class Serd(Component):
-    name = "serd"
-    url = "https://download.drobilla.net/serd-0.32.6.tar.xz"
-    services = []
-
-    def build_and_install(self, source_dir: Path):
-        run_cmd(
-            [
-                "meson",
-                "setup",
-                "build",
-                "--prefix=/usr/local",
-                "--default-library=static",
-                "-Dc_args=-fPIC",
-                "-Dcpp_args=-fPIC",
-                "-Dtests=disabled",
-                "-Ddocs=disabled",
-                "-Dtools=disabled",
-            ],
-            cwd=source_dir,
-            check=True,
-        )
-
-        run_cmd("meson compile -C build", cwd=source_dir, shell=True)
-
-        with superuser():
-            run_cmd("meson install -C build", cwd=source_dir, shell=True)
-
-
-class Sord(Component):
-    name = "sord"
-    url = "https://download.drobilla.net/sord-0.16.20.tar.xz"
-    services = []
-
-    def build_and_install(self, source_dir: Path):
-        run_cmd(
-            [
-                "meson",
-                "setup",
-                "build",
-                "--prefix=/usr/local",
-                "--default-library=static",
-                "-Dc_args=-fPIC",
-                "-Dcpp_args=-fPIC",
-                "-Dtests=disabled",
-                "-Ddocs=disabled",
-                "-Dtools=disabled",
-            ],
-            cwd=source_dir,
-            check=True,
-        )
-
-        run_cmd("meson compile -C build", cwd=source_dir, shell=True)
-
-        with superuser():
-            run_cmd("meson install -C build", cwd=source_dir, shell=True)
-
-
-class Sratom(Component):
-    name = "sratom"
-    url = "https://download.drobilla.net/sratom-0.6.20.tar.xz"
-    services = []
-
-    def build_and_install(self, source_dir: Path):
-        run_cmd(
-            [
-                "meson",
-                "setup",
-                "build",
-                "--prefix=/usr/local",
-                "--default-library=static",
-                "-Dc_args=-fPIC",
-                "-Dcpp_args=-fPIC",
-                "-Dtests=disabled",
-                "-Ddocs=disabled",
-            ],
-            cwd=source_dir,
-            check=True,
-        )
-
-        run_cmd("meson compile -C build", cwd=source_dir, shell=True)
-
-        with superuser():
-            run_cmd("meson install -C build", cwd=source_dir, shell=True)
-
-
-class Zix(Component):
-    name = "zix"
-    url = "https://download.drobilla.net/zix-0.8.0.tar.xz"
-    services = []
-
-    def build_and_install(self, source_dir: Path):
-        run_cmd(
-            [
-                "meson",
-                "setup",
-                "build",
-                "--prefix=/usr/local",
-                "--default-library=static",
-                "-Dc_args=-fPIC",
-                "-Dcpp_args=-fPIC",
-                "-Dtests=disabled",
-                "-Ddocs=disabled",
-                "-Dbenchmarks=disabled",
-            ],
-            cwd=source_dir,
-            check=True,
-        )
-
-        run_cmd("meson compile -C build", cwd=source_dir, shell=True)
-
-        with superuser():
-            run_cmd("meson install -C build", cwd=source_dir, shell=True)
-
-
 class Lilv(Component):
+    """
+    Builds lilv 0.24.12 with WAF for Python bindings only.
+
+    Uses --static --no-shared to produce only static libraries (.a files)
+    that don't conflict with apt's liblilv-0.so.0 in /lib/aarch64-linux-gnu/.
+
+    The Python bindings (lilv.py) will load apt's shared library at runtime,
+    which is compatible because 0.24.12 bindings work with 0.24.14 runtime.
+
+    We remove the static library after install to ensure mod-host links
+    against apt's shared library, not our static one.
+    """
     name = "lilv"
-    url = "https://download.drobilla.net/lilv-0.24.26.tar.xz"
+    url = "https://download.drobilla.net/lilv-0.24.12.tar.bz2"
     services = ["mod-host", "mod-ui"]
 
     def build_and_install(self, source_dir: Path):
-        has_waf = fs.exists(source_dir / "waf")
-        has_meson = fs.exists(source_dir / "meson.build")
-
-        if has_meson:
-            self._build_with_meson(source_dir)
-        elif has_waf:
-            self._build_with_waf(source_dir)
-        else:
-            raise RuntimeError("No supported build system found")
-
-    def _build_with_waf(self, source_dir: Path):
         py_site = get_python_site_packages()
-        cflags = get_env_var("CFLAGS")
-        cxxflags = get_env_var("CXXFLAGS")
-
-        env = {
-            "CFLAGS": (cflags + " -fPIC").strip(),
-            "CXXFLAGS": (cxxflags + " -fPIC").strip(),
-        }
 
         cmd = [
             "./waf",
             "configure",
             "--prefix=/usr/local",
+            "--static",
+            "--static-progs",
+            "--no-shared",
             "--no-utils",
             "--no-bash-completion",
             f"--pythondir={py_site}",
         ]
 
-        run_cmd(cmd, cwd=source_dir, check=True, env=env)
+        run_cmd(cmd, cwd=source_dir, check=True)
         run_cmd("./waf build", cwd=source_dir, shell=True)
         with superuser():
             run_cmd("./waf install", cwd=source_dir, shell=True)
-
-    def _build_with_meson(self, source_dir: Path):
-        py_site = get_python_site_packages()
-
-        run_cmd(
-            [
-                "meson",
-                "setup",
-                "build",
-                "--prefix=/usr/local",
-                "--default-library=shared",
-                "-Dc_args=-fPIC",
-                "-Dcpp_args=-fPIC",
-                "-Dtools=enabled",
-                "-Dtests=disabled",
-                "-Ddocs=disabled",
-                "-Dbindings_py=enabled",
-                "-Dbindings_cpp=enabled",
-                f"-Dpython.purelibdir={py_site}",
-                f"-Dpython.platlibdir={py_site}",
-            ],
-            cwd=source_dir,
-            check=True,
-        )
-
-        run_cmd("meson compile -C build", cwd=source_dir, shell=True)
-
-        with superuser():
+            # Remove static library - we only need Python bindings
+            # mod-host should link against apt's liblilv-0.so.0
             run_cmd("rm -f /usr/local/lib/liblilv-0.a", shell=True)
-            run_cmd(f"rm -f {py_site}/lilv.py", shell=True)
-            run_cmd(f"rm -f {py_site}/lilv.*.so", shell=True)
-            run_cmd("meson install -C build", cwd=source_dir, shell=True)
+            run_cmd("rm -f /usr/local/lib/pkgconfig/lilv-0.pc", shell=True)

@@ -73,11 +73,16 @@ Update components on a running pi-Stomp (`pistomp@pistomp.local` by default) via
 * `mod-ui` and `mod-host`
 * `jack2`
 * `hylia`
-* `lilv`, `serd`, `sord`, `zix`
+* `lilv` (Python bindings only)
 * `browsepy`
 * `amidithru`
 * `mod-midi-merger` and `mod-ttymidi`
 * `touchosc2midi`
+
+**Dependency Architecture:**
+- **jack2**: Source-built v1.9.22 daemon (`/usr/local/bin/jackd`) fixes CV bug. Apps link apt's 1.9.21 client libs via IPC.
+- **lilv**: Source-built 0.24.12 for Python bindings only (no static/shared libs installed). mod-host links apt's 0.24.14 shared lib.
+- **serd/sord/sratom**: Use apt packages only (removed from builder).
 
 ### System/Kernel Updates
 Requires full image rebuild.

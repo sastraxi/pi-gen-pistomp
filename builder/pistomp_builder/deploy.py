@@ -77,8 +77,14 @@ def deploy_component(target: Optional[str], branch: Optional[str], restart: bool
             excludes = []
             if component.name == "pi-stomp":
                 excludes.append("setup/sys")
+            elif component.name == "pi-stomp-pedalboards":
+                # Exclude files that aren't pedalboards
+                excludes.extend(["*.sh", "*.md", "LICENSE"])
 
-            source_dir, is_remote_temp = sync_local_source(local_source, excludes=excludes)
+            # Include .git folder for pedalboards so they can commit from pi-stomp
+            include_git = component.name == "pi-stomp-pedalboards"
+
+            source_dir, is_remote_temp = sync_local_source(local_source, excludes=excludes, include_git=include_git)
 
             component.build_and_install(source_dir)
 
@@ -89,12 +95,20 @@ def deploy_component(target: Optional[str], branch: Optional[str], restart: bool
 
             url = cast(str, component.url)
 
+            # Parse URL to extract branch/tag if present (e.g., "url#tag")
+            url_branch = None
+            if "#" in url and not _is_tarball_url(url):
+                url, url_branch = url.split("#", 1)
+
+            # Use branch from CLI flag, else from URL, else from component default
+            effective_branch = parsed_target.branch or url_branch
+
             if _is_tarball_url(url):
                 source_dir, tmp_context = prepare_tarball_source(url)
                 if tmp_context is None and _ssh_target.get():
                     is_remote_temp = True
             else:
-                source_dir, tmp_context = prepare_git_source(url, parsed_target.branch, component)
+                source_dir, tmp_context = prepare_git_source(url, effective_branch, component)
                 if tmp_context is None and not component.persistent_repo_path and _ssh_target.get():
                     is_remote_temp = True
 

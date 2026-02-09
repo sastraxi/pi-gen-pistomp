@@ -27,17 +27,24 @@ def prepare_git_source(
         if not fs.exists(target_path):
             # Clone fresh
             print(f"Cloning {url} to {target_path}...")
-            cmd = ["git", "clone", "--recursive"]
-
             fs.mkdir(target_path.parent)
 
-            if branch:
-                cmd.extend(["-b", branch])
-            elif component.default_branch:
-                cmd.extend(["-b", component.default_branch])
-            cmd.extend([url, str(target_path)])
-
+            # Clone without specifying branch (to get all refs including tags)
+            cmd = ["git", "clone", "--recursive", url, str(target_path)]
             run_cmd(cmd, check=True)
+
+            # Checkout the specific branch/tag if specified
+            target_ref = branch or component.default_branch
+            if target_ref:
+                print(f"Checking out {target_ref}...")
+                run_cmd(["git", "checkout", target_ref], cwd=target_path, check=True)
+                # Update submodules after checkout
+                run_cmd(
+                    ["git", "submodule", "update", "--init", "--recursive"],
+                    cwd=target_path,
+                    check=True,
+                )
+
             return target_path, None
         else:
             # Update Existing
@@ -106,19 +113,25 @@ def prepare_git_source(
         print(f"Cloning {url} to temporary {remote_tmp}...")
         fs.mkdir(remote_tmp)
 
-        cmd = ["git", "clone", "--recursive"]
-        if branch:
-            cmd.extend(["-b", branch])
-        elif component.default_branch:
-            cmd.extend(["-b", component.default_branch])
-
-        cmd.extend([url, str(remote_tmp)])
-
+        # Clone without specifying branch (to get all refs including tags)
+        cmd = ["git", "clone", "--recursive", url, str(remote_tmp)]
         run_cmd(cmd, check=True)
+
+        # Checkout the specific branch/tag if specified
+        target_ref = branch or component.default_branch
+        if target_ref:
+            print(f"Checking out {target_ref}...")
+            run_cmd(["git", "checkout", target_ref], cwd=remote_tmp, check=True)
+            # Update submodules after checkout
+            run_cmd(
+                ["git", "submodule", "update", "--init", "--recursive"],
+                cwd=remote_tmp,
+                check=True,
+            )
 
         return remote_tmp, None
 
-def sync_local_source(local_source: Path, excludes: Optional[list[str]] = None) -> Tuple[Path, bool]:
+def sync_local_source(local_source: Path, excludes: Optional[list[str]] = None, include_git: bool = False) -> Tuple[Path, bool]:
     """
     Syncs local directory to remote temp directory using rsync.
     Returns (remote_path, is_temp).
@@ -144,10 +157,14 @@ def sync_local_source(local_source: Path, excludes: Optional[list[str]] = None) 
         rsync_cmd = [
             "rsync",
             "-avz",
-            "--exclude=.git",
-            "--exclude=__pycache__",
         ]
-        
+
+        # Exclude .git by default (unless include_git is True)
+        if not include_git:
+            rsync_cmd.append("--exclude=.git")
+
+        rsync_cmd.append("--exclude=__pycache__")
+
         if excludes:
             for pattern in excludes:
                 rsync_cmd.extend(["--exclude", pattern])

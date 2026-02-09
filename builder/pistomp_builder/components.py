@@ -8,10 +8,6 @@ from .dependencies import (
     TouchOsc2Midi,
     ModMidiMerger,
     ModTtyMidi,
-    Serd,
-    Sord,
-    Sratom,
-    Zix,
     Lilv,
 )
 from .effects import (
@@ -19,6 +15,9 @@ from .effects import (
     Sfizz,
     LiquidSFZ,
 )
+
+# Note: serd, sord, sratom are provided by apt packages (liblilv dependencies)
+# lilv is built from source for Python bindings only (static build, no shared libs)
 
 COMPONENT_MAP = {
     "mod-ui": ModUI(),
@@ -30,10 +29,6 @@ COMPONENT_MAP = {
     "touchosc2midi": TouchOsc2Midi(),
     "mod-midi-merger": ModMidiMerger(),
     "mod-ttymidi": ModTtyMidi(),
-    "serd": Serd(),
-    "sord": Sord(),
-    "sratom": Sratom(),
-    "zix": Zix(),
     "lilv": Lilv(),
     "sfizz": Sfizz(),
     "zynaddsubfx": ZynAddSubFX(),

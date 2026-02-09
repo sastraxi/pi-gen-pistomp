@@ -16,6 +16,7 @@ pip3 install pyyaml
 pip3 install pyalsaaudio
 pip3 install python-rtmidi
 pip3 install requests
+pip3 install websockets
 pip3 install gfxhat
 pip3 install adafruit-circuitpython-rgb-display
 pip3 install python-config

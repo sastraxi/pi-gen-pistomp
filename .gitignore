@@ -10,3 +10,6 @@ builder/**/__pycache__/
 **/*.egg-info
 builder/dist/
 builder/.venv/
+
+# Temporary LV2 directory
+lv2/*

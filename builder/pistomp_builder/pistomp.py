@@ -143,10 +143,55 @@ class PiStompPedalboards(Component):
         link = user_home / ".pedalboards"
         target = user_home / "data" / ".pedalboards"
 
+        # Remove existing pedalboards directory for clean replacement
+        if fs.exists(target):
+            run_cmd(f"rm -rf {target}", shell=True)
+
+        # Ensure target directory exists
+        fs.mkdir(target, parents=True)
+
+        # Copy pedalboards from source to target
+        # Include .git folder so user can commit from pi-stomp
+        run_cmd(
+            f"rsync -av {source_dir}/ {target}/",
+            shell=True,
+        )
+
         if not fs.exists(link):
             run_cmd(f"ln -s {target} {link}", shell=True)
+
+        # Reset last.json to point to first available pedalboard to avoid crashes
+        last_json = user_home / "data" / "last.json"
+
+        # Find first pedalboard (prefer default.pedalboard if it exists)
+        default_pb = target / "default.pedalboard"
+        if fs.exists(default_pb):
+            first_pedalboard = default_pb
+        else:
+            # Find first .pedalboard directory
+            result = run_cmd(
+                f"find {target} -maxdepth 1 -name '*.pedalboard' -type d | head -1",
+                shell=True,
+                capture_output=True,
+                text=True,
+            )
+            first_pedalboard_path = result.stdout.strip()
+            if first_pedalboard_path:
+                first_pedalboard = Path(first_pedalboard_path)
+            else:
+                # No pedalboards found, skip updating last.json
+                print("Warning: No pedalboards found, skipping last.json update")
+                first_pedalboard = None
+
+        if first_pedalboard:
+            last_json_content = '{"bank": -2, "pedalboard": "' + str(first_pedalboard) + '", "supportsDividers": true}'
+            run_cmd(
+                f"echo '{last_json_content}' > {last_json}",
+                shell=True,
+            )
 
         with superuser():
             if current_user != first_user:
                 run_cmd(f"chown -R {first_user}:{first_user} {target}", shell=True)
                 run_cmd(f"chown -h {first_user}:{first_user} {link}", shell=True)
+                run_cmd(f"chown {first_user}:{first_user} {last_json}", shell=True)

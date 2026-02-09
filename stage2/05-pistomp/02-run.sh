@@ -17,46 +17,42 @@ chmod +x deploy.sh
 
 echo "----------------------------------------------------------------"
 echo "Installing Hylia..."
-./deploy.sh falkTX/Hylia
+./deploy.sh deploy falkTX/Hylia
 
 echo "----------------------------------------------------------------"
 echo "Installing jack2..."
-./deploy.sh jackaudio/jack2#1.9.22
+./deploy.sh deploy jackaudio/jack2#v1.9.22
 
 echo "----------------------------------------------------------------"
-echo "Installing lilv and dependencies..."
-./deploy.sh zix
-./deploy.sh serd
-./deploy.sh sord
-./deploy.sh sratom
-./deploy.sh lilv
+echo "Installing lilv (Python bindings only)..."
+./deploy.sh deploy lilv
 
 echo "----------------------------------------------------------------"
 echo "Installing browsepy..."
-./deploy.sh micahvdm/browsepy
+./deploy.sh deploy micahvdm/browsepy
 
 echo "----------------------------------------------------------------"
 echo "Installing mod-host..."
-./deploy.sh micahvdm/mod-host
+./deploy.sh deploy micahvdm/mod-host
 
 echo "----------------------------------------------------------------"
 echo "Installing mod-ui..."
-./deploy.sh TreeFallSound/mod-ui#ps-1.13
+./deploy.sh deploy TreeFallSound/mod-ui#ps-1.13
 
 echo "----------------------------------------------------------------"
 echo "Installing amidithru..."
-./deploy.sh BlokasLabs/amidithru
+./deploy.sh deploy BlokasLabs/amidithru
 
 echo "----------------------------------------------------------------"
 echo "Installing touchosc2midi..."
-./deploy.sh micahvdm/touchosc2midi
+./deploy.sh deploy micahvdm/touchosc2midi
 
 echo "----------------------------------------------------------------"
 echo "Installing mod-midi-merger..."
-./deploy.sh micahvdm/mod-midi-merger
+./deploy.sh deploy micahvdm/mod-midi-merger
 
 echo "----------------------------------------------------------------"
 echo "Installing mod-ttymidi..."
-./deploy.sh moddevices/mod-ttymidi
+./deploy.sh deploy moddevices/mod-ttymidi
 
 EOF
