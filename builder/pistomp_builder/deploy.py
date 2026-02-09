@@ -23,7 +23,7 @@ def _cleanup_remote_temp(source_dir: Path):
     cleanup_path = _get_temp_root(source_dir)
     print(f"Cleaning up {cleanup_path}")
     try:
-        run_cmd(f"rm -rf {cleanup_path}", shell=True)
+        run_cmd(f"sudo rm -rf {cleanup_path}", shell=True)
     except Exception as e:
         print(f"Warning: cleanup failed - {e}")
 
