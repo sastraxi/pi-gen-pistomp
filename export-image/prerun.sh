@@ -23,7 +23,7 @@ ALIGN="$((4 * 1024 * 1024))"
 # some overhead (since actual space usage is usually rounded up to the
 # filesystem block size) and gives some free space on the resulting
 # image.
-ROOT_MARGIN=$((700 * 1024 * 1024))
+ROOT_MARGIN=$((1200 * 1024 * 1024))
 
 BOOT_PART_START=$((ALIGN))
 BOOT_PART_SIZE=$(((BOOT_SIZE + ALIGN - 1) / ALIGN * ALIGN))
