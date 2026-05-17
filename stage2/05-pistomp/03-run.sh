@@ -7,6 +7,7 @@ install -m 644 files/sys/linux-libc-dev_6.1.54-rt15-v8+-2_arm64.deb ${ROOTFS_DIR
 install -m 644 files/sys/linux-image-6.12.9-v8-16k+_6.12.9-ga20d400dff3d-3_arm64.deb ${ROOTFS_DIR}/home/${FIRST_USER_NAME}/tmp/
 install -m 644 files/advertise.diff ${ROOTFS_DIR}/home/${FIRST_USER_NAME}/tmp/
 install -m 644 files/NetworkManager.conf.diff ${ROOTFS_DIR}/home/${FIRST_USER_NAME}/tmp/
+install -Dm 644 files/wifi-powersave.conf ${ROOTFS_DIR}/etc/NetworkManager/conf.d/wifi-powersave.conf
 
 echo "Installing Kernel and boot files"
 on_chroot << EOF
