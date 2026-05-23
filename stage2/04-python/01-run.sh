@@ -8,24 +8,8 @@ rm -rf /usr/lib/python3.11/EXTERNALLY-MANAGED
 pip3 install pyserial==3.0 pystache==0.5.4 aggdraw==1.3.11 scandir backports.shutil-get-terminal-size
 pip3 install pycryptodomex
 pip3 install tornado==4.3
-pip3 install Pillow==9.4.0
 pip3 install cython
-pip3 install pyyaml
-pip3 install pyalsaaudio
-pip3 install python-rtmidi
-pip3 install requests
-pip3 install gfxhat
-pip3 install adafruit-circuitpython-rgb-display
 pip3 install python-config
-pip3 install adafruit-circuitpython-mcp3xxx
-pip3 install matplotlib
-pip3 install rpi_ws281x
-pip3 install adafruit-circuitpython-neopixel
-pip3 install Adafruit-Blinka-Raspberry-Pi5-Neopixel
-pip3 install jsonschema
-pip3 install websockets
-pip3 install JACK-Client
-pip3 install numpy
 pip3 install flask
 pip3 install unicategories
 pip3 install scandir
@@ -42,6 +26,8 @@ EOF
 echo "Done installing PIP packages"
 
 # Extra hack for pi5
+# TODO: this may not be needed anymore if pi-stomp was the only consumer;
+# this is now handled by uv via pyproject.toml's dependency override
 on_chroot << EOF
 sudo apt-get -y remove python3-rpi.gpio
 sudo apt-get -y install python3-rpi-lgpio
