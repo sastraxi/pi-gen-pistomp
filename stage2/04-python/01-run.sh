@@ -10,6 +10,7 @@ pip3 install pycryptodomex
 pip3 install tornado==4.3
 pip3 install cython
 pip3 install python-config
+pip3 install JACK-Client
 pip3 install flask
 pip3 install unicategories
 pip3 install scandir
