@@ -10,5 +10,3 @@ RELEASE=bookworm
 DEPLOY_COMPRESSION="none"
 LOCALE_DEFAULT=en_US.UTF-8
 KEYBOARD_KEYMAP=us
-PISTOMP_REPO="https://github.com/TreeFallSound/pi-stomp.git"
-PISTOMP_BRANCH="pistomp-v3"

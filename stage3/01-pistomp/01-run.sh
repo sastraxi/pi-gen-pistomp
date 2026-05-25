@@ -15,7 +15,7 @@ install -m 644 files/alsa-base.conf ${ROOTFS_DIR}/etc/modprobe.d
 on_chroot << EOF
 
 # pi-Stomp code
-git clone -b ${PISTOMP_BRANCH} ${PISTOMP_REPO} /home/${FIRST_USER_NAME}/pi-stomp
+git clone -b pistomp-v3 https://github.com/TreeFallSound/pi-stomp.git /home/${FIRST_USER_NAME}/pi-stomp
 
 mkdir -p /opt/pistomp/venvs
 /usr/local/bin/uv venv --python /usr/bin/python3 --system-site-packages /opt/pistomp/venvs/pi-stomp
