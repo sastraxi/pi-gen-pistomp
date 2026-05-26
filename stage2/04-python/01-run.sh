@@ -8,6 +8,7 @@ rm -rf /usr/lib/python3.11/EXTERNALLY-MANAGED
 pip3 install pyserial==3.0 pystache==0.5.4 aggdraw==1.3.11 scandir backports.shutil-get-terminal-size
 pip3 install pycryptodomex
 pip3 install tornado==4.3
+pip3 install Pillow==9.4.0
 pip3 install cython
 pip3 install python-config
 pip3 install JACK-Client
