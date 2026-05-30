@@ -8,6 +8,7 @@ install -m 644 files/sys/linux-image-6.12.9-v8-16k+_6.12.9-ga20d400dff3d-3_arm64
 install -m 644 files/advertise.diff ${ROOTFS_DIR}/home/${FIRST_USER_NAME}/tmp/
 install -m 644 files/NetworkManager.conf.diff ${ROOTFS_DIR}/home/${FIRST_USER_NAME}/tmp/
 install -Dm 644 files/wifi-powersave.conf ${ROOTFS_DIR}/etc/NetworkManager/conf.d/wifi-powersave.conf
+install -Dm 600 files/wired-end0.nmconnection ${ROOTFS_DIR}/etc/NetworkManager/system-connections/wired-end0.nmconnection
 
 echo "Installing Kernel and boot files"
 on_chroot << EOF
