@@ -10,6 +10,15 @@ PEDALBOARD_DIR=$(CURDIR)/debian/$(PKG)/opt/pistomp/mod-ui/default.pedalboard
 %:
 	dh $@
 
+override_dh_auto_clean:
+	# Upstream has setup.py which triggers python-distutils build system,
+	# removed in compat 12+. We don't need to clean anything.
+	true
+
+override_dh_auto_test:
+	# Same reason — python-distutils test runner removed in compat 12+.
+	true
+
 override_dh_auto_configure:
 	# Clone mod-ui source if not already present
 	if [ ! -d "$(MODUI_SRC_DIR)" ]; then \
@@ -21,20 +30,17 @@ override_dh_auto_configure:
 override_dh_auto_build:
 	# Build the C extension (libmod_utils.so)
 	$(MAKE) -C "$(MODUI_SRC_DIR)/utils"
-	# Install Python 3.11 for the venv
-	UV_PYTHON_INSTALL_DIR=$(CURDIR)/debian/$(PKG)/opt/mod-ui-python \
-		uv python install 3.11
-	# Create a relocatable Python 3.11 venv with --copies
-	UV_PYTHON_INSTALL_DIR=$(CURDIR)/debian/$(PKG)/opt/mod-ui-python \
-		uv venv --copies --python 3.11 "$(VENV_DIR)"
+	# Install Python 3.11 into uv's cache and copy the binary into the venv
+	# so the venv is self-contained on the target (no uv or build paths needed)
+	uv python install 3.11
+	UV_PY=$$(uv python find 3.11) && "$$UV_PY" -m venv --copies "$(VENV_DIR)"
 	# Install tornado==4.3
 	"$(VENV_DIR)/bin/pip" install tornado==4.3
 	# Patch tornado for Python 3.10+ compatibility
 	sed -i -e 's/collections\.MutableMapping/collections.abc.MutableMapping/g' \
 		"$(VENV_DIR)/lib/python3.11/site-packages/tornado/httputil.py"
 	# Install mod-ui into the venv
-	cd "$(MODUI_SRC_DIR)" && \
-		"$(VENV_DIR)/bin/python" setup.py install
+	"$(VENV_DIR)/bin/pip" install "$(MODUI_SRC_DIR)"
 
 override_dh_auto_install:
 	# Install HTML assets
@@ -46,8 +52,7 @@ override_dh_auto_install:
 	# Install systemd service file
 	install -Dm 644 debian/mod-ui.mod-ui.service \
 		$(CURDIR)/debian/mod-ui/lib/systemd/system/mod-ui.service
-	# Remove the standalone Python installation (only the venv is needed)
-	rm -rf $(CURDIR)/debian/$(PKG)/opt/mod-ui-python
+
 
 override_dh_installsystemd:
 	# Service enablement is handled by stage2/05-pistomp/01-run.sh ln -sf,

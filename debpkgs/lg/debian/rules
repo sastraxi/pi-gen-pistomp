@@ -1,0 +1,45 @@
+#!/usr/bin/make -f
+export DH_VERBOSE=1
+
+PKG=lg
+SRC_DIR=$(CURDIR)/../lg-src
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	if [ ! -d "$(SRC_DIR)" ]; then \
+		git clone --depth 1 --branch v0.2.2 \
+			https://github.com/joan2937/lg.git \
+			"$(SRC_DIR)"; \
+	fi
+
+override_dh_auto_build:
+	# GCC 14+ K&R callback typedef fix
+	cd "$(SRC_DIR)" && \
+	sed -i 's/typedef void (\*callbk_t) ();/typedef void (*callbk_t)(void *);/' lgpio.h && \
+	sed -i 's/callbk_t alertFunc;/lgGpioAlertsFunc_t alertFunc;/' lgGpio.h && \
+	sed -i 's/^callbk_t lgGpioSamplesFunc/lgGpioAlertsFunc_t lgGpioSamplesFunc/' lgGpio.c && \
+	sed -i 's/^extern callbk_t lgGpioSamplesFunc/extern lgGpioAlertsFunc_t lgGpioSamplesFunc/' lgGpio.h
+	# Build shared library
+	cd "$(SRC_DIR)" && \
+	CFLAGS="-Wno-incompatible-pointer-types" $(MAKE) liblgpio.so
+	# SWIG-generate Python wrapper
+	cd "$(SRC_DIR)/PY_LGPIO" && \
+	swig -python lgpio.i && \
+	python3 setup.py build_ext --include-dirs=.. --library-dirs=..
+
+override_dh_auto_install:
+	# Shared library
+	install -Dm755 "$(SRC_DIR)/liblgpio.so.1" \
+		$(CURDIR)/debian/$(PKG)/usr/lib/liblgpio.so.1
+	ln -s liblgpio.so.1 $(CURDIR)/debian/$(PKG)/usr/lib/liblgpio.so
+	# Header
+	install -Dm644 "$(SRC_DIR)/lgpio.h" \
+		$(CURDIR)/debian/$(PKG)/usr/include/lgpio.h
+	# Python module — install manually to avoid setup.py writing under /usr/local
+	install -Dm644 "$(SRC_DIR)/PY_LGPIO/lgpio.py" \
+		$(CURDIR)/debian/$(PKG)/usr/lib/python3/dist-packages/lgpio.py
+	install -Dm755 \
+		$(shell find "$(SRC_DIR)/PY_LGPIO/build" -name '_lgpio*.so' | head -1) \
+		$(CURDIR)/debian/$(PKG)/usr/lib/python3/dist-packages/_lgpio.so

@@ -3,6 +3,8 @@ FROM ${BASE_IMAGE}
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Layer 1: base build tools
+# kbd brings in the terminus font for lcd-splash
 RUN dpkg --add-architecture arm64 && \
     apt-get -y update && \
     apt-get -y install --no-install-recommends \
@@ -11,9 +13,20 @@ RUN dpkg --add-architecture arm64 && \
         libarchive-tools libcap2-bin rsync grep udev xz-utils curl xxd file kmod bc \
         binfmt-support ca-certificates fdisk gpg pigz arch-test \
         dpkg-dev devscripts debhelper-compat \
-        python3 python3-dev python3-pip python3-venv python-is-python3 \
-        build-essential crossbuild-essential-arm64 \
+        build-essential crossbuild-essential-arm64 pkg-config \
         cmake meson ninja-build swig \
+        kbd \
+    && rm -rf /var/lib/apt/lists/*
+
+# Layer 2: Python
+RUN apt-get -y update && \
+    apt-get -y install --no-install-recommends \
+        python3 python3-dev python3-pip python3-venv python-is-python3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Layer 3: cross-compilation libraries
+RUN apt-get -y update && \
+    apt-get -y install --no-install-recommends \
         libasound2-dev:arm64 libdb5.3-dev:arm64 libdbus-1-dev:arm64 \
         libexpat1-dev:arm64 libfftw3-dev:arm64 libfreetype-dev:arm64 \
         libglib2.0-dev:arm64 \
@@ -26,6 +39,9 @@ RUN dpkg --add-architecture arm64 && \
         libsystemd-dev \
         libv4l-dev:arm64 lv2-dev:arm64 portaudio19-dev:arm64 \
     && rm -rf /var/lib/apt/lists/*
+
+# Layer 4: Python tooling
+RUN pip3 install uv --break-system-packages
 
 COPY . /pi-gen/
 

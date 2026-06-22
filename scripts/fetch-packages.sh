@@ -65,6 +65,7 @@ fetch_or_build() {
 # All custom packages, in dependency order (hylia before mod-host-pistomp)
 PACKAGES=(
     hylia
+    lg
     jack2-pistomp
     mod-host-pistomp
     amidithru

@@ -1,7 +1,7 @@
 
 [Unit]
 Description=JACK2 Audio Server
-#After=sound.target
+After=firstboot.service
 
 [Service]
 Environment=LV2_PATH=/home/pistomp/.lv2

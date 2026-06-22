@@ -8,6 +8,15 @@ VENV_DIR=$(CURDIR)/debian/$(PKG)/opt/pistomp/venvs/pistomp-recovery
 %:
 	dh $@
 
+override_dh_auto_clean:
+	# pistomp-recovery has pyproject.toml which can trigger
+	# python-distutils detection in compat 12+. No clean needed.
+	true
+
+override_dh_auto_test:
+	# No tests to run in the build environment.
+	true
+
 override_dh_auto_configure:
 	# Clone pistomp-recovery source if not already present
 	if [ ! -d "$(RECOVERY_SRC_DIR)" ]; then \
@@ -17,8 +26,8 @@ override_dh_auto_configure:
 	fi
 
 override_dh_auto_build:
-	# Create a relocatable uv venv with --system-site-packages
-	uv venv --copies --python /usr/bin/python3 --system-site-packages "$(VENV_DIR)"
+	# Venv uses system Python3 (/usr/bin/python3 exists on target, no --copies needed)
+	uv venv --python /usr/bin/python3 --system-site-packages "$(VENV_DIR)"
 	# Sync dependencies (non-editable so the wheel lands in site-packages)
 	UV_PROJECT_ENVIRONMENT="$(VENV_DIR)" \
 		uv sync --frozen --no-dev --no-editable --extra hardware \

@@ -26,8 +26,8 @@ override_dh_auto_configure:
 	fi
 
 override_dh_auto_build:
-	# Create a relocatable venv and install touchosc2midi
-	python3 -m venv --copies --system-site-packages "$(VENV_DIR)"
+	# Venv uses system Python3 (/usr/bin/python3 exists on target, no --copies needed)
+	python3 -m venv --system-site-packages "$(VENV_DIR)"
 	# Install pyliblo3 and pin Cython<3.1 before touchosc2midi pulls in broken pyliblo
 	"$(VENV_DIR)/bin/pip" install 'Cython<3.1'
 	"$(VENV_DIR)/bin/pip" install --no-build-isolation pyliblo3

@@ -50,6 +50,7 @@ echo ""
 echo "==> Building RT kernel ${KERNEL_RELEASE} (20–40 minutes)..."
 echo ""
 
+BUILD_EXIT=0
 docker run --name "${CONTAINER_NAME}" \
     --volume "${SCRIPT_DIR}/rt-kernel:/rt-kernel:ro" \
     --volume "${CACHE_DIR}:/output" \
@@ -92,9 +93,7 @@ docker run --name "${CONTAINER_NAME}" \
         cp /tmp/linux-image-*.deb /tmp/linux-headers-*.deb /tmp/linux-libc-dev*.deb /output/ 2>/dev/null || true
         echo '==> Done.'
         ls -lh /output/linux-*.deb
-    "
-
-BUILD_EXIT=$?
+    " || BUILD_EXIT=$?
 
 if [ ${BUILD_EXIT} -eq 0 ]; then
     echo ""

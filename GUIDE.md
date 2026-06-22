@@ -35,7 +35,7 @@ Build process executes ordered stages.
 ### Notable design decisions
 
 - **mod-ui runs in a Python 3.11 venv** (`/opt/pistomp/venvs/mod-ui`) because it requires `tornado==4.3`, which is incompatible with Python 3.13. All other pi-stomp code runs under the system Python 3.13.
-- **JACK2 is built from source** as a `.deb` with the `pi-controller-reset.patch` applied (fixes PI integrator windup that causes monotonically increasing audio failures). System `waf` is used instead of the bundled waflib (which uses the removed `imp` module).
+- **JACK2 is built from source** as a `.deb` with the `pi-controller-reset.patch` applied (fixes PI integrator windup that causes monotonically increasing audio failures). The bundled `waf` is used with a patched waflib that replaces the removed `imp` module with `types`.
 - **lilv is installed via apt** (`python3-lilv liblilv-dev`) — no source build needed on Trixie.
 - **Networking** matches pistomp-arch exactly: wired NM profile with 15 s DHCP timeout + link-local fallback (`eth0`), wifi power-save off, MAC randomization off, multihome policy routing dispatcher.
 - **WiFi hotspot** is started on demand by `wifi-check.service` (after NM settles), not via rc.local. It only starts if neither WiFi nor ethernet is connected.
@@ -52,8 +52,8 @@ Build process executes ordered stages.
 
 - Docker
 - ~20 GB free disk space
-- On Linux: `qemu-user-static` and `binfmt-support` installed, binfmt_misc mounted.
-- On macOS: Docker Desktop (handles binfmt transparently via the Linux VM).
+- On Linux x86_64: `qemu-user-static` and `binfmt-support` installed, binfmt_misc mounted.
+- On Linux arm64 / macOS (Apple Silicon): no QEMU needed — the Docker container runs native arm64.
 
 ### Step 1 — Build the RT kernel (once, ~20–40 min)
 

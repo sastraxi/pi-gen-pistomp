@@ -1,25 +1,21 @@
 #!/bin/bash
-# Build lcd-splash .deb — binary-only repackage, no compilation.
+# Build lcd-splash .deb for arm64 Debian Trixie — builds from C source.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
-CACHE_DIR="${CACHE_DIR:-${ROOT_DIR}/cache}"
 PKG="lcd-splash"
 VERSION="1.0-2"
-DEB="${PKG}_${VERSION}_arm64.deb"
+CACHE_DIR="${CACHE_DIR:-${ROOT_DIR}/cache}"
+SRC_DIR="${SCRIPT_DIR}/src"
 
 mkdir -p "${CACHE_DIR}"
 
-# Skip if already cached
-if [[ -f "${CACHE_DIR}/${DEB}" && -z "${FORCE_REBUILD:-}" ]]; then
+if ls "${CACHE_DIR}/${PKG}_${VERSION}"*_arm64.deb &>/dev/null && [[ -z "${FORCE_REBUILD:-}" ]]; then
     echo "==> ${PKG} already in cache, skipping."
     exit 0
 fi
-
-# Source files live in stage2/05-pistomp/files/
-STAGE_DIR="${ROOT_DIR}/stage2/05-pistomp/files"
 
 # Stage files into the debian package tree
 DEB_DIR="${SCRIPT_DIR}/debian/${PKG}"
@@ -28,13 +24,24 @@ mkdir -p "${DEB_DIR}/DEBIAN"
 mkdir -p "${DEB_DIR}/usr/bin"
 mkdir -p "${DEB_DIR}/usr/share/pistomp"
 
-# DEBIAN/control (binary package metadata for dpkg-deb)
+# DEBIAN/control
 cp "${SCRIPT_DIR}/debian/control" "${DEB_DIR}/DEBIAN/control"
 
-cp "${STAGE_DIR}/sys/lcd-splash" "${DEB_DIR}/usr/bin/lcd-splash"
-cp "${STAGE_DIR}/splash.rgb565"  "${DEB_DIR}/usr/share/pistomp/splash.rgb565"
+# Generate font.h from Terminus Bold 22px console font
+python3 "${SRC_DIR}/gen-font-h.py" \
+    /usr/share/consolefonts/Lat15-TerminusBold22x11.psf.gz > "${SRC_DIR}/font.h"
 
-# Build the .deb directly (no dpkg-buildpackage needed for binary-only)
-dpkg-deb --build --root-owner-group "${DEB_DIR}" "${CACHE_DIR}/${DEB}"
+# Compile
+gcc -O2 -Wall -Wextra \
+    -o "${DEB_DIR}/usr/bin/lcd-splash" "${SRC_DIR}/lcd-splash.c" \
+    -I"${SRC_DIR}" \
+    -llgpio
 
-echo "==> Built ${PKG} → ${CACHE_DIR}/${DEB}"
+# Splash image
+cp "${ROOT_DIR}/stage2/05-pistomp/files/splash.rgb565" \
+    "${DEB_DIR}/usr/share/pistomp/splash.rgb565"
+
+# Build the .deb
+dpkg-deb --build --root-owner-group "${DEB_DIR}" "${CACHE_DIR}/${PKG}_${VERSION}_arm64.deb"
+
+echo "==> Built ${PKG} → ${CACHE_DIR}"

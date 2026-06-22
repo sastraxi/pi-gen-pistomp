@@ -81,7 +81,7 @@ rm -rf /home/${FIRST_USER_NAME}/tmp
 EOF
 
 # Boot files
-bash -c "sed -i 's/console=serial0,115200//' ${ROOTFS_DIR}/boot/firmware/cmdline.txt"
+sed -i 's/console=serial0,115200//' "${ROOTFS_DIR}/boot/firmware/cmdline.txt"
 # Install our config as config.txt directly — RT kernel is already in place so
 # there's no reason to defer this to firstboot via a config_pistomp.txt swap.
 install -m 644 files/config_pistomp.txt ${ROOTFS_DIR}/boot/firmware/config.txt

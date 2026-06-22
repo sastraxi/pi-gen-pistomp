@@ -9,6 +9,15 @@ SRC_INSTALL_DIR=$(CURDIR)/debian/$(PKG)/opt/pistomp/pi-stomp
 %:
 	dh $@
 
+override_dh_auto_clean:
+	# pi-stomp has pyproject.toml which can trigger python-distutils
+	# detection in compat 12+. We don't need to clean anything.
+	true
+
+override_dh_auto_test:
+	# No tests to run in the build environment.
+	true
+
 override_dh_auto_configure:
 	# Clone pi-stomp source if not already present
 	if [ ! -d "$(PISTOMP_SRC_DIR)" ]; then \
@@ -18,11 +27,11 @@ override_dh_auto_configure:
 	fi
 
 override_dh_auto_build:
-	# Create a relocatable uv venv with --copies
-	uv venv --copies --python /usr/bin/python3 --system-site-packages "$(VENV_DIR)"
-	# Sync dependencies
+	# Venv uses system Python3 (/usr/bin/python3 exists on target, no --copies needed)
+	uv venv --python /usr/bin/python3 --system-site-packages "$(VENV_DIR)"
+	# Sync dependencies; --no-editable installs the wheel into site-packages
 	UV_PROJECT_ENVIRONMENT="$(VENV_DIR)" \
-		uv sync --frozen --no-dev --extra hardware \
+		uv sync --frozen --no-dev --no-editable --extra hardware \
 		--project "$(PISTOMP_SRC_DIR)"
 
 override_dh_auto_install:

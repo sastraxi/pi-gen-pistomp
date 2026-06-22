@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/bin/bash -e
 
 install -m 644 files/services/*.service ${ROOTFS_DIR}/usr/lib/systemd/system/
 install -m 644 files/jackdrc ${ROOTFS_DIR}/etc/
 install -m 644 files/jack-env.sh ${ROOTFS_DIR}/etc/profile.d/
-install -m 644 files/rtirq.conf ${ROOTFS_DIR}/etc/rtirq.conf
+install -Dm 644 files/rtirq.conf ${ROOTFS_DIR}/etc/default/rtirq
 
 # journald size cap for SD card longevity
 install -Dm 644 files/journald-pistomp.conf ${ROOTFS_DIR}/etc/systemd/journald.conf.d/pistomp.conf
@@ -13,6 +13,8 @@ install -Dm 644 files/99-cpu-dma-latency.rules ${ROOTFS_DIR}/etc/udev/rules.d/99
 
 # Realtime priority + memlock limits for audio group (non-service processes)
 install -Dm 644 files/99-audio.conf ${ROOTFS_DIR}/etc/security/limits.d/99-audio.conf
+# authbind: zero-byte file named after the port grants the pistomp user
+# permission to bind port 80 without root (used by browsepy).
 install -m 500 files/80 ${ROOTFS_DIR}/etc/authbind/byport/
 install -m 755 files/wait-for-mod-host.sh ${ROOTFS_DIR}/usr/local/bin/wait-for-mod-host.sh
 install -m 755 files/wait-for-jack.sh ${ROOTFS_DIR}/usr/local/bin/wait-for-jack.sh

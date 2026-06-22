@@ -146,6 +146,11 @@ if [ -f config ]; then
 	source config
 fi
 
+if [ -f "${BASE_DIR}/config.sh" ]; then
+	# shellcheck disable=SC1091
+	source "${BASE_DIR}/config.sh"
+fi
+
 while getopts "c:" flag
 do
 	case "$flag" in

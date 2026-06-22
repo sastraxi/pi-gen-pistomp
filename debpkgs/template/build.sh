@@ -1,6 +1,11 @@
 #!/bin/bash
-# Build <PKG> .deb for arm64 Debian Trixie.
+# TEMPLATE — copy to debpkgs/<pkg>/build.sh and replace all <PKG>/<pkg-name>
+# placeholders before use. This file is not directly executable.
 set -euo pipefail
+if [[ "${PKG:-}" != *"-"* && "${PKG:-}" != "" ]] || grep -q '<PKG>' "$0" 2>/dev/null; then
+    echo "ERROR: This is a template. Replace all <PKG>/<pkg-name> placeholders first." >&2
+    exit 1
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
