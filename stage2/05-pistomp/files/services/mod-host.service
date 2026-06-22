@@ -4,16 +4,21 @@ After=jack.service
 Requires=jack.service
 
 [Service]
-LimitRTPRIO=95
-LimitMEMLOCK=infinity
-Type=simple
-Environment=LV2_PATH=/home/pistomp/.lv2
-Environment=JACK_PROMISCUOUS_SERVER=jack
-ExecStart=/usr/bin/mod-host -p 5555 -f 5556
+Type=forking
 User=pistomp
 Group=pistomp
+Environment=LV2_PATH=/home/pistomp/.lv2
+Environment=JACK_PROMISCUOUS_SERVER=jack
+ExecStartPre=-/usr/bin/lcd-splash /usr/share/pistomp/splash.rgb565 "Starting plugin host"
+ExecStartPre=/usr/local/bin/wait-for-jack.sh
+ExecStart=/usr/bin/mod-host -p 5555 -f 5556
+CPUSchedulingPolicy=fifo
+CPUSchedulingPriority=65
+LimitRTPRIO=95
+LimitMEMLOCK=infinity
 Restart=always
-RestartSec=2
+RestartSec=1
+TimeoutStopSec=5
 
 [Install]
 WantedBy=multi-user.target

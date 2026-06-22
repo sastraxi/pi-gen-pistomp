@@ -103,6 +103,7 @@ fetch_asset() {
 }
 
 fetch_asset "${NAM_REAMP_URL}" "T3K-sweep-v3.wav"
+fetch_asset "${LV2_PLUGINS_URL}" "lv2plugins.tar.gz"
 
 echo "==> fetch-packages.sh complete. Cache contents:"
 ls "${CACHE_DIR}/" 2>/dev/null || echo "  (none)"

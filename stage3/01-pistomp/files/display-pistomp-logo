@@ -28,4 +28,14 @@ echo -e "                    -%+------------------=#+                           
 echo -e "                      :------------------:.                                    "
 echo -e "                                                                               "   
 echo ""
+OSBUILD="/home/pistomp/.osbuild"
+if [ -f "$OSBUILD" ]; then
+    BUILD_DATE=$(python3 -c "import json; print(json.load(open('$OSBUILD')).get('build-date',''))" 2>/dev/null)
+    SW_VER=$(python3 -c "import json; print(json.load(open('$OSBUILD')).get('software-version',''))" 2>/dev/null)
+    BUILD_TAG=$(python3 -c "import json; print(json.load(open('$OSBUILD')).get('build-tag',''))" 2>/dev/null)
+    [ -n "$BUILD_DATE" ] && echo "  Build date:    ${BUILD_DATE}"
+    [ -n "$SW_VER" ]    && echo "  Version:       ${SW_VER} (${BUILD_TAG})"
+fi
+echo "  Kernel:        $(uname -r)"
+echo "  Extras:        ~/extras"
 echo ""

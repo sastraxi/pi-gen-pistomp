@@ -34,10 +34,6 @@ In Debian there are three separate environments:
    Only things explicitly installed here (via `on_chroot`, `.deb` installs, or
    `install` calls in run scripts) reach the Pi.
 
-This separation is why `uv` can't be declared in `Build-Depends` (that only
-populates the `.deb` build chroot) and why a dedicated stage2 run script
-(`05-run.sh`) is needed to install it into the target image.
-
 ---
 
 ## Build architecture
@@ -48,30 +44,21 @@ populates the `.deb` build chroot) and why a dedicated stage2 run script
 | Build flow | pi-gen stages 0–2 inside Docker | 10 sequential `run_in_chroot` scripts |
 | Kernel compilation | Native aarch64 (no QEMU on Apple Silicon / aarch64 Linux) | Native aarch64 inside chroot |
 | Package format | `.deb` (dpkg/apt) | `.pkg.tar.zst` (pacman) |
-| Custom packages | 17 `.deb` packages | 18 `.pkg.tar.zst` packages |
 | Final compression | xz (configurable: zip/gz/xz/none) | zstd -T0 -3 |
-
-The two-phase approach is the same in both repos: build the RT kernel once
-(cached), then build the OS image consuming it.
 
 ---
 
 ## uv availability
 
-| | Arch | Debian |
-|---|---|---|
-| Install method | Official curl script during 04-native-pkgs.sh | Same curl script in Dockerfile (build host) and 05-run.sh (target) |
-| Install location on device | `/opt/pistomp/bin/uv` | `/opt/pistomp/bin/uv` (stage2/05-pistomp/05-run.sh) |
-| On target device | **Yes** | **Yes** — via curl script in 05-run.sh |
-| PATH | Not modified by installer; scripts use full path | `/opt/pistomp/bin` added via `/etc/profile.d/pistomp.sh` |
-
-Both use `INSTALLER_NO_MODIFY_PATH=1`. Debian adds `/opt/pistomp/bin` to PATH
-system-wide via `profile.d` so `uv` is available interactively and to any
-process that inherits a login environment. Systemd service units that need uv
-at runtime should add `Environment=PATH=/opt/pistomp/bin:...` explicitly.
+Both builds install uv via the official curl script to `/opt/pistomp/bin/uv`
+with `INSTALLER_NO_MODIFY_PATH=1`. Debian also adds `/opt/pistomp/bin` to PATH
+system-wide via `/etc/profile.d/pistomp.sh` (Arch does not). Systemd service
+units that invoke uv directly should add `Environment=PATH=/opt/pistomp/bin:...`
+explicitly — `profile.d` only affects login shells.
 
 `uv` cannot be declared in Debian `Build-Depends` or `Depends` because it is
-not a Debian package — the build-time copy lives only in the Docker image.
+not a Debian package. The build-time copy lives only in the Docker image;
+`05-run.sh` installs it into the target.
 
 ---
 
@@ -115,17 +102,10 @@ uses the `imp` module removed in Python 3.12.
 | Invocation | `waf configure && waf build` | `./waf configure && ./waf build` |
 | PYTHONPATH | `export PYTHONPATH="${PWD}:${PYTHONPATH:-}"` (both build and install) | Not set — `./waf` finds its own tools |
 
-The PYTHONPATH export in Arch is a consequence of using system waf (which
-needs to locate jack2's waf tool modules via the Python path). With the
-bundled `./waf`, this is handled internally and PYTHONPATH is not needed.
-
 ### Debian-only patches
 
 - `systemd-pkgconfig.patch` — fixes systemd.pc detection on Debian Trixie
 - `systemd-unit-dir.patch` — provides a fallback unit dir when pkg-config returns nothing
-
-These are not needed on Arch because Arch's systemd packaging exposes
-pkg-config differently.
 
 ---
 
@@ -157,9 +137,6 @@ to fix this:
 2. Run `uv lock` in that repo to generate `uv.lock`.
 3. Change `debpkgs/mod-ui/debian/rules` to use `uv sync --frozen --no-dev
    --no-editable --project "$(MODUI_SRC_DIR)"` — identical pattern to pi-stomp.
-
-This work lives in the mod-ui fork repo; the deb build rules just consume the
-lock file.
 
 ---
 
@@ -222,26 +199,28 @@ Both repos use manual `ln -sf` symlinks into `wants/` directories rather than
 
 ### Service list differences
 
-| Service | Debian | Arch |
-|---|---|---|
-| rtirq | ✓ | — |
-| mod-midi-merger-broadcaster | — | ✓ |
-| wifi-check / wifi-hotspot | wifi-check.service | wifi-hotspot.service |
+| Service | Debian | Arch | Notes |
+|---|---|---|---|
+| rtirq | ✓ | — | Debian advantage |
+| ttymidi | ✓ | — | Intentional: `dtoverlay=midi-uart0` is always present in `config_pistomp.txt` for Pi 3/4/5, so `/dev/ttyAMA0` always exists |
+| wifi-check | ✓ | ✓ | Both enable wifi-check; Arch also enables wifi-hotspot (redundant) |
 
-### mod-ala-pi-stomp.service
+### Remaining service file differences
 
-Ported from Arch. Both now use:
+Most service files now match Arch. One intentional divergence:
 
-```
-Requires=jack.service mod-host.service mod-ui.service
-After=jack.service mod-host.service mod-ui.service
-Restart=on-failure
-RestartSec=5
-LimitRTPRIO=70
-```
+**`jack.service`** — Debian uses `After=firstboot.service` (correct; ensures
+JACK config exists before JACK starts). Arch uses `After=sound.target`. Debian
+is better here: JACK can never start before `/etc/default/jack` exists.
 
-Previously Debian used `Requires=mod-ui.service` only (boot race risk),
-`Restart=always`, `RestartSec=2`, `LimitRTPRIO=64`.
+All four services (`jack`, `mod-host`, `mod-ala-pi-stomp`, `mod-ui`) now wire
+`lcd-splash` as `ExecStartPre` matching Arch. `jack.service` uses the `-+`
+prefix (run as root) because the `jack` user is not in the `gpio` group;
+the others run as `pistomp` which is.
+
+**`mod-ui.service`** — Debian carries a few extra `MOD_*` env vars
+(`MOD_APP`, `MOD_LIVE_ISO`, `MOD_SYSTEM_OUTPUT`) that Arch omits; these are
+harmless defaults.
 
 ---
 
@@ -249,7 +228,8 @@ Previously Debian used `Requires=mod-ui.service` only (boot race risk),
 
 Both match on: NM keyfile plugin, dnsmasq, wifi power-save off, MAC
 randomization off, wired DHCP → link-local fallback, multihome policy-routing
-dispatcher.
+dispatcher, `wifi-check.service` (proper `After=NetworkManager-wait-online.service`,
+not a blind sleep).
 
 One confirmed difference: wired NM profile uses **`eth0`** here and **`end0`**
 in Arch. Modern kernels with predictable interface naming use `end0`; older or
@@ -263,10 +243,16 @@ exposes before changing either.
 | | Debian | Arch |
 |---|---|---|
 | Source | Raspberry Pi Linux (pinned commit in config.sh) | Arch ARM linux-rpi PKGBUILD base (pinned commit) |
-| diffconfig | ~99 lines (RT + size optimisations, disables XFS/BTRFS/GPU debug) | ~400 lines (Arch ARM baseline + RT additions) |
+| diffconfig | ~100 lines (RT + size optimisations, disables XFS/BTRFS/GPU/InfiniBand/ISDN/PCI-audio/staging) | ~400 lines (Arch ARM baseline + RT additions) |
 | Build method | Cross-compile x86_64 → arm64 (`bindeb-pkg`) | Native aarch64 (`makepkg`) |
 | Output | `.deb` files in `stage2/05-pistomp/files/sys/` | `.pkg.tar.*` files in `cache/` |
 | Arch extra patches | — | `disable-heavy-features.patch`, `0001-Make-proc-cpuinfo-consistent-on-arm64-and-arm.patch` |
+
+The Debian diffconfig explicitly disables GPU drivers (amdgpu, i915, nouveau,
+radeon, xe, vmwgfx), InfiniBand, ISDN, PCI sound, and staging at compile
+time. Arch disables overlapping sets at compile time and then prunes the
+remaining module directories at image-build time (09-cleanup.sh). The Debian
+approach is cleaner: nothing to prune because the modules are never built.
 
 ---
 
@@ -275,24 +261,34 @@ exposes before changing either.
 | | Debian | Arch |
 |---|---|---|
 | Build toolchain | Kept (part of base OS) | Removed (`base-devel`, gcc, kernel headers) |
-| Kernel module pruning | Minimal | Explicit — removes GPU/network/staging drivers |
+| Kernel module pruning | Not needed — disabled in diffconfig | Explicit runtime removal |
 | Firmware pruning | Minimal | Keeps only brcm/cypress (RPi WiFi/BT) |
-| Python/uv cache | Basic | Removes uv download cache explicitly |
+| Zero-fill before compression | ✓ (`dd if=/dev/zero` in stage3/02-cleanup) | ✓ (09-cleanup.sh) |
 | SBOM | syft generates SBOM on export | Not generated |
 
 ---
 
-## Possible gaps (to investigate)
+## Open items
 
-- **uv in systemd units** — `/etc/profile.d/pistomp.sh` only affects login
-  shells. Service units that invoke uv directly need
-  `Environment=PATH=/opt/pistomp/bin:...` in the unit file.
-- **Global pip3 installs** — see Python environment section above.
-- **jackbridge** — present as a `.deb` here but not found in pistomp-arch;
-  unclear if it is needed at runtime.
-- **Audio limits** — Debian installs `/etc/security/limits.d/99-audio.conf`
-  and a udev rule for CPU DMA latency (`99-cpu-dma-latency.rules`). Arch
-  relies on `LimitRTPRIO=70` in the service unit. Verify whether the limits
-  file is still needed alongside the unit directive.
-- **eth0 vs end0** — see Networking section above.
-- **mod-midi-merger-broadcaster** — enabled in Arch, not in Debian. Needed?
+- **Global pip3 installs** — `stage2/04-python/01-run.sh` installs packages
+  system-wide for services that use `--system-site-packages` venvs (browsepy,
+  touchosc2midi). Arch isolates everything to venvs. The current set
+  (`flask`, `unicategories`, `netifaces2`, `mido`, `docopt`, `python-rtmidi`)
+  is the minimal correct list; packages already covered by uv venvs have been
+  removed. Fully eliminating global installs would require giving browsepy and
+  touchosc2midi self-contained venvs.
+- **`/usr/lib/lv2` absent from `LV2_PATH`** — Arch includes `:/usr/lib/lv2`
+  in jack/mod-host/mod-ui service environments; Debian only exports
+  `/home/pistomp/.lv2`. No packages in this build install plugins to
+  `/usr/lib/lv2` today, so this has no runtime effect. Add it if apt-installed
+  LV2 plugin packages are ever added.
+- **jackbridge** — present as a `.deb` here and in Arch (installed via
+  `install.sh`). On-demand only; not auto-started. Kept.
+- **eth0 vs end0** — Intentional. RasPiOS sets `net.ifnames=0` via
+  `raspi-config do_net_names 1`, forcing classic names. Arch uses predictable
+  names (`end0`). Both are correct for their platform.
+- **Unpinned upstream refs** — `HYLIA_REF`, `AMIDITHRU_REF`,
+  `TOUCHOSC2MIDI_REF`, `MOD_MIDI_MERGER_REF`, `MOD_TTYMIDI_REF`, and
+  `JACKROUTER_REF` in `config.sh` are all `master` with no commit hash. Pin
+  them if a build breaks.
+- **mod-ui uv.lock** — see mod-ui section above.

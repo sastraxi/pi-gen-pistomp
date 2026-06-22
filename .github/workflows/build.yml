@@ -36,9 +36,11 @@ jobs:
         sudo apt install qemu-user-static
         sudo update-binfmts --enable
 
-    # Build image with docker
     - name: Run build-docker.sh
       run: ./build-docker.sh
+
+    - name: Compress image
+      run: ./compress-img.sh
 
     # Print output directory files
     - name: List output files
@@ -48,7 +50,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: pistompOS
-        path: ./deploy/*pistompOS-lite.img.xz
+        path: ./deploy/*pistompOS-*.img.xz
         compression-level: 6
         if-no-files-found: error
 
@@ -57,7 +59,7 @@ jobs:
       with:
         name: debug-files
         path: | 
-          ./deploy/*pistompOS-lite.info
+          ./deploy/*pistompOS.info
           ./deploy/build.log
         compression-level: 6
         if-no-files-found: error

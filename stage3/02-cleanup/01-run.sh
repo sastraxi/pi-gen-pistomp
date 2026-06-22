@@ -56,3 +56,12 @@ echo "→ Removing build artifacts..."
 sudo rm -rf "${ROOTFS_DIR}/home/${FIRST_USER_NAME}/tmp/"* || true
 
 echo "=== Rootfs cleanup complete ==="
+
+# Zero-fill free space so the xz compressor achieves better ratios.
+# The file is created inside the chroot, then immediately deleted — the
+# filesystem sees the blocks as freed and xz sees them as all-zero runs.
+on_chroot << 'EOF'
+dd if=/dev/zero of=/zero_fill bs=1M 2>/dev/null || true
+rm -f /zero_fill
+sync
+EOF

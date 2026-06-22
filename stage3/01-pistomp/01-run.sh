@@ -38,7 +38,7 @@ install -m 644 /opt/pistomp/pi-stomp/setup/config_templates/default-hardware-des
 
 # Pedalboards (user-editable; not shipped in .deb)
 rm -rf /home/${FIRST_USER_NAME}/data/.pedalboards
-git clone ${PEDALBOARDS_REPO} /home/${FIRST_USER_NAME}/data/.pedalboards
+git clone --depth 1 ${PEDALBOARDS_REPO} /home/${FIRST_USER_NAME}/data/.pedalboards
 ln -s /home/${FIRST_USER_NAME}/data/.pedalboards /home/${FIRST_USER_NAME}/.pedalboards
 
 # mod-tweaks script: copy from installed package location
@@ -48,14 +48,14 @@ install -m 755 /opt/pistomp/pi-stomp/setup/mod-tweaks/start_touchosc2midi.sh /us
 # are shipped from stage2/05-pistomp/files/ so networking behaviour is controlled
 # here, not by whatever the pi-stomp repo happens to have checked in.
 
-# LV2 plugins
-mkdir -p /home/${FIRST_USER_NAME}/tmp
-pushd /home/${FIRST_USER_NAME}/tmp
-wget ${LV2_PLUGINS_URL}
-tar -zxf lv2plugins.tar.gz -C /home/${FIRST_USER_NAME}/
+# LV2 plugins (from cache/, bind-mounted at /pistomp-cache)
+tar -zxf /pistomp-cache/lv2plugins.tar.gz -C /home/${FIRST_USER_NAME}/
 ln -s /home/${FIRST_USER_NAME}/.lv2 /home/${FIRST_USER_NAME}/data/.lv2
-popd
-rm -rf /home/${FIRST_USER_NAME}/tmp
+
+# Pre-seed ALSA mixer state so alsa-restore.service has the correct IQAudio
+# DAC gains on first boot, before firstboot.service runs.
+install -m 644 /opt/pistomp/pi-stomp/setup/audio/iqaudiocodec.state \
+    /var/lib/alsa/asound.state
 
 # NAM reamp signal (from cache/, bind-mounted at /pistomp-cache)
 mkdir -p /opt/pistomp/pi-stomp/setup/nam
@@ -138,5 +138,5 @@ dpkg-query -W -f='\${Version}' pi-stomp
 EOF
 )
 build_tag=$(git --work-tree $BASE_DIR --git-dir $BASE_DIR/.git describe --dirty="*" --always)
-build_date=$(date +"%y%m%d")
+build_date=$(date +"%Y-%m-%d")
 printf '{"build-tag": "%s", "build-date": "%s", "software-version": "%s"}' $build_tag $build_date $software_version > ${ROOTFS_DIR}/home/pistomp/.osbuild

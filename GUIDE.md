@@ -5,7 +5,7 @@ Based on [pi-gen](https://github.com/RPI-Distro/pi-gen) (Debian/Raspberry Pi OS 
 
 ## Ecosystem Context
 
-Produces `pistompOS-lite.img.xz` flashed to SD cards.
+Produces `pistompOS-<date>.img.xz` flashed to SD cards.
 Integrates components:
 1. **Base OS**: Raspberry Pi OS Lite (Debian Trixie / Python 3.13).
 2. **Kernel**: Realtime (RT) kernel (64-bit ARM), installed from `.deb` at build time.
@@ -79,7 +79,7 @@ build and exits immediately if cached packages already exist.
 
 The `-f`/`--force` flag removes any existing build container and clears `deploy/` automatically. Omit it if you want the default behaviour (abort when a stale container exists).
 
-Output: `deploy/*pistompOS-lite.img.xz`
+Output: `deploy/*pistompOS-*.img.xz` (run `./compress-img.sh` after `build-docker.sh` to produce it; `build-docker.sh` alone leaves the uncompressed `.img` in `deploy/`).
 
 ### Resume an interrupted build
 

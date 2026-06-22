@@ -96,3 +96,6 @@ CONFIG_FAIR_GROUP_SCHED=y
 
 # PCI sound (Pi uses I2S/USB only)
 # CONFIG_SND_PCI is not set
+
+# Staging drivers (experimental; none needed on a Pi audio appliance)
+# CONFIG_STAGING is not set

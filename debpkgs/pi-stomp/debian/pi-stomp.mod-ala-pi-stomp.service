@@ -7,10 +7,14 @@ StartLimitBurst=3
 StartLimitIntervalSec=180
 
 [Service]
+User=pistomp
+WorkingDirectory=/home/pistomp
 Environment="JACK_PROMISCUOUS_SERVER=jack"
+ExecStartPre=-/usr/bin/lcd-splash /usr/share/pistomp/splash.rgb565 "Loading pedalboard"
 ExecStart=/opt/pistomp/venvs/pi-stomp/bin/python /opt/pistomp/pi-stomp/modalapistomp.py
 Restart=on-failure
 RestartSec=5
+TimeoutStopSec=5
 LimitMEMLOCK=infinity
 LimitRTPRIO=70
 

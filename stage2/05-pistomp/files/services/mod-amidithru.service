@@ -1,12 +1,15 @@
 [Unit]
 Description=amidithru service for touchosc2midi
-After=sound.target
-Wants=sound.target
+Requires=jack.service
+After=jack.service
 
 [Service]
+User=pistomp
+Environment="JACK_PROMISCUOUS_SERVER=jack"
 ExecStart=/usr/bin/amidithru touchosc
 Restart=always
-RestartSec=2
+RestartSec=1
+TimeoutStopSec=5
 
 [Install]
 WantedBy=multi-user.target

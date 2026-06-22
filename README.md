@@ -2,7 +2,7 @@
 
 Builds the bootable OS image for [pi-Stomp](https://github.com/TreeFallSound/pi-stomp) hardware. Based on [pi-gen](https://github.com/RPI-Distro/pi-gen) (Raspberry Pi OS image builder).
 
-Produces `deploy/pistompOS-lite.img.xz` — flash to SD card and boot.
+Produces `deploy/pistompOS-<date>.img.xz` — flash to SD card and boot.
 
 ## Prerequisites
 
@@ -29,7 +29,7 @@ This is a no-op if cached packages already exist in `stage2/05-pistomp/files/sys
 ./build-docker.sh -f
 ```
 
-`-f` removes any stale build container and clears `deploy/` before starting. Output lands in `deploy/`.
+`-f` removes any stale build container and clears `deploy/` before starting. `build-docker.sh` leaves the uncompressed `.img` in `deploy/`; run `./compress-img.sh` to produce the dated `.img.xz`.
 
 ### Resume an interrupted build
 
@@ -88,6 +88,6 @@ See `GUIDE.md` for architecture detail, design decisions, and kernel update inst
 ## Workflow for pi-stomp code changes
 
 1. Push changes to `TreeFallSound/pi-stomp` on the `pistomp-v3` branch.
-2. Run `./build-docker.sh -f` — Stage 3 clones the branch fresh at build time.
+2. Run `./build-docker.sh -f && ./compress-img.sh` — Stage 3 clones the branch fresh at build time.
 
 To use a different branch during development, set `PISTOMP_BRANCH` in `config.sh`.

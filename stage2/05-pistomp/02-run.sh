@@ -1,6 +1,11 @@
 #!/bin/bash -e
 
 echo "Installing MOD software"
+
+# Bind-mount the host /pistomp-cache into the chroot so dpkg can see the debs.
+mkdir -p "${ROOTFS_DIR}/pistomp-cache"
+mount --bind /pistomp-cache "${ROOTFS_DIR}/pistomp-cache"
+
 on_chroot << EOF
 
 # Install custom .deb packages from cache/ (bind-mounted at /pistomp-cache).
@@ -37,3 +42,5 @@ apt-get install -y jack-example-tools
 # No source build needed — installed via 00-packages.
 
 EOF
+
+umount "${ROOTFS_DIR}/pistomp-cache"

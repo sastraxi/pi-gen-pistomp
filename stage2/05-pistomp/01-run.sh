@@ -13,9 +13,6 @@ install -Dm 644 files/99-cpu-dma-latency.rules ${ROOTFS_DIR}/etc/udev/rules.d/99
 
 # Realtime priority + memlock limits for audio group (non-service processes)
 install -Dm 644 files/99-audio.conf ${ROOTFS_DIR}/etc/security/limits.d/99-audio.conf
-# authbind: zero-byte file named after the port grants the pistomp user
-# permission to bind port 80 without root (used by browsepy).
-install -m 500 files/80 ${ROOTFS_DIR}/etc/authbind/byport/
 install -m 755 files/wait-for-mod-host.sh ${ROOTFS_DIR}/usr/local/bin/wait-for-mod-host.sh
 install -m 755 files/wait-for-jack.sh ${ROOTFS_DIR}/usr/local/bin/wait-for-jack.sh
 
@@ -60,8 +57,8 @@ ln -sf /usr/lib/systemd/system/pistomp-recovery.service /etc/systemd/system/mult
 # mod-amidithru.service + jack.service, so it only runs once both are up.
 # Starts /usr/mod/scripts/start_touchosc2midi.sh which launches the
 # touchosc2midi venv to bridge TouchOSC app input to JACK MIDI.
-#ln -sf /usr/lib/systemd/system/mod-midi-merger.service /etc/systemd/system/multi-user.target.wants
-#ln -sf /usr/lib/systemd/system/mod-midi-merger-broadcaster.service /etc/systemd/system/multi-user.target.wants
+ln -sf /usr/lib/systemd/system/mod-midi-merger.service /etc/systemd/system/multi-user.target.wants
+ln -sf /usr/lib/systemd/system/mod-midi-merger-broadcaster.service /etc/systemd/system/multi-user.target.wants
 ln -sf /usr/lib/systemd/system/ttymidi.service /etc/systemd/system/multi-user.target.wants
 ln -sf /usr/lib/systemd/system/wifi-check.service /etc/systemd/system/multi-user.target.wants
 ln -sf /usr/lib/systemd/system/firstboot.service /etc/systemd/system/multi-user.target.wants

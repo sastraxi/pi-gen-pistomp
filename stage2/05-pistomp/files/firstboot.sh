@@ -65,8 +65,6 @@ lcd "Finishing setup..."
 
 chown -R pistomp:pistomp /home/pistomp/
 
-cp /home/pistomp/pi-stomp/setup/audio/iqaudiocodec.state /var/lib/alsa/asound.state
-
 if grep -q 'Pi 3' /proc/cpuinfo 2>/dev/null; then
     runuser -u pistomp -- /home/pistomp/pi-stomp/util/modify_version.sh 2.0
 else

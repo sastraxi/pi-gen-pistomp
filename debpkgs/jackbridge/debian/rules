@@ -32,6 +32,10 @@ override_dh_auto_install:
 	install -Dm 644 debian/jackbridge.pi-stomp-jackbridge.service \
 		$(CURDIR)/debian/jackbridge/lib/systemd/system/pi-stomp-jackbridge.service
 
+override_dh_usrlocal:
+	# We intentionally install helper scripts under /usr/local/libexec/jackbridge/.
+	# dh_usrlocal expects only directories under /usr/local, so skip it.
+
 override_dh_installsystemd:
 	# No auto-enable — this service is on-demand only (LCD UI starts/stops it).
 	# No [Install] section in the unit file, so deb-systemd-helper would be a no-op anyway.

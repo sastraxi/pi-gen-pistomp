@@ -20,8 +20,10 @@ KEYBOARD_KEYMAP=us
 
 FIRST_USER_NAME="pistomp"
 
-# Account is locked until firstboot.sh sets the password from pistomp.conf.
-# FIRST_USER_PASS is intentionally unset here.
+# FIRST_USER_PASS must be set when DISABLE_FIRST_BOOT_USER_RENAME=1 (upstream
+# pi-gen validation).  This is only a build-time placeholder: firstboot.sh
+# replaces it with the password from /boot/pistomp.conf on first boot.
+FIRST_USER_PASS="pistomp"
 DISABLE_FIRST_BOOT_USER_RENAME=1
 ENABLE_SSH=1
 ENABLE_CLOUD_INIT=0
