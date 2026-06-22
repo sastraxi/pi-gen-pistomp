@@ -8,7 +8,7 @@ set -a
 
 # --- RT Kernel ---
 KERNEL_VERSION="6.18.36"
-KERNEL_LOCALVERSION="-rt-v8+"                          # suffix in uname -r
+KERNEL_LOCALVERSION="-rt-v8+"  # suffix in uname -r
 LINUX_RPI_COMMIT="954341c412dd48b7c7f8125d81212ec4c0e42ed3"
 
 # --- JACK2 ---
@@ -21,7 +21,7 @@ LG_TAG="v0.2.2"
 
 # --- Hylia ---
 HYLIA_REPO="https://github.com/falkTX/Hylia.git"
-HYLIA_REF="master"                                     # no stable tag; pin by commit when needed
+HYLIA_REF="master"  # no stable tag; pin by commit when needed
 
 # --- mod-host ---
 MOD_HOST_REPO="https://github.com/sastraxi/mod-host.git"
