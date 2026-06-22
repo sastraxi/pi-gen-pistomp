@@ -1,0 +1,5 @@
+// Use gpgv instead of sqv for apt key verification.
+// sqv (Debian trixie default) rejects the Raspberry Pi archive key because its
+// self-binding signature uses SHA1, which sqv has blocked since 2026-02-01.
+// gpgv applies the legacy SHA1 policy and accepts the key.
+APT::Key::gpgvcommand "/usr/bin/gpgv";

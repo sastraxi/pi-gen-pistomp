@@ -1,5 +1,6 @@
 deploy/*
 work/*
+.kernel-cache/
 postrun.sh
 SKIP
 SKIP_IMAGES

@@ -1,10 +1,13 @@
 #!/bin/bash -e
 
 install -m 644 files/sys/.bash_aliases ${ROOTFS_DIR}/home/${FIRST_USER_NAME}/
-install -m 644 files/sys/linux-image-6.1.54-rt15-v8+_6.1.54-rt15-v8+-2_arm64.deb ${ROOTFS_DIR}/home/${FIRST_USER_NAME}/tmp/
-install -m 644 files/sys/linux-headers-6.1.54-rt15-v8+_6.1.54-rt15-v8+-2_arm64.deb ${ROOTFS_DIR}/home/${FIRST_USER_NAME}/tmp/
-install -m 644 files/sys/linux-libc-dev_6.1.54-rt15-v8+-2_arm64.deb ${ROOTFS_DIR}/home/${FIRST_USER_NAME}/tmp/
-install -m 644 files/sys/linux-image-6.12.9-v8-16k+_6.12.9-ga20d400dff3d-3_arm64.deb ${ROOTFS_DIR}/home/${FIRST_USER_NAME}/tmp/
+
+# Copy all kernel .deb files into the chroot staging area.
+# Globs here so version bumps in files/sys/ don't require script edits.
+mkdir -p "${ROOTFS_DIR}/home/${FIRST_USER_NAME}/tmp"
+install -m 644 files/sys/linux-image-*-rt-v8+_*_arm64.deb   "${ROOTFS_DIR}/home/${FIRST_USER_NAME}/tmp/"
+install -m 644 files/sys/linux-headers-*-rt-v8+_*_arm64.deb "${ROOTFS_DIR}/home/${FIRST_USER_NAME}/tmp/" 2>/dev/null || true
+install -m 644 files/sys/linux-libc-dev_*.deb                "${ROOTFS_DIR}/home/${FIRST_USER_NAME}/tmp/" 2>/dev/null || true
 
 # NetworkManager: direct write of complete config (not a patch) so there's no
 # fragile diff to maintain. Uses keyfile-only plugin; drops deprecated ifupdown.
@@ -49,36 +52,23 @@ on_chroot << EOF
 
 cd /home/${FIRST_USER_NAME}/tmp
 
-dpkg -i linux-headers-6.1.54-rt15-v8+_6.1.54-rt15-v8+-2_arm64.deb
-dpkg -i linux-libc-dev_6.1.54-rt15-v8+-2_arm64.deb
-dpkg -i linux-image-6.1.54-rt15-v8+_6.1.54-rt15-v8+-2_arm64.deb
+# --- RT kernel (Pi 3/4) ---
+# Discover the exact filenames so this block survives version bumps.
+RT_IMAGE=\$(ls linux-image-*-rt-v8+_*_arm64.deb | head -1)
+RT_KERN=\$(echo "\$RT_IMAGE" | sed 's/linux-image-\(.*\)_.*_arm64\.deb/\1/')
+echo "==> Installing RT kernel \${RT_KERN}"
 
-KERN1=6.1.54-rt15-v8+
-mkdir -p /boot/firmware/6.1.54-rt15-v8+/o/
-cp -d /usr/lib/linux-image-6.1.54-rt15-v8+/overlays/* /boot/firmware/6.1.54-rt15-v8+/o/
-cp -dr /usr/lib/linux-image-6.1.54-rt15-v8+/* /boot/firmware/6.1.54-rt15-v8+/
-cp -d /usr/lib/linux-image-6.1.54-rt15-v8+/broadcom/* /boot/firmware/6.1.54-rt15-v8+/
-touch /boot/firmware/6.1.54-rt15-v8+/o/README
-mv /boot/vmlinuz-6.1.54-rt15-v8+ /boot/firmware/6.1.54-rt15-v8+/
-mv /boot/initrd.img-6.1.54-rt15-v8+ /boot/firmware/6.1.54-rt15-v8+/
-mv /boot/System.map-6.1.54-rt15-v8+ /boot/firmware/6.1.54-rt15-v8+/
-cp /boot/config-6.1.54-rt15-v8+ /boot/firmware/6.1.54-rt15-v8+/
+dpkg -i linux-headers-*-rt-v8+_*_arm64.deb 2>/dev/null || true
+dpkg -i linux-libc-dev_*.deb               2>/dev/null || true
+dpkg -i "\${RT_IMAGE}"
 
-dpkg -i linux-image-6.12.9-v8-16k+_6.12.9-ga20d400dff3d-3_arm64.deb
-
-KERN2=6.12.9-v8-16k+
-mkdir -p /boot/firmware/6.12.9-v8-16k+/o/
-cp -d /usr/lib/linux-image-6.12.9-v8-16k+/overlays/* /boot/firmware/6.12.9-v8-16k+/o/
-cp -dr /usr/lib/linux-image-6.12.9-v8-16k+/* /boot/firmware/6.12.9-v8-16k+/
-cp -d /usr/lib/linux-image-6.12.9-v8-16k+/broadcom/* /boot/firmware/6.12.9-v8-16k+/
-touch /boot/firmware/6.12.9-v8-16k+/o/README
-mv /boot/vmlinuz-6.12.9-v8-16k+ /boot/firmware/6.12.9-v8-16k+/
-mv /boot/initrd.img-6.12.9-v8-16k+ /boot/firmware/6.12.9-v8-16k+/
-mv /boot/System.map-6.12.9-v8-16k+ /boot/firmware/6.12.9-v8-16k+/
-cp /boot/config-6.12.9-v8-16k+ /boot/firmware/6.12.9-v8-16k+/
-
-# Fix for ttymidi on pi5 — remove once it's been added to the upstream kernel
-wget https://github.com/raspberrypi/firmware/raw/master/boot/overlays/midi-uart0-pi5.dtbo -O /boot/firmware/6.12.9-v8-16k+/o/midi-uart0-pi5.dtbo
+# Flat layout (same as pistomp-arch): kernel and initramfs live directly in
+# /boot/firmware/ under fixed names so config.txt needs no os_prefix or
+# per-model kernel= lines.
+cp -d  /usr/lib/linux-image-\${RT_KERN}/overlays/* /boot/firmware/overlays/
+cp -dr /usr/lib/linux-image-\${RT_KERN}/broadcom/* /boot/firmware/
+cp /boot/vmlinuz-\${RT_KERN}    /boot/firmware/kernel8.img
+cp /boot/initrd.img-\${RT_KERN} /boot/firmware/initramfs.img 2>/dev/null || true
 
 # NM dispatcher requires its own D-Bus activation alias to work
 ln -sf /usr/lib/systemd/system/NetworkManager-dispatcher.service \
@@ -90,10 +80,6 @@ EOF
 
 # Boot files
 bash -c "sed -i 's/console=serial0,115200//' ${ROOTFS_DIR}/boot/firmware/cmdline.txt"
-install -m 644 files/config_pistomp.txt ${ROOTFS_DIR}/boot/firmware
-
-bash -c "sed -i \"s/^\s*dtparam=audio/#dtparam=audio/\" ${ROOTFS_DIR}/boot/firmware/config.txt"
-bash -c "sed -i \"s/^\s*hdmi_force_hotplug=/#hdmi_force_hotplug=/\" ${ROOTFS_DIR}/boot/firmware/config.txt"
-bash -c "sed -i \"s/^\s*camera_auto_detect=/#camera_auto_detect=/\" ${ROOTFS_DIR}/boot/firmware/config.txt"
-bash -c "sed -i \"s/^\s*display_auto_detect=/#display_auto_detect=/\" ${ROOTFS_DIR}/boot/firmware/config.txt"
-bash -c "sed -i \"s/^\s*dtoverlay=vc4-kms-v3d/#dtoverlay=vc4-kms-v3d/\" ${ROOTFS_DIR}/boot/firmware/config.txt"
+# Install our config as config.txt directly — RT kernel is already in place so
+# there's no reason to defer this to firstboot via a config_pistomp.txt swap.
+install -m 644 files/config_pistomp.txt ${ROOTFS_DIR}/boot/firmware/config.txt

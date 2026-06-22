@@ -2,10 +2,6 @@
 
 sudo chown -R pistomp:pistomp /home/pistomp/
 
-logger --priority info --tag firstboot.sh "Changing config.txt to use real time kernel"
-sudo cp /boot/firmware/config.txt /boot/firmware/config_orig.txt
-sudo cp /boot/firmware/config_pistomp.txt /boot/firmware/config.txt
-
 logger --priority info --tag firstboot.sh "Copy audiocard settings"
 #/home/pistomp/pi-stomp/util/change-audio-card.sh iqaudio-codec
 sudo cp /home/pistomp/pi-stomp/setup/audio/iqaudiocodec.state /var/lib/alsa/asound.state

@@ -55,7 +55,19 @@ Build process executes ordered stages.
 - On Linux: `qemu-user-static` and `binfmt-support` installed, binfmt_misc mounted.
 - On macOS: Docker Desktop (handles binfmt transparently via the Linux VM).
 
-### Full build
+### Step 1 — Build the RT kernel (once, ~20–40 min)
+
+The RT kernel `.deb` files are not checked into git. Build them first and they
+are cached in `stage2/05-pistomp/files/sys/` for all subsequent image builds.
+
+```bash
+./build-rt-kernel-docker.sh
+```
+
+Re-run only when you want to update the kernel version. The script skips the
+build and exits immediately if cached packages already exist.
+
+### Step 2 — Build the image
 
 ```bash
 # Remove any previous output and stale container

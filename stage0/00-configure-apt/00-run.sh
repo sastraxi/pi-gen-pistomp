@@ -14,6 +14,7 @@ fi
 
 cat files/raspberrypi.gpg.key | gpg --dearmor > "${STAGE_WORK_DIR}/raspberrypi-archive-stable.gpg"
 install -m 644 "${STAGE_WORK_DIR}/raspberrypi-archive-stable.gpg" "${ROOTFS_DIR}/etc/apt/trusted.gpg.d/"
+install -m 644 files/00-use-gpgv "${ROOTFS_DIR}/etc/apt/apt.conf.d/"
 on_chroot <<- \EOF
 	ARCH="$(dpkg --print-architecture)"
 	if [ "$ARCH" = "armhf" ]; then
