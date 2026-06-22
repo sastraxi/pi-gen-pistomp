@@ -13,6 +13,7 @@ on_chroot << EOF
 # Single dpkg -i call: dpkg handles intra-group dependency ordering.
 dpkg -i \
     /pistomp-cache/hylia.deb \
+    /pistomp-cache/lg.deb \
     /pistomp-cache/jack2-pistomp.deb \
     /pistomp-cache/mod-host-pistomp.deb \
     /pistomp-cache/amidithru.deb \

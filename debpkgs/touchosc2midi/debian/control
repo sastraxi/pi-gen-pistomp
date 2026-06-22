@@ -7,7 +7,7 @@ Standards-Version: 4.6.2
 
 Package: touchosc2midi
 Architecture: arm64
-Depends: ${misc:Depends}, python3, pyliblo3
+Depends: ${misc:Depends}, python3, python3-venv
 Description: TouchOSC to MIDI bridge
  Bridges TouchOSC (iOS/Android) OSC messages to ALSA/JACK MIDI.
  Installed in an isolated venv at /opt/pistomp/venvs/touchosc2midi.

@@ -68,6 +68,29 @@ CONTINUE=${CONTINUE:-0}
 PRESERVE_CONTAINER=${PRESERVE_CONTAINER:-0}
 PIGEN_DOCKER_OPTS=${PIGEN_DOCKER_OPTS:-""}
 
+# --- apt-cacher-ng (persistent package cache) ---
+APT_CACHER_CONTAINER="pigen_apt_cacher"
+APT_CACHER_NET="pigen_net"
+APT_CACHER_IMAGE="sameersbn/apt-cacher-ng:latest"
+APT_CACHER_DIR="${DIR}/cache/apt-cacher"
+APT_PROXY="http://${APT_CACHER_CONTAINER}:3142"
+
+start_apt_cache() {
+  mkdir -p "${APT_CACHER_DIR}"
+  ${DOCKER} network create ${APT_CACHER_NET} 2>/dev/null || true
+  ${DOCKER} rm -f ${APT_CACHER_CONTAINER} 2>/dev/null || true
+  ${DOCKER} run -d \
+    --name ${APT_CACHER_CONTAINER} \
+    --network ${APT_CACHER_NET} \
+    --volume "${APT_CACHER_DIR}":/var/cache/apt-cacher-ng \
+    ${APT_CACHER_IMAGE}
+}
+
+stop_apt_cache() {
+  ${DOCKER} rm -f ${APT_CACHER_CONTAINER} 2>/dev/null || true
+  ${DOCKER} network rm ${APT_CACHER_NET} 2>/dev/null || true
+}
+
 if [ -z "${IMG_NAME}" ]; then
 	echo "IMG_NAME not set in 'config'" 1>&2
 	echo 1>&2
@@ -149,15 +172,24 @@ if [[ "${binfmt_misc_required}" == "1" ]]; then
   fi
 fi
 
-trap 'echo "got CTRL+C... please wait 5s" && ${DOCKER} stop -t 5 ${DOCKER_CMDLINE_NAME}' SIGINT SIGTERM
+trap '
+  echo "got CTRL+C... please wait 5s"
+  ${DOCKER} stop -t 5 ${DOCKER_CMDLINE_NAME}
+  stop_apt_cache
+' SIGINT SIGTERM
+
+start_apt_cache
+
 time ${DOCKER} run \
   $DOCKER_CMDLINE_PRE \
   --name "${DOCKER_CMDLINE_NAME}" \
   --privileged \
+  --network ${APT_CACHER_NET} \
   ${PIGEN_DOCKER_OPTS} \
   --volume "${CONFIG_FILE}":/config:ro \
   --volume "${DIR}/cache":/pistomp-cache:rw \
   -e "GIT_HASH=${GIT_HASH}" \
+  -e "APT_PROXY=${APT_PROXY}" \
   $DOCKER_CMDLINE_POST \
   pi-gen \
   bash -e -o pipefail -c "
@@ -171,6 +203,8 @@ time ${DOCKER} run \
     rsync -av work/*/build.log deploy/
   " &
   wait "$!"
+
+stop_apt_cache
 
 # Ensure that deploy/ is always owned by calling user
 echo "copying results from deploy/"
