@@ -10,8 +10,10 @@ mkdir -p /home/${FIRST_USER_NAME}/tmp
 cd /home/${FIRST_USER_NAME}/tmp
 
 # uv: Python version manager (installs Python 3.11 for mod-ui) + also used in stage3
-# waf: build tool removed from Debian Trixie, needed for JACK2
-pip3 install uv waf
+pip3 install uv
+# waf: build tool removed from Debian Trixie, not on PyPI either; download standalone script
+curl -fsSL -o /usr/local/bin/waf https://waf.io/waf-2.0.27
+chmod +x /usr/local/bin/waf
 
 # Python 3.11 goes to /opt/mod-ui-python so the venv symlink is valid on the Pi
 UV_PYTHON_INSTALL_DIR=/opt/mod-ui-python uv python install 3.11
@@ -30,7 +32,7 @@ cd jack2
 # See stage2/05-pistomp/files/patches/pi-controller-reset.patch for the diagnosis.
 git apply /tmp/pi-controller-reset.patch
 # Drop the bundled waflib so we use system waf, which supports Python 3.12+
-# (the bundled waf uses the `imp` module removed in 3.12).
+# (the bundled waf uses the imp module removed in 3.12).
 rm -rf waflib
 waf configure
 waf build
