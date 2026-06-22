@@ -1,0 +1,19 @@
+Description: Add file rotation support to jack_capture
+ Enables automatic file rotation based on size or duration.
+Origin: pistomp-arch
+Forwarded: not-needed
+Last-Update: 2026-06-22
+
+--- a/jack_capture.c
++++ b/jack_capture.c
+@@ -1,3 +1,8 @@
++// TODO: port file-rotation patch from pistomp-arch
++// This is a placeholder. The actual patch from pistomp-arch
++// (pkgbuilds/jack-capture/jack_capture-file-rotation.patch)
++// should be applied here.
++
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+```
+

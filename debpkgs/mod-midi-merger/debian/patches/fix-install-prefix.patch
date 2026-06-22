@@ -1,0 +1,15 @@
+Description: Un-hardcode CMAKE_INSTALL_PREFIX in CMakeLists.txt
+ The upstream CMakeLists.txt sets CMAKE_INSTALL_PREFIX to /usr, which
+ conflicts with dh_auto_configure's --prefix flag. Comment out the
+ hardcoded line so dh can set the prefix.
+Author: pistomp <pistomp@example.com>
+Forwarded: not-needed
+Last-Update: 2026-06-22
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-set(CMAKE_INSTALL_PREFIX /usr)
++# set(CMAKE_INSTALL_PREFIX /usr)
+```
+

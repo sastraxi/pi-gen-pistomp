@@ -1,0 +1,13 @@
+Source: hylia
+Section: libs
+Priority: optional
+Maintainer: pistomp <pistomp@example.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.2
+
+Package: hylia
+Architecture: arm64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: JACK-aware Ableton Link wrapper
+ Provides libhylia for synchronising JACK transports with Ableton Link
+ sessions. Required by mod-host-pistomp at build time.

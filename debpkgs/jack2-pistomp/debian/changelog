@@ -1,0 +1,6 @@
+jack2-pistomp (1.9.22-1) trixie; urgency=medium
+
+  * Initial package. Based on upstream v1.9.22 with pi-controller-reset
+    fix and libdb 5.3 linkage.
+
+ -- pistomp <pistomp@example.com>  Mon, 22 Jun 2026 00:00:00 +0000

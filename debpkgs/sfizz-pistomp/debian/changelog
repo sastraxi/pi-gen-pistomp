@@ -1,0 +1,7 @@
+sfizz-pistomp (1.2.3-7) trixie; urgency=medium
+
+  * Minimal headless LV2-only build for pi-Stomp.
+  * Add MOD Audio file type annotations (add-mod-filetype.patch).
+  * Disable system abseil/pugixml to avoid GCC 14 / version conflicts.
+
+ -- pistomp <pistomp@example.com>  Mon, 22 Jun 2026 00:00:00 +0000

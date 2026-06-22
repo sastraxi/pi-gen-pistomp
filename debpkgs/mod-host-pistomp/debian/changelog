@@ -1,0 +1,6 @@
+mod-host-pistomp (0.10.6-1) trixie; urgency=medium
+
+  * Initial package. Forked from moddevices/mod-host, fix/effect-drain-midi
+    branch.
+
+ -- pistomp <pistomp@example.com>  Mon, 22 Jun 2026 00:00:00 +0000

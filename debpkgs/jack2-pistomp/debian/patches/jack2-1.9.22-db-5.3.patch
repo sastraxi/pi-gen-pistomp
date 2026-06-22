@@ -1,0 +1,20 @@
+Description: Link against libdb 5.3 instead of default db
+ Trixie ships libdb5.3-dev (not libdb-dev). Add the include and
+ library paths so waf finds the correct version.
+Author: pistomp <pistomp@example.com>
+Forwarded: not-needed
+Last-Update: 2026-06-22
+
+--- a/wscript
++++ b/wscript
+@@ -199,8 +199,8 @@
+     db = opt.add_auto_option(
+             'db',
+             help='Use Berkeley DB (metadata)')
+-    db.check(header_name='db.h')
+-    db.check(lib='db')
++    db.check(header_name='db.h', includes='/usr/include/db5.3')
++    db.check(lib='db-5.3')
+ 
+     # dbus options
+     opt.recurse('dbus')

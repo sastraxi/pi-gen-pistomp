@@ -1,0 +1,6 @@
+#!/usr/bin/make -f
+%:
+	dh $@ --buildsystem=cmake --with quilt
+
+override_dh_auto_configure:
+	dh_auto_configure -- -DCMAKE_POLICY_VERSION_MINIMUM=3.5

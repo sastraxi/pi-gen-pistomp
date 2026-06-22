@@ -1,0 +1,9 @@
+#!/usr/bin/make -f
+%:
+	dh $@ --with quilt
+
+override_dh_auto_build:
+	$(MAKE)
+
+override_dh_auto_install:
+	install -Dm755 amidithru $(CURDIR)/debian/amidithru/usr/bin/amidithru

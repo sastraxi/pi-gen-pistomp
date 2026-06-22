@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+export NOOPT=true
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	$(MAKE) PREFIX=/usr NOOPT=true
+
+override_dh_auto_install:
+	$(MAKE) PREFIX=/usr DESTDIR=$(CURDIR)/debian/hylia install

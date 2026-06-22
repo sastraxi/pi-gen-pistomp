@@ -83,3 +83,8 @@ bash -c "sed -i 's/console=serial0,115200//' ${ROOTFS_DIR}/boot/firmware/cmdline
 # Install our config as config.txt directly — RT kernel is already in place so
 # there's no reason to defer this to firstboot via a config_pistomp.txt swap.
 install -m 644 files/config_pistomp.txt ${ROOTFS_DIR}/boot/firmware/config.txt
+
+# Sudoers drop-in: allow pistomp user passwordless package management
+# (required by pistomp-recovery for OTA upgrades).
+install -m 440 files/pistomp-nopasswd.sudoers \
+    "${ROOTFS_DIR}/etc/sudoers.d/pistomp-nopasswd"

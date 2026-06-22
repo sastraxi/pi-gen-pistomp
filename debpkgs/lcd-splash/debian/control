@@ -1,0 +1,6 @@
+Package: lcd-splash
+Version: 1.0-2
+Architecture: arm64
+Maintainer: pistomp <pistomp@example.com>
+Depends: liblgpio1
+Description: Fast ILI9341 LCD boot splash for pi-Stomp

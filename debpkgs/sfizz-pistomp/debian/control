@@ -1,0 +1,19 @@
+Source: sfizz-pistomp
+Section: sound
+Priority: optional
+Maintainer: pistomp <pistomp@example.com>
+Build-Depends: debhelper-compat (= 13), cmake, git, lv2-dev,
+ libsndfile1-dev, libsamplerate0-dev
+Standards-Version: 4.6.2
+Homepage: https://github.com/sfztools/sfizz-ui
+
+Package: sfizz-pistomp
+Architecture: arm64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Provides: sfizz, sfizz-lv2
+Conflicts: sfizz, sfizz-lv2
+Replaces: sfizz, sfizz-lv2
+Description: SFZ library and LV2 plugin (minimal, headless)
+ sfizz is an SFZ parser and synth C++ library and set of plugins.
+ This build is a minimal headless LV2-only variant for pi-Stomp, with
+ MOD Audio file type annotations for the SFZ file browser.

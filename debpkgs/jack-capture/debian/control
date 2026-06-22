@@ -1,0 +1,15 @@
+Source: jack-capture
+Section: sound
+Priority: optional
+Maintainer: pistomp <pistomp@example.com>
+Build-Depends: debhelper-compat (= 13),
+ libjack-jackd2-dev | libjack-dev, liblo-dev,
+ libmp3lame-dev, libsndfile1-dev
+Standards-Version: 4.6.2
+
+Package: jack-capture
+Architecture: arm64
+Depends: ${shlibs:Depends}, ${misc:Depends}, liblo7, libsndfile1, libmp3lame0
+Description: Record JACK audio output to a file
+ Captures audio from any JACK port and writes it to a WAV, FLAC, or
+ MP3 file. Useful for debugging and recording sessions on pi-Stomp.

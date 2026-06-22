@@ -1,0 +1,12 @@
+Source: amidithru
+Section: sound
+Priority: optional
+Maintainer: pistomp <pistomp@example.com>
+Build-Depends: debhelper-compat (= 13), libasound2-dev
+Standards-Version: 4.6.2
+
+Package: amidithru
+Architecture: arm64
+Depends: ${shlibs:Depends}, ${misc:Depends}, libasound2
+Description: ALSA MIDI thru tool
+ A simple ALSA MIDI thru utility that routes MIDI input to output.

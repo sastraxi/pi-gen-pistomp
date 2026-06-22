@@ -1,0 +1,19 @@
+Source: fluidsynth-headless
+Section: sound
+Priority: optional
+Maintainer: pistomp <pistomp@example.com>
+Build-Depends: debhelper-compat (= 13), cmake,
+ libasound2-dev, libdbus-1-dev, libglib2.0-dev,
+ libjack-jackd2-dev | libjack-dev, libpulse-dev,
+ libreadline-dev, libsndfile1-dev, libfluidsynth-dev,
+ portaudio19-dev
+Standards-Version: 4.6.2
+
+Package: fluidsynth-headless
+Architecture: arm64
+Depends: ${shlibs:Depends}, ${misc:Depends}, libfluidsynth3
+Description: FluidSynth CLI binary (headless, no SDL)
+ A build of the FluidSynth CLI binary with SDL2/SDL3 disabled,
+ suitable for headless pi-Stomp systems. The shared library
+ (libfluidsynth3) comes from Debian Trixie apt — this package
+ ships only the CLI binary.

@@ -1,8 +1,5 @@
 #!/bin/bash -e
 
-# Copy the patch into the chroot before the main build block
-install -m 644 files/patches/pi-controller-reset.patch "${ROOTFS_DIR}/tmp/"
-
 echo "Installing MOD software"
 on_chroot << EOF
 
@@ -11,41 +8,23 @@ cd /home/${FIRST_USER_NAME}/tmp
 
 # uv: Python version manager (installs Python 3.11 for mod-ui) + also used in stage3
 pip3 install uv
-# waf: build tool removed from Debian Trixie, not on PyPI either; download standalone script
-curl -fsSL -o /usr/local/bin/waf https://waf.io/waf-2.0.27
-chmod +x /usr/local/bin/waf
 
 # Python 3.11 goes to /opt/mod-ui-python so the venv symlink is valid on the Pi
 UV_PYTHON_INSTALL_DIR=/opt/mod-ui-python uv python install 3.11
 
-export NOOPT=true
-[ ! -d Hylia ] && git clone --recursive https://github.com/falkTX/Hylia.git
-cd Hylia
-make
-make install
-cd ..
-
-[ ! -d jack2 ] && git clone --branch v1.9.22 https://github.com/jackaudio/jack2.git
-cd jack2
-# Critical stability fix: clear PI controller integrator windup on ringbuffer
-# reset. Without this, failure rate ramps monotonically from jackd start.
-# See stage2/05-pistomp/files/patches/pi-controller-reset.patch for the diagnosis.
-git apply /tmp/pi-controller-reset.patch
-# Remove the bundled waf entry point (uses removed imp module), but keep
-# waflib/Tools/ so project-specific tools like autooptions are available.
-rm -f waf
-waf configure
-waf build
-waf install
-cd ..
-
-# jack-example-tools provides jack_load/jack_unload v4
-[ ! -d jack-example-tools ] && git clone --branch debian/4-4 https://salsa.debian.org/multimedia-team/jack-example-tools.git
-cd jack-example-tools
-meson setup --prefix=/usr/local build
-ninja -C build
-meson install -C build
-cd ..
+# Install custom .deb packages (built by debpkgs/*/build.sh, served from
+# the pistomp apt repo or cached locally during image build).
+apt-get install -y \
+    hylia \
+    jack2-pistomp \
+    amidithru \
+    mod-host-pistomp \
+    mod-midi-merger \
+    mod-ttymidi \
+    sfizz-pistomp \
+    fluidsynth-headless \
+    lcd-splash \
+    jack-capture
 
 # python3-lilv and liblilv-dev are available via apt on trixie (>=0.24.26).
 # No source build needed — installed via 00-packages.
@@ -53,12 +32,6 @@ cd ..
 [ ! -d browsepy ] && git clone https://github.com/micahvdm/browsepy.git
 cd browsepy
 pip3 install ./
-cd ..
-
-[ ! -d mod-host ] && git clone --branch fix/effect-drain-midi https://github.com/sastraxi/mod-host.git mod-host
-cd mod-host
-make
-make install
 cd ..
 
 # mod-ui requires tornado==4.3 which is incompatible with Python 3.13.
@@ -78,32 +51,9 @@ sed -i -e 's/collections\.MutableMapping/collections.abc.MutableMapping/g' \
 cp -r default.pedalboard /home/${FIRST_USER_NAME}/data/.pedalboards
 cd ..
 
-[ ! -d amidithru ] && git clone https://github.com/BlokasLabs/amidithru.git
-cd amidithru
-sed -i 's/CXX=g++.*/CXX=g++/' Makefile
-make install
-cd ..
-
 [ ! -d touchosc2midi ] && git clone https://github.com/BlokasLabs/touchosc2midi.git
 cd touchosc2midi
 pip3 install ./
 cd ..
 
-[ ! -d mod-midi-merger ] && git clone https://github.com/mod-audio/mod-midi-merger
-cd mod-midi-merger
-# cmake forces install prefix to /usr, override it so we use /usr/local
-sed -i 's/^[[:space:]]*set(CMAKE_INSTALL_PREFIX[[:space:]]*\/usr)/# &/' CMakeLists.txt
-[ -d build ] && rm -rf build
-mkdir build && cd build
-cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
-make
-make install
-cd ../..
-
-[ ! -d mod-ttymidi ] && git clone https://github.com/moddevices/mod-ttymidi.git
-cd mod-ttymidi
-make install
-cd ..
-
-rm -f /tmp/pi-controller-reset.patch
 EOF

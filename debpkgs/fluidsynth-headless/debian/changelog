@@ -1,0 +1,5 @@
+fluidsynth-headless (2.5.2-1) trixie; urgency=medium
+
+  * Initial package. Headless CLI build without SDL2/SDL3.
+
+ -- pistomp <pistomp@example.com>  Mon, 22 Jun 2026 00:00:00 +0000
