@@ -16,7 +16,6 @@ install -Dm 644 files/99-spidev.rules ${ROOTFS_DIR}/etc/udev/rules.d/99-spidev.r
 
 # Realtime priority + memlock limits for audio group (non-service processes)
 install -Dm 644 files/99-audio.conf ${ROOTFS_DIR}/etc/security/limits.d/99-audio.conf
-install -m 755 files/wait-for-mod-host.sh ${ROOTFS_DIR}/usr/local/bin/wait-for-mod-host.sh
 install -m 755 files/wait-for-jack.sh ${ROOTFS_DIR}/usr/local/bin/wait-for-jack.sh
 
 # Helper scripts for common service operations (ps-restart, ps-stop, ps-run,

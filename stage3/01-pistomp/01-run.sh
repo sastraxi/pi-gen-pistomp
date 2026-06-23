@@ -130,7 +130,7 @@ PEDALBOARDS_DIR=\${DATA_DIR}/.pedalboards
 #if [ -d "\${PEDALBOARDS_DIR}/default.pedalboard" ]; then
 #    FIRST_PB="\${PEDALBOARDS_DIR}/default.pedalboard"
 #else
-    FIRST_PB=\$(find "\${PEDALBOARDS_DIR}" -maxdepth 1 -name '*.pedalboard' -type d | head -n 1 || true)
+    FIRST_PB=\$(find "\${PEDALBOARDS_DIR}" -maxdepth 1 -name '*.pedalboard' -type d | sort | head -n 1 || true)
 #fi
 
 if [ -n "\${FIRST_PB}" ]; then

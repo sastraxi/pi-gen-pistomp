@@ -1,7 +1,8 @@
 [Unit]
 Description=MOD-ALA-PI-STOMP
 After=jack.service mod-host.service mod-ui.service
-Requires=jack.service mod-host.service mod-ui.service
+Requires=jack.service mod-host.service
+BindsTo=mod-ui.service
 OnFailure=pistomp-recovery.service
 StartLimitBurst=3
 StartLimitIntervalSec=180
