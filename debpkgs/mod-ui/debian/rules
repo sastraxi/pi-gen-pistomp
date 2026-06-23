@@ -46,13 +46,13 @@ override_dh_auto_install:
 	  -e 's|^home = .*|home = /opt/pistomp/venvs/mod-ui/bin|' \
 	  -e 's|^executable = .*|executable = /opt/pistomp/venvs/mod-ui/bin/python3.11|' \
 	  "$(VENV_DIR)/pyvenv.cfg"
-	# Install tornado==4.3
-	"$(VENV_DIR)/bin/pip" install tornado==4.3
+	# Install mod-ui's real deps (setup.py declares bogus names like tornado4,
+	# pil, pycrypto — install the actual packages first, then mod-ui --no-deps).
+	"$(VENV_DIR)/bin/pip" install tornado==4.3 pillow pystache pycryptodome aggdraw pyserial
 	# Patch tornado for Python 3.10+ compatibility
 	sed -i -e 's/collections\.MutableMapping/collections.abc.MutableMapping/g' \
 		"$(VENV_DIR)/lib/python3.11/site-packages/tornado/httputil.py"
-	# Install mod-ui into the venv (--no-deps: tornado4 doesn't exist on PyPI,
-	# but tornado==4.3 is already installed above)
+	# Install mod-ui with --no-deps: bogus declared deps already satisfied above
 	"$(VENV_DIR)/bin/pip" install --no-deps "$(MODUI_SRC_DIR)"
 	# Install HTML assets
 	mkdir -p "$(HTML_INSTALL_DIR)"
@@ -64,6 +64,10 @@ override_dh_auto_install:
 	install -Dm 644 debian/mod-ui.mod-ui.service \
 		$(CURDIR)/debian/mod-ui/lib/systemd/system/mod-ui.service
 
+
+override_dh_dwz:
+	# Skip: venv binaries have no debug info, dwz exits non-zero on them.
+	true
 
 override_dh_installsystemd:
 	# Service enablement is handled by stage2/05-pistomp/01-run.sh ln -sf,

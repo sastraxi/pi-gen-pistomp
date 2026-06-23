@@ -4,7 +4,10 @@ After=mod-host.service
 After=browsepy.service
 Requires=mod-host.service
 Requires=browsepy.service
+Wants=mod-ala-pi-stomp.service
 OnFailure=pistomp-recovery.service
+StartLimitBurst=3
+StartLimitIntervalSec=60
 
 [Service]
 LimitRTPRIO=95
