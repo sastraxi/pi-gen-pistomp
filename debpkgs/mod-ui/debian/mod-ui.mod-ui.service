@@ -4,6 +4,7 @@ After=mod-host.service
 After=browsepy.service
 Requires=mod-host.service
 Requires=browsepy.service
+OnFailure=pistomp-recovery.service
 
 [Service]
 LimitRTPRIO=95

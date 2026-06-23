@@ -41,6 +41,7 @@ override_dh_auto_install:
 	UV_PREFIX=$$(cd "$$(dirname "$$UV_PY")/.." && pwd) && \
 	"$$UV_PY" -m venv --copies "$(VENV_DIR)" && \
 	rsync -a --exclude=site-packages "$$UV_PREFIX/lib/python3.11/" "$(VENV_DIR)/lib/python3.11/" && \
+	rm -f "$(VENV_DIR)/lib/python3.11/EXTERNALLY-MANAGED" && \
 	sed -i \
 	  -e 's|^home = .*|home = /opt/pistomp/venvs/mod-ui/bin|' \
 	  -e 's|^executable = .*|executable = /opt/pistomp/venvs/mod-ui/bin/python3.11|' \

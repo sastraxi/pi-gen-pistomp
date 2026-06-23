@@ -2,6 +2,7 @@
 [Unit]
 Description=JACK2 Audio Server
 After=firstboot.service
+OnFailure=pistomp-recovery.service
 
 [Service]
 Environment=LV2_PATH=/home/pistomp/.lv2

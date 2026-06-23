@@ -1,3 +1,15 @@
+mod-ui (3.0-3) trixie; urgency=medium
+
+  * Add OnFailure=pistomp-recovery.service to mod-ui.service.
+
+ -- pistomp <pistomp@example.com>  Mon, 23 Jun 2026 00:00:00 +0000
+
+mod-ui (3.0-2) trixie; urgency=medium
+
+  * Remove wait-for-mod-host.sh ExecStartPre from mod-ui.service.
+
+ -- pistomp <pistomp@example.com>  Mon, 23 Jun 2026 00:00:00 +0000
+
 mod-ui (3.0-1) trixie; urgency=medium
 
   * Initial package. Python 3.11 venv with tornado==4.3.

@@ -23,5 +23,10 @@ cache_check() {
 move_to_cache() {
     local search_dir="${1:-$(dirname "${UPSTREAM_DIR}")}"
     find "${search_dir}" -maxdepth 1 -name "${PKG}_*.deb" -exec mv {} "${CACHE_DIR}/" \;
+    local latest
+    latest="$(ls -t "${CACHE_DIR}/${PKG}_"*"_arm64.deb" 2>/dev/null | head -1)"
+    if [[ -n "${latest}" ]]; then
+        ln -sf "$(basename "${latest}")" "${CACHE_DIR}/${PKG}.deb"
+    fi
     echo "==> Built ${PKG} → ${CACHE_DIR}"
 }

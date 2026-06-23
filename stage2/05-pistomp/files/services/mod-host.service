@@ -2,6 +2,7 @@
 Description=MOD-host
 After=jack.service
 Requires=jack.service
+OnFailure=pistomp-recovery.service
 
 [Service]
 Type=forking
