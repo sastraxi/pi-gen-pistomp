@@ -6,7 +6,7 @@ ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 source "${ROOT_DIR}/scripts/build-common.sh"
 
 PKG="jack2-pistomp"
-VERSION="${JACK2_TAG#v}"        # strip leading v → 1.9.22
+VERSION="$(dpkg-parsechangelog -l "${SCRIPT_DIR}/debian/changelog" -S Version)"
 UPSTREAM_DIR="${WORKDIR}/${PKG}-src"
 
 cache_check

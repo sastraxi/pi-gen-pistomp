@@ -1,3 +1,10 @@
+mod-midi-merger (1.0-2) trixie; urgency=medium
+
+  * Install JACK internal clients to /usr/lib/aarch64-linux-gnu/jack to
+    match jack2-pistomp's multiarch libdir and JACK_DRIVER_DIR in jackdrc.
+
+ -- pistomp <pistomp@example.com>  Tue, 23 Jun 2026 00:00:00 +0000
+
 mod-midi-merger (1.0-1) trixie; urgency=medium
 
   * Initial package.

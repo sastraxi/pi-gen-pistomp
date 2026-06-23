@@ -1,3 +1,15 @@
+jack2-pistomp (1.9.22-2) trixie; urgency=medium
+
+  * Conflicts/Replaces/versioned-Provides libjack-jackd2-0 so Debian's stock
+    libjackserver.so.0 is never installed alongside this build.
+  * Install libraries to the arm64 multiarch dir (/usr/lib/aarch64-linux-gnu)
+    so the patched libjackserver wins in ld.so.cache. Previously the package
+    installed to /usr/lib (not on the linker search path); jackd loaded the
+    stock Debian libjackserver instead of the patched one, causing
+    jack.service to crash-loop and mod-host to hang at boot.
+
+ -- pistomp <pistomp@example.com>  Tue, 23 Jun 2026 00:00:00 +0000
+
 jack2-pistomp (1.9.22-1) trixie; urgency=medium
 
   * Initial package. Based on upstream v1.9.22 with pi-controller-reset

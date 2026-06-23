@@ -12,6 +12,47 @@ Integrates components:
 3. **Audio Engine**: JACK2 (with PI-controller reset fix), MOD-Host, MOD-UI (Stage 2).
 4. **Application**: `pi-stomp` Python codebase, LV2 plugins, user data (Stage 3).
 
+## Debugging build failures — start here
+
+When something doesn't work at boot (service hangs, crash loops, missing files), the two highest-signal investigation steps are:
+
+### 1. Read the build logs in `deploy/`
+
+Every build writes a timestamped log to `deploy/build_log_*.log`. These contain the full stdout/stderr of every stage and substage — package installs, `dpkg` output, service file copies, kernel file placement, everything.
+
+```bash
+ls -t deploy/build_log_*.log | head -1   # latest build
+```
+
+Key things to grep for:
+- `dpkg: error`, `dependency problems`, `unmet dependencies` — apt failures
+- Package names that shouldn't be there (e.g. `libjack-jackd2-0` from upstream Debian shadowing a custom package)
+- `failed`, `error`, `No such file` — stage script failures
+- Service file copies (`cp`, `install`) — verify files landed in the right places
+
+### 2. Mount the built image and look around
+
+The uncompressed `.img` in `deploy/` is a full ext4 filesystem with a FAT boot partition. Mount it and inspect what actually ended up on disk:
+
+```bash
+# Find partition offsets (sector size is 512)
+fdisk -l deploy/*pistompOS-*.img
+# Typically: partition 1 (FAT boot) at sector 8192, partition 2 (ext4 root) at sector 1056768
+
+# Mount root partition
+sudo mkdir -p /mnt/pistomp-root
+sudo mount -o loop,offset=$((1056768*512)) deploy/*pistompOS-*.img /mnt/pistomp-root
+
+# Mount boot partition
+sudo mkdir -p /mnt/pistomp-boot
+sudo mount -o loop,offset=$((8192*512)) deploy/*pistompOS-*.img /mnt/pistomp-boot
+```
+
+Unmount when done:
+```bash
+sudo umount /mnt/pistomp-root /mnt/pistomp-boot
+```
+
 ## Architecture
 
 Build process executes ordered stages.

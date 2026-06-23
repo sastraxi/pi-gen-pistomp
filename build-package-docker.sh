@@ -35,7 +35,11 @@ fi
 # Repo is mounted rw because lcd-splash and libfluidsynth2-compat write into
 # debpkgs/<pkg>/debian/ as their dpkg-deb staging tree.
 echo "==> Building ${PKG} in Docker container..."
-${DOCKER} run --rm -it \
+TTY_FLAG=""
+if [ -t 0 ]; then
+    TTY_FLAG="-it"
+fi
+${DOCKER} run --rm ${TTY_FLAG} \
     --volume "${DIR}/cache":/pistomp-cache:rw \
     --volume "${DIR}":/pistomp:rw \
     -e "CACHE_DIR=/pistomp-cache" \

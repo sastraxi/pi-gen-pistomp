@@ -4,3 +4,13 @@
 
 override_dh_auto_configure:
 	dh_auto_configure -- -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+
+override_dh_auto_install:
+	dh_auto_install
+	# Move JACK internal clients from /usr/lib/jack to the multiarch
+	# driver dir (/usr/lib/aarch64-linux-gnu/jack) to match jack2-pistomp's
+	# --libdir and JACK_DRIVER_DIR in jackdrc.
+	install -d $(CURDIR)/debian/mod-midi-merger/usr/lib/aarch64-linux-gnu/jack
+	mv $(CURDIR)/debian/mod-midi-merger/usr/lib/jack/*.so \
+		$(CURDIR)/debian/mod-midi-merger/usr/lib/aarch64-linux-gnu/jack/
+	rmdir $(CURDIR)/debian/mod-midi-merger/usr/lib/jack

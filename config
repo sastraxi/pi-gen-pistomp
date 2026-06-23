@@ -1,4 +1,4 @@
-# pi-gen build-time image settings only (upstream pi-gen convention).
+# pi-gen build-time image settings
 # Sourced by build.sh and build-docker.sh; validated for IMG_NAME/RELEASE.
 #
 # Configuration is split across three files by audience:
@@ -6,7 +6,7 @@
 #   - config.sh:        upstream URLs, branches, version pins for custom .deb packages
 #                       (set -a auto-exports every var into build.sh / fetch-packages.sh
 #                       / debian/rules)
-#   - stage2/05-pistomp/files/pistomp.conf:
+#   - stage2/05-pistomp/files/pistomp.conf -> /pistomp.conf on boot volume:
 #                       runtime/user-facing settings (WiFi, hostname, password,
 #                       timezone, JACK_SAMPLE_RATE, JACK_PERIOD) — applied by
 #                       firstboot.sh on first boot, NOT baked in at build time.
