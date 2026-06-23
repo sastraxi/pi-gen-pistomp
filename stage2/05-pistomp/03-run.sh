@@ -16,6 +16,7 @@ done
 
 # NetworkManager: direct write of complete config (not a patch) so there's no
 # fragile diff to maintain. Uses keyfile-only plugin; drops deprecated ifupdown.
+# NM manages dnsmasq for DNS/mDNS.
 cat > "${ROOTFS_DIR}/etc/NetworkManager/NetworkManager.conf" <<'EOF'
 [main]
 dns=dnsmasq
@@ -99,6 +100,26 @@ cp /boot/vmlinuz-\${RT_KERN}    /boot/firmware/kernel8.img
 # NM dispatcher requires its own D-Bus activation alias to work
 ln -sf /usr/lib/systemd/system/NetworkManager-dispatcher.service \
     /etc/systemd/system/dbus-org.freedesktop.nm-dispatcher.service
+
+# Explicitly enable NM — package postinst uses deb-systemd-helper which is
+# unreliable inside pi-gen's chroot. Belt-and-suspenders.
+systemctl enable NetworkManager.service
+
+# Mask the system dnsmasq service so it never binds port 53 and conflicts with
+# NM. NM's hotspot (ipv4.method shared) uses its own internal dnsmasq instance
+# and is unaffected by masking the system unit.
+systemctl mask dnsmasq.service
+
+# Explicitly allow password authentication so the device is reachable via SSH
+# even if firstboot.sh hasn't run yet (authorized_keys not yet written).
+sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+
+# mDNS: configure nsswitch.conf so pistomp.local resolves via avahi.
+# Matches pistomp-arch exactly. libnss-mdns must be installed (00-packages).
+sed -i 's/^hosts:.*/hosts: myhostname mdns_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files dns/' /etc/nsswitch.conf
+
+# Explicitly enable avahi so pistomp.local is always advertised.
+systemctl enable avahi-daemon.service
 
 rm -rf /home/${FIRST_USER_NAME}/tmp
 

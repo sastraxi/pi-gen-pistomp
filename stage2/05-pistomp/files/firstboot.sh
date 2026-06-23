@@ -77,16 +77,15 @@ lcd "Finishing setup..."
 chown -R pistomp:pistomp /home/pistomp/
 
 if grep -q 'Pi 3' /proc/cpuinfo 2>/dev/null; then
-    runuser -u pistomp -- /home/pistomp/pi-stomp/util/modify_version.sh 2.0
+    runuser -u pistomp -- /home/pistomp/pi-stomp/util/modify_version.sh 2.0 || true
 else
-    runuser -u pistomp -- /home/pistomp/pi-stomp/util/modify_version.sh 3.0
+    runuser -u pistomp -- /home/pistomp/pi-stomp/util/modify_version.sh 3.0 || true
 fi
 
 if grep -q 'Pi 5' /proc/cpuinfo 2>/dev/null; then
     runuser -u pistomp -- /home/pistomp/pi-stomp/util/pi5_eeprom_update.sh || true
 fi
 
-systemctl disable --now dnsmasq.service 2>/dev/null || true
 systemctl disable --now hciuart.service 2>/dev/null || true
 systemctl disable --now bluetooth.service 2>/dev/null || true
 

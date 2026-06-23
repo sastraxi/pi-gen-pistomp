@@ -226,15 +226,50 @@ harmless defaults.
 
 ## Networking
 
-Both match on: NM keyfile plugin, dnsmasq, wifi power-save off, MAC
+Both match on: NM keyfile plugin, `dns=dnsmasq`, wifi power-save off, MAC
 randomization off, wired DHCP → link-local fallback, multihome policy-routing
 dispatcher, `wifi-check.service` (proper `After=NetworkManager-wait-online.service`,
-not a blind sleep).
+not a blind sleep), `libnss-mdns` + `nsswitch.conf` `mdns_minimal` for
+`pistomp.local` resolution.
 
-One confirmed difference: wired NM profile uses **`eth0`** here and **`end0`**
-in Arch. Modern kernels with predictable interface naming use `end0`; older or
-RPi-specific udev rules may use `eth0`. Check which name the target kernel
-exposes before changing either.
+### Debian-specific: dnsmasq service masking
+
+Both builds use `dns=dnsmasq` in `NetworkManager.conf`, which lets NM manage
+its own dnsmasq instance for DNS/mDNS. On Arch, the system dnsmasq service
+never auto-starts (Arch requires explicit `systemctl enable`), so there is no
+conflict. On Debian, installing the `dnsmasq` package auto-starts the service
+via package postinst, which binds port 53 before NM can — breaking NM's
+dnsmasq plugin entirely and preventing eth0 from getting any address (including
+link-local). `03-run.sh` masks `dnsmasq.service` at image-build time to prevent
+this. NM's hotspot (`ipv4.method shared`) uses its own internal dnsmasq instance
+and is unaffected.
+
+### Debian-specific: explicit service enables
+
+Arch enables NM via `ln -sf` into `multi-user.target.wants/`. On Debian,
+`network-manager` postinst uses `deb-systemd-helper`, which is unreliable inside
+pi-gen's intercepted-systemctl chroot. `03-run.sh` calls `systemctl enable
+NetworkManager.service` and `systemctl enable avahi-daemon.service` explicitly.
+
+### mDNS
+
+Arch installs `nss-mdns` and configures `nsswitch.conf` in `02-system.sh`.
+Debian installs `libnss-mdns` (in `01-sys-tweaks/00-packages`) and sets the
+same `hosts:` line via `sed` in `03-run.sh`. `avahi-daemon` is auto-started
+by Debian's package postinst, but is also explicitly enabled for belt-and-suspenders.
+
+### SSH access hardening
+
+`03-run.sh` explicitly sets `PasswordAuthentication yes` in `sshd_config` so
+the device is reachable via `pistomp`/`pistomp` even before `firstboot.sh` has
+run (i.e. before the user's `SSH_AUTHORIZED_KEY` from `pistomp.conf` is written
+to `authorized_keys`). Arch sets the same flag in `02-system.sh`.
+
+### Wired interface name
+
+Wired NM profile uses **`eth0`** here and **`end0`** in Arch. RasPiOS sets
+`net.ifnames=0` (classic names); Arch uses predictable names. Both are correct
+for their platform.
 
 ---
 
@@ -284,9 +319,14 @@ approach is cleaner: nothing to prune because the modules are never built.
   LV2 plugin packages are ever added.
 - **jackbridge** — present as a `.deb` here and in Arch (installed via
   `install.sh`). On-demand only; not auto-started. Kept.
-- **eth0 vs end0** — Intentional. RasPiOS sets `net.ifnames=0` via
-  `raspi-config do_net_names 1`, forcing classic names. Arch uses predictable
-  names (`end0`). Both are correct for their platform.
+- **eth0 vs end0** — Resolved. `EthernetManager.iface` is now a `@cached_property`
+  that discovers the first wired non-loopback interface from `/sys/class/net/`
+  at runtime, so pi-stomp works on both `eth0` (Debian) and `end0` (Arch) without
+  hardcoding.
+- **firstboot.sh robustness** — `set -e` is active throughout firstboot. Calls
+  to `modify_version.sh` and `pi5_eeprom_update.sh` use `|| true` so a failure
+  there does not skip the final `reboot -f`. Any new command added to firstboot
+  that is non-fatal should also use `|| true`.
 - **Unpinned upstream refs** — `HYLIA_REF`, `AMIDITHRU_REF`,
   `TOUCHOSC2MIDI_REF`, `MOD_MIDI_MERGER_REF`, `MOD_TTYMIDI_REF`, and
   `JACKROUTER_REF` in `config.sh` are all `master` with no commit hash. Pin

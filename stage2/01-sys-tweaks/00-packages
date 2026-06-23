@@ -7,7 +7,7 @@ gpiod python3-libgpiod
 python3-gpiozero
 python3-rpi-lgpio python3-spidev
 python3-smbus2
-avahi-daemon
+avahi-daemon libnss-mdns
 ca-certificates curl
 usbutils
 dosfstools
