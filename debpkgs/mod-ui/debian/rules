@@ -51,8 +51,9 @@ override_dh_auto_install:
 	# Patch tornado for Python 3.10+ compatibility
 	sed -i -e 's/collections\.MutableMapping/collections.abc.MutableMapping/g' \
 		"$(VENV_DIR)/lib/python3.11/site-packages/tornado/httputil.py"
-	# Install mod-ui into the venv
-	"$(VENV_DIR)/bin/pip" install "$(MODUI_SRC_DIR)"
+	# Install mod-ui into the venv (--no-deps: tornado4 doesn't exist on PyPI,
+	# but tornado==4.3 is already installed above)
+	"$(VENV_DIR)/bin/pip" install --no-deps "$(MODUI_SRC_DIR)"
 	# Install HTML assets
 	mkdir -p "$(HTML_INSTALL_DIR)"
 	cp -a "$(MODUI_SRC_DIR)/html/"* "$(HTML_INSTALL_DIR)/"
