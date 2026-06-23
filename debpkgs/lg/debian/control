@@ -8,6 +8,8 @@ Standards-Version: 4.6.2
 Package: lg
 Architecture: arm64
 Depends: ${shlibs:Depends}, ${misc:Depends}, python3
+Conflicts: python3-rpi-lgpio, python3-lgpio
+Replaces: python3-rpi-lgpio, python3-lgpio
 Description: Linux C library and Python bindings for GPIO (lgpio/rgpio)
  Provides liblgpio.so.1, C headers, and Python SWIG bindings for GPIO
  on Raspberry Pi. Built from joan2937/lg v0.2.2.

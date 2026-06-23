@@ -2,6 +2,11 @@
 
 echo "pi-Stomp files"
 
+# Bind-mount the host /pistomp-cache into the chroot so stage3 can access
+# cached assets (lv2plugins.tar.gz, T3K-sweep-v3.wav).
+mkdir -p "${ROOTFS_DIR}/pistomp-cache"
+mount --bind /pistomp-cache "${ROOTFS_DIR}/pistomp-cache"
+
 # ssh logo splash
 install -m 666 files/display-pistomp-logo ${ROOTFS_DIR}/etc/update-motd.d/
 chmod +x ${ROOTFS_DIR}/etc/update-motd.d/display-pistomp-logo
@@ -18,6 +23,7 @@ install -d ${ROOTFS_DIR}/home/${FIRST_USER_NAME}/extras
 install -m 755 files/extras/*.sh ${ROOTFS_DIR}/home/${FIRST_USER_NAME}/extras/
 
 on_chroot << EOF
+set -o pipefail
 
 # pi-stomp installed as .deb in stage2; postinst creates /home/pistomp/pi-stomp
 # symlink pointing to /opt/pistomp/pi-stomp/. Service enablement is in
@@ -28,6 +34,7 @@ mkdir -p /home/${FIRST_USER_NAME}/data/config
 mkdir -p /usr/mod/scripts
 
 # pi-Stomp user-files (user-editable; not shipped in .deb)
+rm -rf /home/${FIRST_USER_NAME}/data/user-files
 git clone --recurse-submodules ${USERFILES_REPO} /home/${FIRST_USER_NAME}/data/user-files
 
 # Config templates come from the installed package path
@@ -38,7 +45,8 @@ install -m 644 /opt/pistomp/pi-stomp/setup/config_templates/default-hardware-des
 
 # Pedalboards (user-editable; not shipped in .deb)
 rm -rf /home/${FIRST_USER_NAME}/data/.pedalboards
-git clone --depth 1 ${PEDALBOARDS_REPO} /home/${FIRST_USER_NAME}/data/.pedalboards
+rm -f /home/${FIRST_USER_NAME}/.pedalboards
+git clone ${PEDALBOARDS_REPO} /home/${FIRST_USER_NAME}/data/.pedalboards
 ln -s /home/${FIRST_USER_NAME}/data/.pedalboards /home/${FIRST_USER_NAME}/.pedalboards
 
 # mod-tweaks script: copy from installed package location
@@ -49,6 +57,8 @@ install -m 755 /opt/pistomp/pi-stomp/setup/mod-tweaks/start_touchosc2midi.sh /us
 # here, not by whatever the pi-stomp repo happens to have checked in.
 
 # LV2 plugins (from cache/, bind-mounted at /pistomp-cache)
+rm -rf /home/${FIRST_USER_NAME}/.lv2
+rm -f /home/${FIRST_USER_NAME}/data/.lv2
 tar -zxf /pistomp-cache/lv2plugins.tar.gz -C /home/${FIRST_USER_NAME}/
 ln -s /home/${FIRST_USER_NAME}/.lv2 /home/${FIRST_USER_NAME}/data/.lv2
 
@@ -103,12 +113,12 @@ cp /etc/pistomp/factory-packages.list /home/${FIRST_USER_NAME}/.pistomp-recovery
 # Initialize pedalboards git repo with a factory branch so pistomp-recovery
 # can diff/rollback pedalboard changes.
 cd /home/${FIRST_USER_NAME}/data/.pedalboards
-git init --initial-branch device
 git config user.email "recovery@pistomp.local"
 git config user.name "pistomp-recovery"
-git add -A
-git commit -m "factory pedalboards state"
-git branch factory
+FACTORY_REF=\$(git rev-parse --abbrev-ref HEAD)
+git config pistomp.factory-ref "origin/\${FACTORY_REF}"
+git branch device
+git symbolic-ref HEAD refs/heads/device
 cd - > /dev/null
 
 # ---------- last.json ----------
@@ -137,6 +147,12 @@ software_version=$(on_chroot <<EOF
 dpkg-query -W -f='\${Version}' pi-stomp
 EOF
 )
-build_tag=$(git --work-tree $BASE_DIR --git-dir $BASE_DIR/.git describe --dirty="*" --always)
+if [ -z "$software_version" ]; then
+    echo "ERROR: could not determine pi-stomp package version for .osbuild" >&2
+    exit 1
+fi
+build_tag="${GIT_DESCRIBE:-${GIT_HASH:-unknown}}"
 build_date=$(date +"%Y-%m-%d")
-printf '{"build-tag": "%s", "build-date": "%s", "software-version": "%s"}' $build_tag $build_date $software_version > ${ROOTFS_DIR}/home/pistomp/.osbuild
+printf '{"build-tag": "%s", "build-date": "%s", "software-version": "%s"}' "$build_tag" "$build_date" "$software_version" > ${ROOTFS_DIR}/home/pistomp/.osbuild
+
+umount "${ROOTFS_DIR}/pistomp-cache"

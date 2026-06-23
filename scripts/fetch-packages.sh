@@ -24,6 +24,9 @@ WORKDIR="${WORKDIR:-/tmp}"
 
 mkdir -p "${CACHE_DIR}"
 
+# Remove dangling symlinks left behind if a versioned .deb was deleted.
+find "${CACHE_DIR}" -maxdepth 1 -xtype l -delete
+
 fetch_or_build() {
     local pkg="$1"
     local build_sh="${ROOT_DIR}/debpkgs/${pkg}/build.sh"
@@ -35,7 +38,7 @@ fetch_or_build() {
     local deb_ver_var="${stem}_DEB_VERSION"
 
     # Check cache first (skip unless FORCE_REBUILD=1)
-    if ls "${CACHE_DIR}/${pkg}_"*"_arm64.deb" &>/dev/null && [[ -z "${FORCE_REBUILD:-}" ]]; then
+    if ls "${CACHE_DIR}/${pkg}_"*"_arm64.deb" &>/dev/null && [[ "${FORCE_REBUILD:-0}" != "1" ]]; then
         echo "==> ${pkg}: already in cache, skipping."
         # Update the stable symlink to the latest cached version
         local latest
@@ -95,7 +98,7 @@ done
 fetch_asset() {
     local url="$1"
     local filename="$2"
-    if [[ -f "${CACHE_DIR}/${filename}" && -z "${FORCE_REBUILD:-}" ]]; then
+    if [[ -f "${CACHE_DIR}/${filename}" && "${FORCE_REBUILD:-0}" != "1" ]]; then
         echo "==> ${filename}: already in cache, skipping."
         return 0
     fi

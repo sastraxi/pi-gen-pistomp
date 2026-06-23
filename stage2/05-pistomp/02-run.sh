@@ -8,30 +8,27 @@ mount --bind /pistomp-cache "${ROOTFS_DIR}/pistomp-cache"
 
 on_chroot << EOF
 
-# Install custom .deb packages from cache/ (bind-mounted at /pistomp-cache).
-# Each package has a stable <pkg>.deb symlink pointing to the latest version.
-# Single dpkg -i call: dpkg handles intra-group dependency ordering.
-dpkg -i \
-    /pistomp-cache/hylia.deb \
-    /pistomp-cache/lg.deb \
-    /pistomp-cache/jack2-pistomp.deb \
-    /pistomp-cache/mod-host-pistomp.deb \
-    /pistomp-cache/amidithru.deb \
-    /pistomp-cache/mod-midi-merger.deb \
-    /pistomp-cache/mod-ttymidi.deb \
-    /pistomp-cache/sfizz-pistomp.deb \
-    /pistomp-cache/fluidsynth-headless.deb \
-    /pistomp-cache/lcd-splash.deb \
-    /pistomp-cache/jack-capture.deb \
-    /pistomp-cache/libfluidsynth2-compat.deb \
-    /pistomp-cache/browsepy.deb \
-    /pistomp-cache/touchosc2midi.deb \
-    /pistomp-cache/mod-ui.deb \
-    /pistomp-cache/pi-stomp.deb \
-    /pistomp-cache/pistomp-recovery.deb \
-    /pistomp-cache/jackbridge.deb \
-    /pistomp-cache/ffmpeg-pistomp.deb
-apt-get install -f -y -qq
+# Install custom .deb packages from the local apt repo (added in
+# stage2/00-dummy-packages). jack2-pistomp and lg are already installed.
+# apt-get resolves dependencies automatically (unlike dpkg -i).
+apt-get install -y -qq \
+    hylia \
+    mod-host-pistomp \
+    amidithru \
+    mod-midi-merger \
+    mod-ttymidi \
+    sfizz-pistomp \
+    fluidsynth-headless \
+    lcd-splash \
+    jack-capture \
+    libfluidsynth2-compat \
+    browsepy \
+    touchosc2midi \
+    mod-ui \
+    pi-stomp \
+    pistomp-recovery \
+    jackbridge \
+    ffmpeg-pistomp
 
 # ps-record-lcd: convenience symlink so record_lcd.py is on PATH.
 # pi-stomp.deb postinst creates /home/pistomp/pi-stomp → /opt/pistomp/pi-stomp.
@@ -39,6 +36,10 @@ ln -sf /home/\${FIRST_USER_NAME}/pi-stomp/util/record_lcd.py /usr/local/bin/ps-r
 
 # jack-example-tools comes from Trixie apt (not a custom deb)
 apt-get install -y jack-example-tools
+
+# Remove packages that were pulled in as transitive deps of the Debian jackd2
+# package (which got installed and then removed when jack2-pistomp replaced it).
+apt-get autoremove --purge -y
 
 # ffmpeg is vendored as ffmpeg-pistomp to avoid SDL2/X11/GL/PulseAudio deps.
 # No additional apt ffmpeg package needed.

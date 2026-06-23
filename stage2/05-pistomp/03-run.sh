@@ -4,8 +4,13 @@
 # Globs here so version bumps in files/sys/ don't require script edits.
 mkdir -p "${ROOTFS_DIR}/home/${FIRST_USER_NAME}/tmp"
 install -m 644 files/sys/linux-image-*-rt-v8+_*_arm64.deb   "${ROOTFS_DIR}/home/${FIRST_USER_NAME}/tmp/"
-install -m 644 files/sys/linux-headers-*-rt-v8+_*_arm64.deb "${ROOTFS_DIR}/home/${FIRST_USER_NAME}/tmp/" 2>/dev/null || true
-install -m 644 files/sys/linux-libc-dev_*.deb                "${ROOTFS_DIR}/home/${FIRST_USER_NAME}/tmp/" 2>/dev/null || true
+# Headers and libc-dev are optional (not always built), but if a file IS present
+# its copy must succeed — don't mask a real install failure.
+for f in files/sys/linux-headers-*-rt-v8+_*_arm64.deb files/sys/linux-libc-dev_*.deb; do
+    if [ -e "$f" ]; then
+        install -m 644 "$f" "${ROOTFS_DIR}/home/${FIRST_USER_NAME}/tmp/"
+    fi
+done
 
 # NetworkManager: direct write of complete config (not a patch) so there's no
 # fragile diff to maintain. Uses keyfile-only plugin; drops deprecated ifupdown.
@@ -51,6 +56,7 @@ install -Dm 644 files/90-audio.conf \
 
 echo "Installing Kernel and boot files"
 on_chroot << EOF
+set -o pipefail
 
 cd /home/${FIRST_USER_NAME}/tmp
 
@@ -60,8 +66,12 @@ RT_IMAGE=\$(ls linux-image-*-rt-v8+_*_arm64.deb | head -1)
 RT_KERN=\$(echo "\$RT_IMAGE" | sed 's/linux-image-\(.*\)_.*_arm64\.deb/\1/')
 echo "==> Installing RT kernel \${RT_KERN}"
 
-dpkg -i linux-headers-*-rt-v8+_*_arm64.deb 2>/dev/null || true
-dpkg -i linux-libc-dev_*.deb               2>/dev/null || true
+# Headers/libc-dev are optional, but a present .deb that fails to install is fatal.
+for deb in linux-headers-*-rt-v8+_*_arm64.deb linux-libc-dev_*.deb; do
+    if [ -e "\$deb" ]; then
+        dpkg -i "\$deb"
+    fi
+done
 dpkg -i "\${RT_IMAGE}"
 
 # Flat layout (same as pistomp-arch): kernel and initramfs live directly in
@@ -70,7 +80,7 @@ dpkg -i "\${RT_IMAGE}"
 cp -d  /usr/lib/linux-image-\${RT_KERN}/overlays/* /boot/firmware/overlays/
 cp -dr /usr/lib/linux-image-\${RT_KERN}/broadcom/* /boot/firmware/
 cp /boot/vmlinuz-\${RT_KERN}    /boot/firmware/kernel8.img
-cp /boot/initrd.img-\${RT_KERN} /boot/firmware/initramfs.img 2>/dev/null || true
+cp /boot/initrd.img-\${RT_KERN} /boot/firmware/initramfs.img
 
 # NM dispatcher requires its own D-Bus activation alias to work
 ln -sf /usr/lib/systemd/system/NetworkManager-dispatcher.service \

@@ -1,12 +1,22 @@
-#!/bin/bash
+#!/bin/bash -e
 
-apt update && apt-get -y install equivs
-export DEB_BUILD_OPTIONS="nocheck"
-export DPKG_DEB_COMPRESSOR=gzip
-equivs-build files/jack-dummy.ctl
-cp jack-dummy_1.9.22_all.deb ${ROOTFS_DIR}/
+# Bind-mount the host /pistomp-cache into the chroot so apt can see the local repo.
+mkdir -p "${ROOTFS_DIR}/pistomp-cache"
+mount --bind /pistomp-cache "${ROOTFS_DIR}/pistomp-cache"
 
 on_chroot << EOF
-dpkg -i /jack-dummy_1.9.22_all.deb
-rm /jack-dummy_1.9.22_all.deb
+# Purge any half-installed packages left from a previous failed build
+# (e.g. stage2/05-pistomp/02-run.sh that was interrupted).
+dpkg --purge --force-all \$(dpkg -l 2>/dev/null | awk '/^iU|^iF|^iH/{print \$2}') 2>/dev/null || true
+apt-get install -f -y
+
+# Add local apt repository (built by scripts/setup-apt-repo.sh from cache/).
+echo "deb [arch=arm64 trusted=yes] file:/pistomp-cache/apt-repo trixie main" \
+    > /etc/apt/sources.list.d/pistomp-local.list
+apt-get update -qq
+
+# Install jack2-pistomp and lg early so their Provides satisfy dependencies
+# for later stages (e.g. libjack-jackd2-dev in stage2/04-python depends on
+# libjack-jackd2-0, which jack2-pistomp provides).
+apt-get install -y -qq jack2-pistomp lg
 EOF

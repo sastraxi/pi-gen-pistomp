@@ -9,13 +9,13 @@ RUN dpkg --add-architecture arm64 && \
     apt-get -y update && \
     apt-get -y install --no-install-recommends \
         git vim parted \
-        quilt coreutils qemu-user-static debootstrap zerofree zip dosfstools \
+        quilt coreutils qemu-user-static debootstrap zerofree zip dosfstools e2fsprogs \
         libarchive-tools libcap2-bin rsync grep udev xz-utils curl xxd file kmod bc \
         binfmt-support ca-certificates fdisk gpg pigz arch-test \
         dpkg-dev devscripts debhelper-compat \
         build-essential crossbuild-essential-arm64 pkg-config \
         cmake meson ninja-build swig nasm \
-        kbd \
+        kbd console-setup \
     && rm -rf /var/lib/apt/lists/*
 
 # Layer 2: Python
@@ -41,9 +41,10 @@ RUN apt-get -y update && \
         libv4l-dev:arm64 lv2-dev:arm64 portaudio19-dev:arm64 \
     && rm -rf /var/lib/apt/lists/*
 
-# Layer 4: uv — same curl-based install as the target image (05-run.sh)
-RUN curl -LsSf https://astral.sh/uv/install.sh \
-    | env UV_INSTALL_DIR=/usr/local/bin INSTALLER_NO_MODIFY_PATH=1 sh
+# Layer 4: uv — same curl-based install as the target image (05-run.sh).
+# Run under bash with pipefail so a failed download (e.g. 404/HTML) aborts the
+# layer instead of piping garbage into sh and caching a broken "success".
+RUN ["/bin/bash", "-o", "pipefail", "-c", "curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin INSTALLER_NO_MODIFY_PATH=1 sh"]
 
 COPY . /pi-gen/
 

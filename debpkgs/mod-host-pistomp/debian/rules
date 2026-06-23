@@ -7,3 +7,9 @@ override_dh_auto_build:
 
 override_dh_auto_install:
 	$(MAKE) PREFIX=/usr DESTDIR=$(CURDIR)/debian/mod-host-pistomp install
+
+override_dh_shlibdeps:
+	# Trixie's shlibs still maps liblilv-0-0.so.0 to the old liblilv0 name,
+	# but the actual package is liblilv-0-0. Exclude it since control already
+	# declares the correct dependency.
+	dh_shlibdeps --exclude=liblilv

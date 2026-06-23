@@ -39,7 +39,14 @@ Custom `.deb` packages (`debpkgs/`) are cached in `cache/` and only rebuilt when
 FORCE_REBUILD=1 ./build-docker.sh -f
 ```
 
-To rebuild a single package, delete its `.deb` from `cache/` first.
+To rebuild a single package without a full image build, use `build-package-docker.sh`:
+
+```bash
+./build-package-docker.sh jack2-pistomp
+FORCE_REBUILD=1 ./build-package-docker.sh mod-ui
+```
+
+This drops you into the same Docker environment as the full build, with `cache/` mounted at `/pistomp-cache`. The built `.deb` lands in `cache/` and will be picked up by the next `./build-docker.sh` run without rebuilding.
 
 ### Resume an interrupted build
 
@@ -91,7 +98,7 @@ Then rebuild. `build.sh` reads the version from the changelog automatically — 
 | **2** | RT kernel, custom `.deb` packages, audio stack, networking, services |
 | **3** | pi-stomp app, pedalboards, LV2 plugins, factory state |
 
-Custom packages are built from source by `scripts/fetch-packages.sh` before the image build starts. Sources and URLs are pinned in `config.sh`. The built `.deb` files are cached in `cache/` and bind-mounted into the Docker build container at `/pistomp-cache`.
+Custom packages are built from source by `scripts/fetch-packages.sh` before the image build starts. Sources and URLs are pinned in `config.sh`. The built `.deb` files land in `cache/` alongside persistent uv, pip, and apt caches — all bind-mounted into the Docker build container at `/pistomp-cache` so subsequent builds skip re-downloading.
 
 See `GUIDE.md` for architecture detail, design decisions, and kernel update instructions.
 

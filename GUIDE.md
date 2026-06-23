@@ -81,6 +81,17 @@ The `-f`/`--force` flag removes any existing build container and clears `deploy/
 
 Output: `deploy/*pistompOS-*.img.xz` (run `./compress-img.sh` after `build-docker.sh` to produce it; `build-docker.sh` alone leaves the uncompressed `.img` in `deploy/`).
 
+### Build a single package
+
+Iterate on one `debpkgs/<pkg>` without running the full image build:
+
+```bash
+./build-package-docker.sh jack2-pistomp
+FORCE_REBUILD=1 ./build-package-docker.sh mod-ui
+```
+
+Mounts `cache/` at `/pistomp-cache` (same as the full build) and the repo root at `/pistomp` read-write (some packages write into `debpkgs/<pkg>/debian/` as a staging tree). Sets `CACHE_DIR`, `WORKDIR`, `FORCE_REBUILD`, and all uv/pip cache vars automatically.
+
 ### Resume an interrupted build
 
 If the build container still exists from a previous run:
@@ -103,7 +114,7 @@ PRESERVE_CONTAINER=1 ./build-docker.sh
 | `CONTINUE` | `0` | Resume existing container instead of failing |
 | `PRESERVE_CONTAINER` | `0` | Don't delete the container after build |
 | `CONTAINER_NAME` | `pigen_work` | Override container name |
-| `FORCE_REBUILD` | `0` | Rebuild all custom `.deb` packages from source, ignoring cache |
+| `FORCE_REBUILD` | `0` | Set to `1` to rebuild all custom `.deb` packages from source, ignoring cache. Must be exactly `"1"` — the check is `!= "1"`, not a truthiness test. |
 
 ## Configuration
 
@@ -119,8 +130,13 @@ Runtime configuration copied to `/boot/pistomp.conf` on the image. Contains `JAC
 ## Package Management
 
 Custom packages live under `debpkgs/<pkg>/`. Each has:
-- `build.sh` — sources `config.sh`, derives `VERSION` from `debian/changelog`, clones source, calls `dpkg-buildpackage`
+- `build.sh` — sets `PKG`/`VERSION`/`UPSTREAM_DIR`, sources `scripts/build-common.sh`, clones/downloads source, calls `dpkg-buildpackage` (or `dpkg-deb` for `lcd-splash` and `libfluidsynth2-compat`)
 - `debian/` — standard Debian packaging directory; `debian/rules` uses exported config.sh vars for any fallback git clone
+
+**`scripts/build-common.sh`** is sourced by every `build.sh` and provides:
+- Env setup: `source config.sh`, `CACHE_DIR`, `WORKDIR`, `mkdir -p`
+- `cache_check()` — exits 0 immediately if a versioned `.deb` already exists in `cache/` and `FORCE_REBUILD != 1`
+- `move_to_cache [dir]` — moves `${PKG}_*.deb` from the build parent dir into `cache/`
 
 **Version source of truth**: `debian/changelog`. To bump a package version:
 
@@ -131,13 +147,27 @@ dch -v <new-version> "Description of change."
 
 `build.sh` reads the version from the changelog via `dpkg-parsechangelog` — no other files need updating.
 
-**Stable symlinks**: `scripts/fetch-packages.sh` creates a `<pkg>.deb` symlink in `cache/` pointing to the latest versioned `.deb` (e.g. `mod-host-pistomp.deb → mod-host-pistomp_1.0.5-1_arm64.deb`). Stage scripts reference the unversioned symlink so version bumps don't require script edits.
+Packages using `dpkg-deb --build` (`lcd-splash`, `libfluidsynth2-compat`) derive their version from `debian/control`'s `Version:` field instead.
 
-Packages using `dpkg-deb --build` instead of `dpkg-buildpackage` (currently `lcd-splash` and `libfluidsynth2-compat`) derive their version from `debian/control`'s `Version:` field.
+**Stable symlinks**: `scripts/fetch-packages.sh` creates a `<pkg>.deb` symlink in `cache/` pointing to the latest versioned `.deb` (e.g. `mod-host-pistomp.deb → mod-host-pistomp_1.0.5-1_arm64.deb`). Stage scripts reference the unversioned symlink so version bumps don't require script edits. Dangling symlinks (versioned target deleted) are pruned automatically at the start of `fetch-packages.sh`.
 
 ### Package build order
 
 `scripts/fetch-packages.sh` processes packages in dependency order (defined in the `PACKAGES` array). `lg` is built before `lcd-splash` because lcd-splash links against lgpio at compile time by extracting the lg `.deb` from cache.
+
+### `cache/` directory structure
+
+| Path | Contents |
+| :--- | :--- |
+| `cache/<pkg>_<ver>_arm64.deb` | Built/downloaded package archives |
+| `cache/<pkg>.deb` | Stable symlink → latest versioned `.deb` |
+| `cache/apt-repo/` | Generated local apt repo (rebuilt each run) |
+| `cache/apt-cacher/` | apt-cacher-ng persistent cache (Debian packages) |
+| `cache/uv-cache/` | uv wheel/sdist cache (`UV_CACHE_DIR`) |
+| `cache/uv-python/` | uv-managed Python installs (`UV_PYTHON_INSTALL_DIR`) |
+| `cache/pip-cache/` | pip download cache (`PIP_CACHE_DIR`) |
+
+The uv and pip caches persist across builds automatically — `build-docker.sh` and `build-package-docker.sh` both set the relevant env vars to point here.
 
 ## Customization
 
@@ -158,6 +188,36 @@ The RT kernel `.deb` files live in `stage2/05-pistomp/files/sys/`. Updating requ
 4. Rebuild the image.
 
 > **Note**: Kernel `.deb` files must be built against the target Debian release (Trixie). Bookworm kernel `.deb` files will fail on Trixie's initramfs.
+
+## Troubleshooting
+
+### apt-cacher-ng crashes with "Could not reach APT_PROXY server"
+
+The build uses `apt-cacher-ng` (container `pigen_apt_cacher`) as a Debian package proxy. If a previous build was interrupted mid-download, the cacher's on-disk cache can contain partial/corrupt files that cause it to exit immediately on restart.
+
+Symptom in build output:
+```
+Could not reach APT_PROXY server: http://pigen_apt_cacher:3142
+```
+
+Check what's wrong:
+```bash
+docker logs pigen_apt_cacher
+```
+
+A corrupt entry looks like:
+```
+chmod: changing permissions of '/var/cache/apt-cacher-ng/_xstore/rsnap/...': No such file or directory
+```
+
+Fix — delete the corrupt subdirectory and remove the crashed container:
+```bash
+# find and remove the bad path printed in the docker logs
+rm -rf cache/apt-cacher/_xstore/rsnap/debrep/dists/<whatever-was-corrupt>
+docker rm -f pigen_apt_cacher
+```
+
+Then re-run the build normally. The cacher will restart clean and rebuild its index.
 
 ## Workflow for pi-stomp code changes
 

@@ -2,41 +2,25 @@
 # TEMPLATE — copy to debpkgs/<pkg>/build.sh and replace all <PKG>/<pkg-name>
 # placeholders before use. This file is not directly executable.
 set -euo pipefail
-if [[ "${PKG:-}" != *"-"* && "${PKG:-}" != "" ]] || grep -q '<PKG>' "$0" 2>/dev/null; then
+if grep -q '<PKG>' "$0" 2>/dev/null; then
     echo "ERROR: This is a template. Replace all <PKG>/<pkg-name> placeholders first." >&2
     exit 1
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-
-# Source version pins (idempotent if already sourced by caller)
-# shellcheck source=../../config.sh
-source "${ROOT_DIR}/config.sh"
+source "${ROOT_DIR}/scripts/build-common.sh"
 
 PKG="<pkg-name>"
 VERSION="${<PKG>_TAG:-${<PKG>_REF}}"      # whichever var applies
-CACHE_DIR="${CACHE_DIR:-${ROOT_DIR}/cache}"
-UPSTREAM_DIR="${WORKDIR:-/tmp}/${PKG}-src"
+UPSTREAM_DIR="${WORKDIR}/${PKG}-src"
 
-mkdir -p "${CACHE_DIR}"
-
-# Skip if already built
-if ls "${CACHE_DIR}/${PKG}_${VERSION}"*_arm64.deb &>/dev/null && [[ -z "${FORCE_REBUILD:-}" ]]; then
-    echo "==> ${PKG} already in cache, skipping."
-    exit 0
-fi
+cache_check
 
 [ ! -d "${UPSTREAM_DIR}" ] && \
-    git clone --branch "${VERSION}" --recurse-submodules \
-        "${<PKG>_REPO}" "${UPSTREAM_DIR}"
+    git clone --branch "${VERSION}" --recurse-submodules "${<PKG>_REPO}" "${UPSTREAM_DIR}"
 
 cp -r "${SCRIPT_DIR}/debian" "${UPSTREAM_DIR}/"
 cd "${UPSTREAM_DIR}"
 dpkg-buildpackage -b -us -uc
-
-# Move output debs to cache
-find "$(dirname "${UPSTREAM_DIR}")" -maxdepth 1 -name "${PKG}_*.deb" \
-    -exec mv {} "${CACHE_DIR}/" \;
-
-echo "==> Built ${PKG} → ${CACHE_DIR}"
+move_to_cache

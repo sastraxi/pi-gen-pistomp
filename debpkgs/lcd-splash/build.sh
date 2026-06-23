@@ -1,33 +1,23 @@
 #!/bin/bash
 # Build lcd-splash .deb for arm64 Debian Trixie — builds from C source.
 set -euo pipefail
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+source "${ROOT_DIR}/scripts/build-common.sh"
 
 PKG="lcd-splash"
 VERSION="$(grep '^Version:' "${SCRIPT_DIR}/debian/control" | awk '{print $2}')"
-CACHE_DIR="${CACHE_DIR:-${ROOT_DIR}/cache}"
 SRC_DIR="${SCRIPT_DIR}/src"
 
-mkdir -p "${CACHE_DIR}"
-
-if ls "${CACHE_DIR}/${PKG}_${VERSION}"*_arm64.deb &>/dev/null && [[ -z "${FORCE_REBUILD:-}" ]]; then
-    echo "==> ${PKG} already in cache, skipping."
-    exit 0
-fi
+cache_check
 
 # Stage files into the debian package tree
 DEB_DIR="${SCRIPT_DIR}/debian/${PKG}"
 rm -rf "${DEB_DIR}"
-mkdir -p "${DEB_DIR}/DEBIAN"
-mkdir -p "${DEB_DIR}/usr/bin"
-mkdir -p "${DEB_DIR}/usr/share/pistomp"
-
-# DEBIAN/control
+mkdir -p "${DEB_DIR}/DEBIAN" "${DEB_DIR}/usr/bin" "${DEB_DIR}/usr/share/pistomp"
 cp "${SCRIPT_DIR}/debian/control" "${DEB_DIR}/DEBIAN/control"
 
-# Generate font.h from Terminus Bold 22px console font (kbd package provides this)
+# Generate font.h from Terminus Bold 22px console font (console-setup provides this)
 python3 "${SRC_DIR}/gen-font-h.py" \
     /usr/share/consolefonts/Lat15-TerminusBold22x11.psf.gz > "${SRC_DIR}/font.h"
 
@@ -38,7 +28,7 @@ if [[ -z "${LG_DEB}" ]]; then
     echo "ERROR: lg .deb not found in ${CACHE_DIR} — build lg first" >&2
     exit 1
 fi
-LG_EXTRACT="${WORKDIR:-/tmp}/lg-extract"
+LG_EXTRACT="${WORKDIR}/lg-extract"
 dpkg-deb -x "${LG_DEB}" "${LG_EXTRACT}"
 
 # Compile (link against extracted lgpio; at runtime the installed lg.deb provides it)
@@ -49,11 +39,9 @@ gcc -O2 -Wall -Wextra \
     -I"${SRC_DIR}" \
     -llgpio
 
-# Splash image
 cp "${ROOT_DIR}/stage2/05-pistomp/files/splash.rgb565" \
     "${DEB_DIR}/usr/share/pistomp/splash.rgb565"
 
-# Build the .deb
 dpkg-deb --build --root-owner-group "${DEB_DIR}" "${CACHE_DIR}/${PKG}_${VERSION}_arm64.deb"
 
 echo "==> Built ${PKG} → ${CACHE_DIR}"

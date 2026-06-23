@@ -68,6 +68,8 @@ CONTINUE=${CONTINUE:-0}
 PRESERVE_CONTAINER=${PRESERVE_CONTAINER:-0}
 PIGEN_DOCKER_OPTS=${PIGEN_DOCKER_OPTS:-""}
 
+IMG_DATE="$(date +%Y-%m-%d)"
+
 # --- apt-cacher-ng (persistent package cache) ---
 APT_CACHER_CONTAINER="pigen_apt_cacher"
 APT_CACHER_NET="pigen_net"
@@ -95,7 +97,10 @@ start_apt_cache() {
     fi
     sleep 1
   done
-  echo "WARNING: apt-cacher-ng did not become healthy within 15s, continuing anyway."
+  echo "ERROR: apt-cacher-ng did not become healthy within 15s." >&2
+  echo "       The build sets APT_PROXY=${APT_PROXY}; continuing would point apt" >&2
+  echo "       at a dead proxy and fail mid-build. Check: docker logs ${APT_CACHER_CONTAINER}" >&2
+  return 1
 }
 
 stop_apt_cache() {
@@ -109,8 +114,11 @@ if [ -z "${IMG_NAME}" ]; then
 exit 1
 fi
 
-# Ensure the Git Hash is recorded before entering the docker container
+# Ensure the Git Hash is recorded before entering the docker container.
+# Both are computed on the host so the image build needs no .git copied in
+# (see .dockerignore — the whole .git is excluded from the build context).
 GIT_HASH=${GIT_HASH:-"$(git rev-parse HEAD)"}
+GIT_DESCRIBE=${GIT_DESCRIBE:-"$(git describe --dirty='*' --always)"}
 
 CONTAINER_EXISTS=$(${DOCKER} ps -a --filter name="${CONTAINER_NAME}" -q)
 CONTAINER_RUNNING=$(${DOCKER} ps --filter name="${CONTAINER_NAME}" -q)
@@ -201,7 +209,12 @@ time ${DOCKER} run \
   --volume "${CONFIG_FILE}":/config:ro \
   --volume "${DIR}/cache":/pistomp-cache:rw \
   -e "GIT_HASH=${GIT_HASH}" \
+  -e "GIT_DESCRIBE=${GIT_DESCRIBE}" \
   -e "APT_PROXY=${APT_PROXY}" \
+  -e "FORCE_REBUILD=${FORCE_REBUILD:-0}" \
+  -e "UV_CACHE_DIR=/pistomp-cache/uv-cache" \
+  -e "UV_PYTHON_INSTALL_DIR=/pistomp-cache/uv-python" \
+  -e "PIP_CACHE_DIR=/pistomp-cache/pip-cache" \
   $DOCKER_CMDLINE_POST \
   pi-gen \
   bash -e -o pipefail -c "
@@ -211,8 +224,10 @@ time ${DOCKER} run \
     cd /pi-gen &&
     echo '==> Fetching/building custom .deb packages...' &&
     CACHE_DIR=/pistomp-cache bash scripts/fetch-packages.sh &&
+    echo '==> Building local apt repository...' &&
+    CACHE_DIR=/pistomp-cache REPO_DIR=/pistomp-cache/apt-repo bash scripts/setup-apt-repo.sh &&
     ./build.sh ${BUILD_OPTS} &&
-    rsync -av work/*/build.log deploy/
+    rsync -av work/*/build.log "deploy/${IMG_DATE}-build.log"
   " &
   wait "$!"
 
@@ -223,7 +238,7 @@ echo "copying results from deploy/"
 ${DOCKER} cp "${CONTAINER_NAME}":/pi-gen/deploy - | tar -xf -
 
 echo "copying log from container ${CONTAINER_NAME} to deploy/"
-${DOCKER} logs --timestamps "${CONTAINER_NAME}" &>deploy/build-docker.log
+${DOCKER} logs --timestamps "${CONTAINER_NAME}" &>"deploy/${IMG_DATE}-build-docker.log"
 
 ls -lah deploy
 
