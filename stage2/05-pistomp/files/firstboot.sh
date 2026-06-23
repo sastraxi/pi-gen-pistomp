@@ -29,6 +29,15 @@ if [[ -f "${CONF}" ]]; then
     printf 'options cfg80211 ieee80211_regdom=%s\n' "${WIFI_COUNTRY:-US}" \
         > /etc/modprobe.d/cfg80211.conf
     iw reg set "${WIFI_COUNTRY:-US}" 2>/dev/null || true
+
+    # Disable in-driver (firmware) roaming. The BCM43455 firmware can't do
+    # 802.11r/FT, so on a band/AP-steering mesh (e.g. Bell Whole Home WiFi) its
+    # driver-based roam attempts a WPA-PSK->FT-PSK cross-AKM transition that the
+    # firmware botches, dropping the link. With roamoff=1 a steer becomes a clean
+    # full reconnect instead. This is a stationary appliance, so we don't need
+    # roaming. See raspberrypi/linux#6265, Arch FS#63397, kernel BZ 206315.
+    printf 'options brcmfmac roamoff=1\n' > /etc/modprobe.d/brcmfmac.conf
+
     if [[ -n "${WIFI_SSID:-}" ]]; then
         nmcli connection delete "preconfigured" 2>/dev/null || true
         nmcli connection add type wifi ifname wlan0 con-name "preconfigured" \

@@ -83,6 +83,7 @@ Build process executes ordered stages.
 - **Realtime IRQ tuning** uses the `rtirq-init` apt package (not `rtirq` — the old name doesn't exist on Trixie). Config is installed to `/etc/default/rtirq`. A custom `rtirq.service` unit wraps the init script.
 - **Networking** matches pistomp-arch exactly: wired NM profile with 15 s DHCP timeout + link-local fallback (`eth0`), wifi power-save off, MAC randomization off, multihome policy routing dispatcher.
 - **WiFi hotspot** is started on demand by `wifi-check.service` (after NM settles), not via rc.local. It only starts if neither WiFi nor ethernet is connected.
+- **WiFi firmware roaming is disabled** (`options brcmfmac roamoff=1`, written by `firstboot.sh` to `/etc/modprobe.d/brcmfmac.conf`). The onboard BCM43455 firmware can't do 802.11r/FT, but NetworkManager unconditionally advertises FT-PSK whenever an AP does. On a band/AP-steering mesh (e.g. Bell "Whole Home WiFi"), the driver's roam then attempts a WPA-PSK→FT-PSK *cross-AKM* transition the firmware botches, dropping the link — observed as frequent disconnect/reconnect "roaming" on Debian where pistomp-arch was stable (arch's wpa_supplicant didn't expose FT). pi-Stomp is a stationary appliance that sits on the floor in use, so it never needs to roam.
 - **QEMU**: not needed. The build runs in a native arm64 Docker container (Apple Silicon, arm64 Linux, arm64 CI). On x86_64 Linux, `dpkg-reconfigure qemu-user-binfmt` inside the container registers QEMU with the `F` flag — no QEMU binary needs to exist inside the rootfs.
 
 ## Hardware Targets
