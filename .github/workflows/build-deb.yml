@@ -88,6 +88,8 @@ jobs:
           fi
 
       - name: Build .deb
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           source config.sh
           WORKDIR=/tmp CACHE_DIR=${{ github.workspace }}/cache \
