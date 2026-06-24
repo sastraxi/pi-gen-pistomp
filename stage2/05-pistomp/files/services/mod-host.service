@@ -15,6 +15,7 @@ ExecStartPre=/usr/local/bin/wait-for-jack.sh
 ExecStart=/usr/bin/mod-host -p 5555 -f 5556
 CPUSchedulingPolicy=fifo
 CPUSchedulingPriority=65
+AmbientCapabilities=CAP_SYS_NICE CAP_IPC_LOCK
 LimitRTPRIO=95
 LimitMEMLOCK=infinity
 Restart=always
