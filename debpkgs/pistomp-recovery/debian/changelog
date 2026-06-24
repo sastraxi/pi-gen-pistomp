@@ -1,3 +1,17 @@
+pistomp-recovery (0.1.0-7) trixie; urgency=medium
+
+  * Updates picker now shows a "Checking for updates..." progress overlay
+    while apt-get update runs in the background; auto-dismisses on completion.
+  * Show a disabled "No internet" row in the System updates domain when the
+    device has no network connectivity (TCP probe to 8.8.8.8:53).
+  * Add "Update All" row to the System updates list when multiple packages
+    have available updates.
+  * Add browsepy, ffmpeg-pistomp, touchosc2midi, and lg to the tracked
+    package list so they appear in update/rollback flows.
+  * Sort Updates above Reset to Checkpoint and Factory Reset in the main menu.
+
+ -- pistomp <pistomp@example.com>  Wed, 25 Jun 2026 00:00:00 +0000
+
 pistomp-recovery (0.1.0-6) trixie; urgency=medium
 
   * Start conflicting units (mod-ui, mod-ala-pi-stomp) with --no-block in
