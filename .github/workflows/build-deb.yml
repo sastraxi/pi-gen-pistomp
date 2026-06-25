@@ -144,7 +144,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.pkg }}-deb
-          path: ${{ github.workspace }}/cache/*.deb
+          path: ${{ github.workspace }}/cache/*_arm64.deb
           if-no-files-found: error
 
       - name: Extract changelog entry
@@ -168,7 +168,7 @@ jobs:
           tag_name: debpkg/${{ inputs.pkg }}/${{ steps.version.outputs.version }}
           name: "${{ inputs.pkg }} ${{ steps.version.outputs.version }}"
           body: ${{ steps.changelog.outputs.body }}
-          files: ${{ github.workspace }}/cache/*.deb
+          files: ${{ github.workspace }}/cache/*_arm64.deb
           draft: false
           prerelease: false
         env:
