@@ -18,18 +18,18 @@ Description: Linux C library and Python bindings for GPIO (lgpio/rgpio)
  on Raspberry Pi. Built from joan2937/lg v0.2.2.
 
 Package: pistomp-recovery
-Version: 0.1.0-11
+Version: 0.1.0-12
 Architecture: arm64
 Maintainer: pistomp <pistomp@example.com>
-Installed-Size: 118971
+Installed-Size: 118973
 Depends: python3, jack2-pistomp, lg, libasound2, libfreetype6
 Priority: optional
 Section: utils
-Filename: pool/main/p/pistomp-recovery/pistomp-recovery_0.1.0-11_arm64.deb
-Size: 22771880
-SHA256: 43531e754ddddb82236f143aa74ceaf94fe8333e3890f13c3b875f85dd55d300
-SHA1: 34bbfc61a5aa1a6b4c1c9a85d6d0176fffb9a43c
-MD5sum: 194e284255df604323b0a8cecb0dc3ec
+Filename: pool/main/p/pistomp-recovery/pistomp-recovery_0.1.0-12_arm64.deb
+Size: 22770468
+SHA256: b98ede415ca199692f1b8f79f4e5417e7e0b835374a5818767e13d629a63127b
+SHA1: ea307ffad0f410aaacaec62f7a772a2896e82bf6
+MD5sum: 03af9400e115abaceaba90d32755a769
 Description: Package update and recovery service for pi-Stomp
  Recovery service that provides LCD-based factory reset, package rollback,
  and OTA update management. Runs as a systemd service triggered on
