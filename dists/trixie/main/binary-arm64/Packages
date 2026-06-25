@@ -31,6 +31,52 @@ Description: File browser for pi-Stomp user files
  A simple web-based file browser for browsing and uploading user files
  on pi-Stomp. Runs on port 8081, serving /home/pistomp/data/user-files.
 
+Package: ffmpeg-pistomp
+Version: 7.1.1-2
+Architecture: arm64
+Maintainer: pistomp <pistomp@example.com>
+Installed-Size: 7675
+Depends: libc6 (>= 2.38), libvorbis0a (>= 1.1.2), libx264-164 (>= 2:0.164.3108+git31e19f9)
+Conflicts: ffmpeg
+Replaces: ffmpeg
+Provides: ffmpeg
+Priority: optional
+Section: video
+Filename: pool/main/f/ffmpeg-pistomp/ffmpeg-pistomp_7.1.1-2_arm64.deb
+Size: 2322400
+SHA256: 0dfeae4abf9c6409f397a2a47cd8d34c2f9485190e0417bab7cf550c0318e250
+SHA1: 5d2be647bc36547d88b1b0bf1eb05b608db7a9ec
+MD5sum: 13fabed882c86ad961389c0c715d0f9e
+Description: Minimal ffmpeg build for pi-Stomp
+ A stripped-down ffmpeg build intended for pi-Stomp's ps-record-lcd
+ utility. Supports rawvideo input and H.264 (libx264) output to MP4,
+ plus Vorbis decoding, without any SDL2, X11, OpenGL, PulseAudio,
+ ALSA, network protocols, or other display/audio-output device
+ dependencies.
+
+Package: fluidsynth-headless
+Version: 2.5.2-2
+Architecture: arm64
+Maintainer: pistomp <pistomp@example.com>
+Installed-Size: 815
+Depends: libasound2t64 (>= 1.0.16), libc6 (>= 2.34), libdbus-1-3 (>= 1.10), libgcc-s1 (>= 3.0), libglib2.0-0t64 (>= 2.32.0), libgomp1 (>= 4.9), libjack-jackd2-0 (>= 1.9.10+20150825) | libjack-0.125, libreadline8t64 (>= 6.0), libsndfile1 (>= 1.0.20), libstdc++6 (>= 14), libsystemd0
+Conflicts: libfluidsynth3
+Replaces: libfluidsynth3
+Provides: libfluidsynth3
+Priority: optional
+Section: sound
+Filename: pool/main/f/fluidsynth-headless/fluidsynth-headless_2.5.2-2_arm64.deb
+Size: 242564
+SHA256: cfe2b75ea5818b8c4e1e28a2750f188bfb03f4f39cc7c99b503b6dfb6ee4b1ea
+SHA1: f6d1456315eecd371c7343add57339490721cefd
+MD5sum: 656dc20f21c64b8f7e2dc10c880e43d0
+Description: FluidSynth CLI + headless shared library
+ A headless build of FluidSynth with only JACK and ALSA audio
+ support (no PulseAudio, no PortAudio, no SDL3).  Ships both the
+ fluidsynth CLI binary and libfluidsynth.so.3, replacing the
+ Debian Trixie libfluidsynth3 package to avoid its SDL/PulseAudio
+ dependencies.
+
 Package: hylia
 Version: 1.0-1
 Architecture: arm64
