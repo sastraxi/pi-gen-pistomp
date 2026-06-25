@@ -1,4 +1,4 @@
-name: build-pistomp-recovery
+name: build-pi-stomp
 
 on:
   push:
