@@ -93,6 +93,23 @@ Description: JACK-aware Ableton Link wrapper
  Provides libhylia for synchronising JACK transports with Ableton Link
  sessions. Required by mod-host-pistomp at build time.
 
+Package: jack-capture
+Version: 0.9.73-2
+Architecture: arm64
+Maintainer: pistomp <pistomp@example.com>
+Installed-Size: 142
+Depends: libc6 (>= 2.38), libjack-jackd2-0 (>= 1.9.10+20150825) | libjack-0.125, liblo7 (>= 0.26~repack), libmp3lame0 (>= 3.100), libsndfile1 (>= 1.0.20)
+Priority: optional
+Section: sound
+Filename: pool/main/j/jack-capture/jack-capture_0.9.73-2_arm64.deb
+Size: 30868
+SHA256: baaba5877973c693327ed40a6332e9498d40175902c42f55714ccdfcc030624e
+SHA1: d02fba9c485f73f921fd3e9fe982dcfd27f74473
+MD5sum: 5aeed801ba0ce542529c68cbbc7b3236
+Description: Record JACK audio output to a file
+ Captures audio from any JACK port and writes it to a WAV, FLAC, or
+ MP3 file. Useful for debugging and recording sessions on pi-Stomp.
+
 Package: jack2-pistomp
 Version: 1.9.22-2
 Architecture: arm64
@@ -171,6 +188,23 @@ Description: MOD Host — LV2 plugin host for JACK (pi-Stomp fork)
  Forked from moddevices/mod-host with the fix/effect-drain-midi branch
  for proper MIDI effect drain on pedalboard changes.
 
+Package: mod-midi-merger
+Version: 1.0-3
+Architecture: arm64
+Maintainer: pistomp <pistomp@example.com>
+Installed-Size: 144
+Depends: libc6 (>= 2.34), libjack-jackd2-0 (>= 1.9.10+20150825) | libjack-0.125
+Priority: optional
+Section: sound
+Filename: pool/main/m/mod-midi-merger/mod-midi-merger_1.0-3_arm64.deb
+Size: 6008
+SHA256: e4b5c5c2b1982109821593e886b537759fd1ff4db05c0d8d6d459b6526328d72
+SHA1: 1dbc89d8529719a8d29c1f1c971745f3c53bcba8
+MD5sum: 863723cd2a1df6d362c160ce6249fe15
+Description: MOD MIDI Merger — merge multiple MIDI inputs into one JACK port
+ Part of the MOD ecosystem. Merges multiple ALSA MIDI inputs into a single
+ JACK MIDI output port.
+
 Package: mod-ttymidi
 Version: 1.0-2
 Architecture: arm64
@@ -222,4 +256,21 @@ Description: Package update and recovery service for pi-Stomp
  Recovery service that provides LCD-based factory reset, package rollback,
  and OTA update management. Runs as a systemd service triggered on
  mod-ala-pi-stomp failure (3 crashes in 3 minutes).
+
+Package: touchosc2midi
+Version: 1.0-3
+Architecture: arm64
+Maintainer: pistomp <pistomp@example.com>
+Installed-Size: 25644
+Depends: python3, python3-venv
+Priority: optional
+Section: sound
+Filename: pool/main/t/touchosc2midi/touchosc2midi_1.0-3_arm64.deb
+Size: 5793088
+SHA256: dfaa243734fc542f54cb6045ca9d8354ab5dda8df1ff8061d1ca8a47ea06d399
+SHA1: 2ba2e08695f53649fc34e54606a03a580c43e382
+MD5sum: 44f100d66ef033ec67cb8c853d0b24ae
+Description: TouchOSC to MIDI bridge
+ Bridges TouchOSC (iOS/Android) OSC messages to ALSA/JACK MIDI.
+ Installed in an isolated venv at /opt/pistomp/venvs/touchosc2midi.
 
