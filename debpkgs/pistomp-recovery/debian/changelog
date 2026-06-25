@@ -1,3 +1,9 @@
+pistomp-recovery (0.1.0-14) trixie; urgency=medium
+
+  * Rename lg package to lg-pistomp in PISTOMP_PACKAGES and PACKAGE_SERVICES.
+
+ -- pistomp <pistomp@example.com>  Wed, 25 Jun 2026 00:00:00 +0000
+
 pistomp-recovery (0.1.0-13) trixie; urgency=medium
 
   * PluginFacet now supports stamp and checkpoint in addition to factory
