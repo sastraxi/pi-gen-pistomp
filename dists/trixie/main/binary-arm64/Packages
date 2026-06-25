@@ -169,21 +169,21 @@ Description: Linux C library and Python bindings for GPIO (lgpio/rgpio)
  on Raspberry Pi. Built from joan2937/lg v0.2.2.
 
 Package: lg-pistomp
-Version: 0.2.2-2
+Version: 0.2.2-3
 Architecture: arm64
 Maintainer: pistomp <pistomp@example.com>
-Installed-Size: 7
-Depends: python3
+Installed-Size: 417
+Depends: libc6 (>= 2.34), python3
 Conflicts: lg, python3-lgpio, python3-rpi-lgpio
 Replaces: lg, python3-lgpio, python3-rpi-lgpio
 Provides: lg
 Priority: optional
 Section: libs
-Filename: pool/main/l/lg-pistomp/lg-pistomp_0.2.2-2_arm64.deb
-Size: 1336
-SHA256: 462173b11d4ce0f9c150692b5de87c56c2265505da278bc452e4f14bdbc41ba5
-SHA1: 0b2fe01e199711ab698db13172d308db318b7e98
-MD5sum: 4eb24d2482bdb9c530c34756c92e4963
+Filename: pool/main/l/lg-pistomp/lg-pistomp_0.2.2-3_arm64.deb
+Size: 72792
+SHA256: d933dd52bacf55c2258b19a5a21069d625a00039c160e83b42a398f513620b84
+SHA1: 76fc1d5a36423cc2bf5333e261277e1e1bb17078
+MD5sum: d0f4ff3f1dedd08ce0dc1c7dd1e5d4a5
 Description: Linux C library and Python bindings for GPIO (lgpio/rgpio)
  Provides liblgpio.so.1, C headers, and Python SWIG bindings for GPIO
  on Raspberry Pi. Built from joan2937/lg v0.2.2.
