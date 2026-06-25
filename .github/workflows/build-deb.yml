@@ -93,7 +93,19 @@ jobs:
 
           # Extract package names from dpkg-checkbuilddeps stderr, stripping
           # version constraints like (>= 1.0) and the | alternatives operator.
+          # For binary-only packages (no Source: stanza), dpkg-checkbuilddeps
+          # silently exits 0, so fall back to parsing Build-Depends directly.
           get_unmet() {
+            if ! grep -q '^Source:' "$CONTROL"; then
+              grep '^Build-Depends:' "$CONTROL" \
+                | sed 's/Build-Depends://' | tr ',' '\n' \
+                | sed 's/([^)]*)//g; s/|.*//; s/ //g' \
+                | grep -E '^[a-z]' \
+                | while read -r dep; do
+                    dpkg -s "$dep" &>/dev/null || echo "$dep"
+                  done
+              return
+            fi
             local raw
             raw=$(dpkg-checkbuilddeps "$CONTROL" 2>&1 || true)
             echo "$raw" | grep -i 'unmet build dependencies' | \
