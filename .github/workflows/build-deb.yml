@@ -95,8 +95,8 @@ jobs:
           # version constraints like (>= 1.0) and the | alternatives operator.
           get_unmet() {
             dpkg-checkbuilddeps "$CONTROL" 2>&1 | \
-              grep 'Unmet build dependencies' | \
-              sed 's/.*Unmet build dependencies: //' | \
+              grep -i 'unmet build dependencies' | \
+              sed 's/.*[Uu]nmet build dependencies: //' | \
               tr ' ' '\n' | \
               grep -E '^[a-z]' || true
           }
