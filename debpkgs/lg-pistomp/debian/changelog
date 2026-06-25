@@ -1,3 +1,10 @@
+lg-pistomp (0.2.2-3) trixie; urgency=medium
+
+  * Fix debian/rules: change PKG=lg to PKG=lg-pistomp so files are staged
+    in debian/lg-pistomp/ and actually end up in the built .deb.
+
+ -- pistomp <pistomp@example.com>  Wed, 25 Jun 2026 22:45:00 +0000
+
 lg-pistomp (0.2.2-2) trixie; urgency=medium
 
   * Rename package to lg-pistomp to avoid collision with Debian's lg package.

@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 export DH_VERBOSE=1
 
-PKG=lg
+PKG=lg-pistomp
 SRC_DIR=$(CURDIR)/../lg-src
 
 %:
