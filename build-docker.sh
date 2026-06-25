@@ -63,6 +63,10 @@ else
 	source ${CONFIG_FILE}
 fi
 
+# Pull in APT_REPO_URL and friends for use below (PassThroughPattern, etc.)
+# shellcheck disable=SC1091
+source "${DIR}/config.sh"
+
 CONTAINER_NAME=${CONTAINER_NAME:-pigen_work}
 CONTINUE=${CONTINUE:-0}
 PRESERVE_CONTAINER=${PRESERVE_CONTAINER:-0}
@@ -94,6 +98,9 @@ start_apt_cache() {
   rm -rf "${APT_CACHER_DIR}/_xstore/rsnap"
   ${DOCKER} network create ${APT_CACHER_NET} 2>/dev/null || true
   ${DOCKER} rm -f ${APT_CACHER_CONTAINER} 2>/dev/null || true
+  # Derive hostname from APT_REPO_URL for PassThroughPattern so our custom
+  # apt repo's Packages index is always fetched live, never served stale from cache.
+  APT_REPO_HOST=$(echo "${APT_REPO_URL}" | sed 's|https\?://||; s|/.*||')
   ${DOCKER} run -d \
     --name ${APT_CACHER_CONTAINER} \
     --network ${APT_CACHER_NET} \
@@ -101,6 +108,7 @@ start_apt_cache() {
     --health-interval=1s \
     --health-retries=10 \
     --volume "${APT_CACHER_DIR}":/var/cache/apt-cacher-ng \
+    -e "ACNG_PassThroughPattern=.*${APT_REPO_HOST}.*" \
     ${APT_CACHER_IMAGE}
   echo "Waiting for apt-cacher-ng to become healthy..."
   for i in $(seq 1 15); do
@@ -156,6 +164,17 @@ fi
 
 # Modify original build-options to allow config file to be mounted in the docker container
 BUILD_OPTS="$(echo "${BUILD_OPTS:-}" | sed -E 's@-c ?([^ ]+)@-c /config@; s/--force//g; s/(^| )-f( |$)/ /g')"
+
+# If there are no local .deb overrides, remove any stale cache/apt-repo/ left
+# from a previous build-package-docker.sh run.  Without this, apt silently
+# installs old versions from the leftover repo instead of fetching from the
+# published apt repo.
+if ! ls "${DIR}/cache/debpkgs"/*.deb >/dev/null 2>&1; then
+  if [ -d "${DIR}/cache/apt-repo" ]; then
+    echo "==> No local .deb overrides; removing stale cache/apt-repo/..."
+    rm -rf "${DIR}/cache/apt-repo"
+  fi
+fi
 
 # Pre-flight: verify every custom package is available before spending time on
 # the Docker build.  Checks cache/debpkgs/ AND the published apt repo.

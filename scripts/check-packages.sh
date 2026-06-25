@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Pre-flight check: verify that every custom package (discovered from debpkgs/)
-# is available from at least one of:
+# is available at the required version from at least one of:
 #   (a) cache/debpkgs/ local overrides, or
 #   (b) the GitHub Pages apt repo (origin/gh-pages Packages index)
 #
@@ -14,39 +14,72 @@ source "${ROOT_DIR}/config.sh"
 
 CACHE_DIR="${CACHE_DIR:-${ROOT_DIR}/cache}"
 
-# --- packages available in cache/debpkgs/ (local overrides) ---
-declare -A cached
+# --- packages available in cache/debpkgs/ (local overrides): name -> version ---
+declare -A cached_ver
 for deb in "${CACHE_DIR}/debpkgs"/*.deb; do
     [ -f "$deb" ] || continue
-    name="$(basename "$deb" | cut -d_ -f1)"
-    cached["$name"]=1
+    base="$(basename "$deb")"
+    name="${base%%_*}"
+    rest="${base#*_}"
+    ver="${rest%%_*}"
+    cached_ver["$name"]="$ver"
 done
 
-# --- packages available in the GitHub Pages apt repo ---
-declare -A repo
+# --- packages available in the GitHub Pages apt repo: name -> version ---
+declare -A repo_ver
 packages_file="$(git -C "${ROOT_DIR}" show origin/gh-pages:dists/${APT_REPO_SUITE}/${APT_REPO_COMPONENT}/binary-${APT_REPO_ARCH}/Packages 2>/dev/null || true)"
 if [ -n "$packages_file" ]; then
+    cur_pkg=""
     while IFS= read -r line; do
         if [[ "$line" == Package:\ * ]]; then
-            repo["${line#Package: }"]=1
+            cur_pkg="${line#Package: }"
+        elif [[ "$line" == Version:\ * ]] && [ -n "$cur_pkg" ]; then
+            repo_ver["$cur_pkg"]="${line#Version: }"
+            cur_pkg=""
         fi
     done <<< "$packages_file"
 else
-    echo "WARNING: could not read origin/gh-pages Packages file — apt repo check skipped" >&2
+    echo "WARNING: could not read origin/gh-pages Packages file — apt repo version check skipped" >&2
 fi
 
-# --- discover required packages from debpkgs/*/debian/control ---
+# --- discover required packages and versions from debpkgs/ ---
+# debian/changelog is the canonical version source (dpkg-buildpackage reads it).
+# For dpkg-deb packages (lcd-splash, libfluidsynth2-compat) that have no
+# changelog, fall back to the Version: field in debian/control.
 missing=()
 checked=0
-while IFS= read -r pkg; do
-    checked=$((checked + 1))
-    if [ -z "${cached[$pkg]+set}" ] && [ -z "${repo[$pkg]+set}" ]; then
-        missing+=("$pkg")
+while IFS= read -r control_file; do
+    pkg=$(grep '^Package:' "$control_file" | awk '{print $2}')
+    [ -n "$pkg" ] || continue
+    pkg_dir="$(dirname "$(dirname "$control_file")")"
+
+    if [ -f "${pkg_dir}/debian/changelog" ]; then
+        required_ver=$(head -1 "${pkg_dir}/debian/changelog" | awk '{gsub(/[()]/,""); print $2}')
+    else
+        required_ver=$(grep '^Version:' "$control_file" | awk '{print $2}')
     fi
-done < <(grep -h "^Package:" "${ROOT_DIR}/debpkgs"/*/debian/control | awk '{print $2}')
+
+    checked=$((checked + 1))
+    cached="${cached_ver[$pkg]:-}"
+    in_repo="${repo_ver[$pkg]:-}"
+
+    if [ "$cached" = "$required_ver" ] || [ "$in_repo" = "$required_ver" ]; then
+        continue
+    fi
+
+    # Build a diagnostic showing what we have vs what we need
+    have=""
+    [ -n "$cached" ] && have="cache: ${cached}"
+    if [ -n "$in_repo" ]; then
+        [ -n "$have" ] && have="${have}, "
+        have="${have}repo: ${in_repo}"
+    fi
+    [ -z "$have" ] && have="none"
+    missing+=("${pkg} (need ${required_ver}, have ${have})")
+done < <(find "${ROOT_DIR}/debpkgs" -name control -path "*/debian/control" | sort)
 
 if [ "${#missing[@]}" -gt 0 ]; then
-    echo "ERROR: the following packages are not available in cache/debpkgs/ or the apt repo:" >&2
+    echo "ERROR: the following packages are not available at the required version:" >&2
     for pkg in "${missing[@]}"; do
         echo "  - $pkg" >&2
     done
@@ -56,4 +89,4 @@ if [ "${#missing[@]}" -gt 0 ]; then
     exit 1
 fi
 
-echo "==> Package pre-flight check passed (${checked} packages, none missing)."
+echo "==> Package pre-flight check passed (${checked} packages, all at required versions)."
