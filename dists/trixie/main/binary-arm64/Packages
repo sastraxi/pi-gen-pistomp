@@ -46,10 +46,10 @@ Depends: python3, lg, python3-lilv, mod-host-pistomp, mod-ui, mod-midi-merger, m
 Priority: optional
 Section: sound
 Filename: pool/main/p/pi-stomp/pi-stomp_3.0-5_arm64.deb
-Size: 33778336
-SHA256: 999da25259e51bd8847dc30549d3481621241e53cfc83fd786ce8fafeeb1c84d
-SHA1: 22557c466007b95f8246a3919483fa026eb22f99
-MD5sum: 0365c1607eb70c70b97e585e41e617fc
+Size: 33777532
+SHA256: ec93d32bfe1f835dd3a84b554fc57651f04b0254e4b6a1d5e040d5d2c4ca7243
+SHA1: 946c8cad5c79c280e0b7174073417e6e5a706084
+MD5sum: 18749bf32b3754116466282be896b935
 Description: pi-Stomp application — guitar effects pedalboard software
  The pi-Stomp application code, uv-managed venv, and systemd service.
  Installs to /opt/pistomp/pi-stomp/ with a symlink at
