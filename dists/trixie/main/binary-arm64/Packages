@@ -1,3 +1,19 @@
+Package: hylia
+Version: 1.0-1
+Architecture: arm64
+Maintainer: pistomp <pistomp@example.com>
+Installed-Size: 986
+Priority: optional
+Section: libs
+Filename: pool/main/h/hylia/hylia_1.0-1_arm64.deb
+Size: 107772
+SHA256: 8e6f61109912901f0b387f2cb6a7709eeb45aea7da090f2993828e436d1e04f4
+SHA1: f6c6dd1a177e8558e621ef7723d7953623385d5e
+MD5sum: 442db811824f2ea0ebf8e5cda84198d5
+Description: JACK-aware Ableton Link wrapper
+ Provides libhylia for synchronising JACK transports with Ableton Link
+ sessions. Required by mod-host-pistomp at build time.
+
 Package: jack2-pistomp
 Version: 1.9.22-2
 Architecture: arm64
