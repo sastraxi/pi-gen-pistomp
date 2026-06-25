@@ -147,13 +147,13 @@ jobs:
       - name: Verify build output
         run: |
           echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
-          ls -la "$GITHUB_WORKSPACE/cache/"*.deb
+          ls -la "$GITHUB_WORKSPACE/cache/${{ inputs.pkg }}_"*"_arm64.deb"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.pkg }}-deb
-          path: ${{ github.workspace }}/cache/*_arm64.deb
+          path: ${{ github.workspace }}/cache/${{ inputs.pkg }}_*_arm64.deb
           if-no-files-found: error
 
       - name: Extract changelog entry
@@ -177,7 +177,7 @@ jobs:
           tag_name: debpkg/${{ inputs.pkg }}/${{ steps.version.outputs.version }}
           name: "${{ inputs.pkg }} ${{ steps.version.outputs.version }}"
           body: ${{ steps.changelog.outputs.body }}
-          files: ${{ github.workspace }}/cache/*_arm64.deb
+          files: ${{ github.workspace }}/cache/${{ inputs.pkg }}_*_arm64.deb
           draft: false
           prerelease: false
         env:
