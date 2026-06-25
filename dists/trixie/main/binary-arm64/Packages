@@ -1,3 +1,36 @@
+Package: amidithru
+Version: 1.0-1
+Architecture: arm64
+Maintainer: pistomp <pistomp@example.com>
+Installed-Size: 116
+Depends: libasound2t64 (>= 1.0.16), libc6 (>= 2.34), libasound2
+Priority: optional
+Section: sound
+Filename: pool/main/a/amidithru/amidithru_1.0-1_arm64.deb
+Size: 11496
+SHA256: db45c50a3b94d0825124c20d00d90b8c09c011149dbd02702cfbcb520749f3d0
+SHA1: bb5addeddcafa934a1c509d063bd7344d13ace21
+MD5sum: ed60fddf6f98ff979a433a46c807ceb3
+Description: ALSA MIDI thru tool
+ A simple ALSA MIDI thru utility that routes MIDI input to output.
+
+Package: browsepy
+Version: 0.5.6-1
+Architecture: arm64
+Maintainer: pistomp <pistomp@example.com>
+Installed-Size: 31553
+Depends: python3
+Priority: optional
+Section: web
+Filename: pool/main/b/browsepy/browsepy_0.5.6-1_arm64.deb
+Size: 4980488
+SHA256: 301c4a34205ec42da3e8b240df2c4f32b5b7a305617d291c7af52d7a447492b2
+SHA1: 1a50cf1d39ac435254f8e680a0bfd2b077ec6faf
+MD5sum: e2cf1038663456f161f766905504d20d
+Description: File browser for pi-Stomp user files
+ A simple web-based file browser for browsing and uploading user files
+ on pi-Stomp. Runs on port 8081, serving /home/pistomp/data/user-files.
+
 Package: hylia
 Version: 1.0-1
 Architecture: arm64
@@ -34,6 +67,25 @@ Description: JACK Audio Connection Kit v2 (pi-Stomp build)
  JACK is a low-latency audio server. This build includes the
  pi-controller-reset stability fix and links against libdb 5.3.
 
+Package: jackbridge
+Version: 1.0-2
+Architecture: arm64
+Maintainer: pistomp <pistomp@example.com>
+Installed-Size: 28
+Depends: jack2-pistomp, jack-example-tools, iproute2
+Priority: optional
+Section: sound
+Filename: pool/main/j/jackbridge/jackbridge_1.0-2_arm64.deb
+Size: 6472
+SHA256: 265d077f279cc6577956f1b4441bea6ca41cf8f874c1c3ad765ca6379fbe73f8
+SHA1: 80cf1ed1ec3347a3555476b595435b6a085cd18c
+MD5sum: 5a6b5d3a3c80e60f8c783df7b05702ca
+Description: netJACK2 client for DAW recording over Ethernet
+ Installs the pi-side JackBridge service: 6 helper scripts under
+ /usr/local/libexec/jackbridge/ plus pi-stomp-jackbridge.service.
+ The service is on-demand only (not enabled at boot); the LCD UI
+ starts/stops it via systemctl.
+
 Package: lg
 Version: 0.2.2-1
 Architecture: arm64
@@ -52,6 +104,42 @@ MD5sum: ed86f64d46e291a16129647a4843eed9
 Description: Linux C library and Python bindings for GPIO (lgpio/rgpio)
  Provides liblgpio.so.1, C headers, and Python SWIG bindings for GPIO
  on Raspberry Pi. Built from joan2937/lg v0.2.2.
+
+Package: mod-host-pistomp
+Version: 0.10.6-1
+Architecture: arm64
+Maintainer: pistomp <pistomp@example.com>
+Installed-Size: 930
+Depends: libc6 (>= 2.38), libfftw3-double3 (>= 3.3.10), libfftw3-single3 (>= 3.3.10), libgcc-s1 (>= 3.0), libjack-jackd2-0 (>= 1.9.10+20150825) | libjack-0.125, liblilv-0-0 (>= 0.22.0~dfsg0), libreadline8t64 (>= 6.0), libstdc++6 (>= 14), liblo7, libreadline8, hylia
+Conflicts: mod-host
+Replaces: mod-host
+Provides: mod-host
+Priority: optional
+Section: sound
+Filename: pool/main/m/mod-host-pistomp/mod-host-pistomp_0.10.6-1_arm64.deb
+Size: 167840
+SHA256: 5e2957997a9607761e96d2fe3d179ffac2c0003d63ca5a248edd87c00318ad84
+SHA1: 2c461982006631a54661bf71c3f6a328179284cb
+MD5sum: e57a3f6dcd4696e575919bc23b18f299
+Description: MOD Host — LV2 plugin host for JACK (pi-Stomp fork)
+ Forked from moddevices/mod-host with the fix/effect-drain-midi branch
+ for proper MIDI effect drain on pedalboard changes.
+
+Package: mod-ttymidi
+Version: 1.0-2
+Architecture: arm64
+Maintainer: pistomp <pistomp@example.com>
+Installed-Size: 146
+Depends: libc6 (>= 2.34), libjack-jackd2-0 (>= 1.9.10+20150825) | libjack-0.125
+Priority: optional
+Section: sound
+Filename: pool/main/m/mod-ttymidi/mod-ttymidi_1.0-2_arm64.deb
+Size: 9340
+SHA256: 11ddda07d7f66c3e37ed0d0c4680308008749075e366968fcbbab16bf359decf
+SHA1: e0cd19d70d6ec31f15581bd50564c72ac883520f
+MD5sum: 42f7b71ed435513224e17a668ec7f9f8
+Description: MOD ttymidi — serial MIDI bridge
+ A simple serial port to ALSA/JACK MIDI bridge, part of the MOD ecosystem.
 
 Package: pi-stomp
 Version: 3.0-5
