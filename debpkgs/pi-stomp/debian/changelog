@@ -1,3 +1,11 @@
+pi-stomp (3.0-6) trixie; urgency=medium
+
+  * NAM training: subprocess split, silence detection, lower CPU usage.
+  * NAM panel: cheaper rendering, pending-path display, level meters.
+  * Fix CI test failures: patch wav_duration in panel tests.
+
+ -- Cam Gorrie <sastraxi@gmail.com>  Thu, 26 Jun 2026 00:00:00 +0000
+
 pi-stomp (3.0-5) trixie; urgency=medium
 
   * Add pkg-config, jack2-pistomp, libasound2-dev to Build-Depends:
