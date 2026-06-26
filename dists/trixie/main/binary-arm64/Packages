@@ -352,18 +352,18 @@ Description: SFZ library and LV2 plugin (minimal, headless)
  MOD Audio file type annotations for the SFZ file browser.
 
 Package: touchosc2midi
-Version: 1.0-3
+Version: 1.0-4
 Architecture: arm64
 Maintainer: pistomp <pistomp@example.com>
 Installed-Size: 25644
 Depends: python3, python3-venv
 Priority: optional
 Section: sound
-Filename: pool/main/t/touchosc2midi/touchosc2midi_1.0-3_arm64.deb
-Size: 5793088
-SHA256: dfaa243734fc542f54cb6045ca9d8354ab5dda8df1ff8061d1ca8a47ea06d399
-SHA1: 2ba2e08695f53649fc34e54606a03a580c43e382
-MD5sum: 44f100d66ef033ec67cb8c853d0b24ae
+Filename: pool/main/t/touchosc2midi/touchosc2midi_1.0-4_arm64.deb
+Size: 5792020
+SHA256: bbc20c597bb8759d62a89a73da48dd39ae7bf05023ce6e2e5f1eff7661f66936
+SHA1: cf3633003bda4308b419e023090b1d32f5e34fce
+MD5sum: a75ca6e09f272d03796c30011c0b4179
 Description: TouchOSC to MIDI bridge
  Bridges TouchOSC (iOS/Android) OSC messages to ALSA/JACK MIDI.
  Installed in an isolated venv at /opt/pistomp/venvs/touchosc2midi.
