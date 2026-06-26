@@ -97,10 +97,10 @@ jobs:
           # silently exits 0, so fall back to parsing Build-Depends directly.
           get_unmet() {
             if ! grep -q '^Source:' "$CONTROL"; then
-              grep '^Build-Depends:' "$CONTROL" \
+              { grep '^Build-Depends:' "$CONTROL" || true; } \
                 | sed 's/Build-Depends://' | tr ',' '\n' \
                 | sed 's/([^)]*)//g; s/|.*//; s/ //g' \
-                | grep -E '^[a-z]' \
+                | { grep -E '^[a-z]' || true; } \
                 | while read -r dep; do
                     dpkg -s "$dep" &>/dev/null || echo "$dep"
                   done
