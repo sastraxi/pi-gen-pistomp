@@ -284,28 +284,28 @@ Depends: python3, jack2-pistomp, mod-host-pistomp
 Priority: optional
 Section: web
 Filename: pool/main/m/mod-ui/mod-ui_3.0-4_arm64.deb
-Size: 48514348
-SHA256: 313754661fd434d1541c5150433f8a23d3effe429537ab7d7957e75bef9ca1a6
-SHA1: 26f20d3cdbdf89d01f5b0136f1d8aee8de872159
-MD5sum: 23c160648cfc5e5eaa75d87a05a68c27
+Size: 48513644
+SHA256: cf998b71038bfec9c95314d72926927405edd09e14c212032be0ccb90a4ff86d
+SHA1: dc05a0dea40dd3ec1fe65e94d6f91c3f999c37cb
+MD5sum: 9412cea6ef2281fb066b8a18086efc00
 Description: MOD Web UI — web-based pedalboard interface for pi-Stomp
  MOD UI is a web-based interface for managing pedalboards on MOD
  devices. This build runs in a Python 3.11 venv (required by
  tornado==4.3) and is configured for pi-Stomp.
 
 Package: pi-stomp
-Version: 3.0-5
+Version: 3.0-6
 Architecture: arm64
 Maintainer: pistomp <pistomp@example.com>
-Installed-Size: 168441
-Depends: python3, lg, python3-lilv, mod-host-pistomp, mod-ui, mod-midi-merger, mod-ttymidi, amidithru, jack2-pistomp, hylia, sfizz-pistomp, lcd-splash, jack-capture
+Installed-Size: 168488
+Depends: python3, lg-pistomp, python3-lilv, mod-host-pistomp, mod-ui, mod-midi-merger, mod-ttymidi, amidithru, jack2-pistomp, hylia, sfizz-pistomp, lcd-splash, jack-capture
 Priority: optional
 Section: sound
-Filename: pool/main/p/pi-stomp/pi-stomp_3.0-5_arm64.deb
-Size: 33777532
-SHA256: ec93d32bfe1f835dd3a84b554fc57651f04b0254e4b6a1d5e040d5d2c4ca7243
-SHA1: 946c8cad5c79c280e0b7174073417e6e5a706084
-MD5sum: 18749bf32b3754116466282be896b935
+Filename: pool/main/p/pi-stomp/pi-stomp_3.0-6_arm64.deb
+Size: 33792676
+SHA256: 97f5b7cb8be33e43a1e4fe5a7a1eb0636e7143a042f83c51dcac760613ada8e5
+SHA1: 95167da397eabbaced43fa12f6099ccee1a5e581
+MD5sum: cf5fda851ab903eea6aa6e5dbad1094a
 Description: pi-Stomp application — guitar effects pedalboard software
  The pi-Stomp application code, uv-managed venv, and systemd service.
  Installs to /opt/pistomp/pi-stomp/ with a symlink at
@@ -320,10 +320,10 @@ Depends: python3, jack2-pistomp, lg-pistomp, libasound2, libfreetype6
 Priority: optional
 Section: utils
 Filename: pool/main/p/pistomp-recovery/pistomp-recovery_0.1.0-14_arm64.deb
-Size: 22773096
-SHA256: 11746fedc20af8b132308be188b278c66530b377de701162a510baf955f68b8d
-SHA1: 295ae3f52e1225a993d82a1c091a34e209cc640a
-MD5sum: 3b116fe1f3c0d4c2ab25ed51d0b204b7
+Size: 22774924
+SHA256: 2bac2c4c39bee3928a97eed06698447b9b0137130d73dd2c71ad40582de78903
+SHA1: de6527927b0eb3079095b9e97b0c5f40395dcc96
+MD5sum: 155b63f2dc3aaa83d8efddae14d0ebe8
 Description: Package update and recovery service for pi-Stomp
  Recovery service that provides LCD-based factory reset, package rollback,
  and OTA update management. Runs as a systemd service triggered on
@@ -360,10 +360,10 @@ Depends: python3, python3-venv
 Priority: optional
 Section: sound
 Filename: pool/main/t/touchosc2midi/touchosc2midi_1.0-4_arm64.deb
-Size: 5792020
-SHA256: bbc20c597bb8759d62a89a73da48dd39ae7bf05023ce6e2e5f1eff7661f66936
-SHA1: cf3633003bda4308b419e023090b1d32f5e34fce
-MD5sum: a75ca6e09f272d03796c30011c0b4179
+Size: 5791944
+SHA256: 438118b40cbacd60fdf54bdfb4d09101bb93c8e51e17d255654af3106656c3fc
+SHA1: 89fd8354ba3b0dc2e78d4ea61c0c3982ef325238
+MD5sum: 57ebc712d7b3bbdbf3d80907a41becb0
 Description: TouchOSC to MIDI bridge
  Bridges TouchOSC (iOS/Android) OSC messages to ALSA/JACK MIDI.
  Installed in an isolated venv at /opt/pistomp/venvs/touchosc2midi.
