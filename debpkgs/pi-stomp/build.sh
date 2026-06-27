@@ -15,6 +15,7 @@ cache_check
 # Clone source to a sibling directory so debian/rules can find it
 [ ! -d "${UPSTREAM_DIR}" ] && \
     git clone --branch "${PISTOMP_BRANCH}" --depth 1 "${PISTOMP_REPO}" "${UPSTREAM_DIR}"
+record_upstream_sha
 
 # Install lg-pistomp from cache (build-time dep for liblgpio headers/library)
 dpkg -i "${CACHE_DIR}/lg-pistomp_"*"_arm64.deb" 2>/dev/null || true

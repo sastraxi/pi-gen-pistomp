@@ -11,6 +11,13 @@ mkdir -p "${CACHE_DIR}"
 # build-package-docker.sh always rebuilds; CI is always a clean workspace.
 cache_check() { :; }
 
+# Record the HEAD SHA of the upstream clone so check-dirty-pkgs.sh can detect
+# whether the remote branch has moved since the last build.
+record_upstream_sha() {
+    local dir="${1:-${UPSTREAM_DIR}}"
+    git -C "$dir" rev-parse HEAD > "${CACHE_DIR}/${PKG}.built-sha"
+}
+
 # Move built .deb(s) from a parent directory into CACHE_DIR.
 # Usage: move_to_cache [parent_dir]   (default: parent of UPSTREAM_DIR)
 move_to_cache() {

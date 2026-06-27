@@ -13,6 +13,7 @@ cache_check
 
 [ ! -d "${UPSTREAM_DIR}" ] && \
     git clone --branch "${MODUI_BRANCH}" --depth 1 "${MODUI_REPO}" "${UPSTREAM_DIR}"
+record_upstream_sha
 
 cp -r "${SCRIPT_DIR}/debian" "${UPSTREAM_DIR}/"
 cd "${UPSTREAM_DIR}"

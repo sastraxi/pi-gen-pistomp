@@ -1,3 +1,9 @@
+mod-ttymidi (1.0-3) trixie; urgency=medium
+
+  * Bump to track upstream branch HEAD.
+
+ -- pi-gen-pistomp <noreply@github.com>  Sat, 27 Jun 2026 04:19:45 +0000
+
 mod-ttymidi (1.0-2) trixie; urgency=medium
 
   * Remove redundant /usr/lib/jack install dir (ttymidi.so already installs

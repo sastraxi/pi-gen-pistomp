@@ -66,6 +66,8 @@ ln -s /home/${FIRST_USER_NAME}/.lv2 /home/${FIRST_USER_NAME}/data/.lv2
 # cabsim-lv2 deb installs a fixed version to /usr/lib/lv2; remove the
 # tar.gz copy so it doesn't shadow the package (mod-host scans ~/.lv2 first).
 rm -rf /home/${FIRST_USER_NAME}/.lv2/cabsim.lv2
+mkdir -p /etc/pistomp
+ls /home/${FIRST_USER_NAME}/.lv2/ > /etc/pistomp/factory-lv2-bundles.list
 
 # NAM reamp signal (from cache/, bind-mounted at /pistomp-cache)
 mkdir -p /opt/pistomp/pi-stomp/setup/nam

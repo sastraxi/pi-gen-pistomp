@@ -1,3 +1,9 @@
+mod-ui (3.0-6) trixie; urgency=medium
+
+  * Bump to track upstream branch HEAD.
+
+ -- pi-gen-pistomp <noreply@github.com>  Sat, 27 Jun 2026 04:19:45 +0000
+
 mod-ui (3.0-5) trixie; urgency=medium
 
   * Fix bypass feedback stall when mod-ui runs in a background browser tab.

@@ -14,6 +14,7 @@ cache_check
 
 [ ! -d "${UPSTREAM_DIR}" ] && \
     git clone --branch "${JACKROUTER_REF}" --depth 1 "${JACKROUTER_REPO}" "${UPSTREAM_DIR}"
+record_upstream_sha
 
 cp -r "${SCRIPT_DIR}/debian" "${UPSTREAM_DIR}/"
 cd "${UPSTREAM_DIR}"

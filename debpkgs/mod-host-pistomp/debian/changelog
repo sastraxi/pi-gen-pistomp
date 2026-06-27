@@ -1,3 +1,9 @@
+mod-host-pistomp (0.10.6-2) trixie; urgency=medium
+
+  * Bump to track upstream branch HEAD.
+
+ -- pi-gen-pistomp <noreply@github.com>  Sat, 27 Jun 2026 04:19:45 +0000
+
 mod-host-pistomp (0.10.6-1) trixie; urgency=medium
 
   * Initial package. Forked from moddevices/mod-host, fix/effect-drain-midi

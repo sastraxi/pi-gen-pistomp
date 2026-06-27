@@ -13,6 +13,7 @@ cache_check
 
 [ ! -d "${UPSTREAM_DIR}" ] && \
     git clone --branch "${CABSIM_LV2_REF}" --depth 1 "${CABSIM_LV2_REPO}" "${UPSTREAM_DIR}"
+record_upstream_sha
 
 cp -r "${SCRIPT_DIR}/debian" "${UPSTREAM_DIR}/"
 cd "${UPSTREAM_DIR}"

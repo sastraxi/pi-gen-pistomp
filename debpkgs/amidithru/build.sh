@@ -13,6 +13,7 @@ cache_check
 
 [ ! -d "${UPSTREAM_DIR}" ] && \
     git clone --branch "${AMIDITHRU_REF}" --depth 1 "${AMIDITHRU_REPO}" "${UPSTREAM_DIR}"
+record_upstream_sha
 
 cp -r "${SCRIPT_DIR}/debian" "${UPSTREAM_DIR}/"
 cd "${UPSTREAM_DIR}"

@@ -13,6 +13,7 @@ cache_check
 
 [ ! -d "${UPSTREAM_DIR}" ] && \
     git clone --branch "${HYLIA_REF}" --depth 1 "${HYLIA_REPO}" "${UPSTREAM_DIR}"
+record_upstream_sha
 
 cp -r "${SCRIPT_DIR}/debian" "${UPSTREAM_DIR}/"
 cd "${UPSTREAM_DIR}"
