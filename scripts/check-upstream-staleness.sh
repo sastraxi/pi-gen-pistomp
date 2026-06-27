@@ -53,9 +53,13 @@ check_pkg() {
         return
     fi
 
-    # Most recent published release for this package (releases come back newest first).
+    # Most recent published release for this package. The GitHub releases API
+    # does NOT reliably return newest-first (a release created against a
+    # pre-existing tag can sort out of order), so pick explicitly by publish
+    # date rather than trusting array position.
     tag="$(jq -r --arg p "${pkg}" \
-        '[.[] | select(.tag_name | startswith("debpkg/\($p)/"))][0].tag_name // empty' \
+        '[.[] | select(.tag_name | startswith("debpkg/\($p)/"))]
+         | sort_by(.published_at // .created_at) | last.tag_name // empty' \
         <<<"${releases_json}")"
     if [[ -z "${tag}" ]]; then
         echo "  WARN  ${pkg}: no published release found — never built?"
