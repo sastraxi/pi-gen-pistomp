@@ -157,10 +157,10 @@ Depends: lg-pistomp
 Priority: optional
 Section: misc
 Filename: pool/main/l/lcd-splash/lcd-splash_1.0-16_arm64.deb
-Size: 11952
-SHA256: 17d8847efababe56e7872fc88535496c4a769620dba79894e3a295265781e6b0
-SHA1: ab8421500aadbde2c4cb5538328beafdde2dd0d6
-MD5sum: 6af4d4bbade626dea5cda4249780fbc6
+Size: 12012
+SHA256: cbe93e4505252ebcacef87f2ece5a176cf287d52c0b5d64c47a61e5aa6d08024
+SHA1: 298506664fc15a1c369c372a939887311235be89
+MD5sum: 517631e73a3740ff9e792ae1b031229f
 Description: Fast ILI9341 LCD boot splash for pi-Stomp
  Drives the 320x240 SPI LCD directly (spidev + lgpio) with no
  Python/interpreter overhead. Displays a pre-converted RGB565 image
@@ -214,9 +214,9 @@ Priority: optional
 Section: libs
 Filename: pool/main/libf/libfluidsynth2-compat/libfluidsynth2-compat_2.3.4-3_arm64.deb
 Size: 1092
-SHA256: 268e6a0f35f8593a956144a0ad8a1acc972d9568f929613d1c21d4e2dd05aa9d
-SHA1: cf5c477c6211a621034a725aed287d072cc216f1
-MD5sum: 6fb48b2251bd40b60c624fbed130105f
+SHA256: aca2aaf093aaf13893ba40eb54092c87b7e8f7f2babeef2970fb544faad8ce6b
+SHA1: e09d0f8e354324c886e1be01740d6b3a049bf067
+MD5sum: cdac472d4779dcee490e407f16f28e48
 Description: FluidSynth .so.2 compatibility shim for prebuilt LV2 plugins
  Creates a libfluidsynth.so.2 symlink pointing to the real .so.3 library
  (shipped by fluidsynth-headless) so that prebuilt LV2 plugins compiled
@@ -360,10 +360,10 @@ Depends: python3, python3-venv
 Priority: optional
 Section: sound
 Filename: pool/main/t/touchosc2midi/touchosc2midi_1.0-4_arm64.deb
-Size: 5791932
-SHA256: 64e11d767019a7f7b60c00ccd7586b5c665f6b1c1841c5985d50cc6804105545
-SHA1: 9e549c908d846643bb87ca529edf6a52071a5ce5
-MD5sum: 9c4d42f767f99e4587605c4b294b1eba
+Size: 5791896
+SHA256: 9bf03f245309f3d0ff546c06a8d2f3300a64d107b3eb0c17d189f90e8900dadd
+SHA1: 5b00c27f6ceec9bfc96de4f1b54552bcd1fc97c7
+MD5sum: 50156430ff214fbd70a7ea7b47c0e29a
 Description: TouchOSC to MIDI bridge
  Bridges TouchOSC (iOS/Android) OSC messages to ALSA/JACK MIDI.
  Installed in an isolated venv at /opt/pistomp/venvs/touchosc2midi.
