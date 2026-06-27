@@ -284,10 +284,10 @@ Depends: python3, jack2-pistomp, mod-host-pistomp
 Priority: optional
 Section: web
 Filename: pool/main/m/mod-ui/mod-ui_3.0-5_arm64.deb
-Size: 48521268
-SHA256: 21617ff00e912505ff3c9a6fe529ab9d641f4bd3bcab2f42e1fdb0d70b533b8d
-SHA1: 5e68ea20625f63e628a51e31bb0776b845299727
-MD5sum: 4f88cf3cff401f77219e59ef705b83b1
+Size: 48521288
+SHA256: db3491ee1f438599cd6665c3797f0c2139fd3aac28f8fd2ad20f5dbcab8d397f
+SHA1: 75169605d69336568ae7d2ac38d1565d3177580d
+MD5sum: c71216af7a7448f0e8d10d5604e83217
 Description: MOD Web UI — web-based pedalboard interface for pi-Stomp
  MOD UI is a web-based interface for managing pedalboards on MOD
  devices. This build runs in a Python 3.11 venv (required by
@@ -302,10 +302,10 @@ Depends: python3, lg-pistomp, python3-lilv, mod-host-pistomp, mod-ui, mod-midi-m
 Priority: optional
 Section: sound
 Filename: pool/main/p/pi-stomp/pi-stomp_3.0-8_arm64.deb
-Size: 33790152
-SHA256: fcce992c1ec02a8f7c9597a393846a2c7dc71abc6d9c461e4b004b0c14355fb6
-SHA1: 5027f7fc088bf8f5a510ad5c75f4f06d56c4e372
-MD5sum: 851354b97be612f47634c5a2e37e84f7
+Size: 33793732
+SHA256: 093749f67dbbce21eb903d20208e389ec49a2585769c1280780c7f9323acaf7b
+SHA1: 67eca4537747647e2fd6f8cb465267e3b6ae0496
+MD5sum: c13de4d63e8c67df155b0994c14a6981
 Description: pi-Stomp application — guitar effects pedalboard software
  The pi-Stomp application code, uv-managed venv, and systemd service.
  Installs to /opt/pistomp/pi-stomp/ with a symlink at
@@ -315,15 +315,15 @@ Package: pistomp-recovery
 Version: 0.1.0-14
 Architecture: arm64
 Maintainer: pistomp <pistomp@example.com>
-Installed-Size: 118981
+Installed-Size: 118989
 Depends: python3, jack2-pistomp, lg-pistomp, libasound2, libfreetype6
 Priority: optional
 Section: utils
 Filename: pool/main/p/pistomp-recovery/pistomp-recovery_0.1.0-14_arm64.deb
-Size: 22774216
-SHA256: 640692df54710cd5b0febce2a451af4fad55cbf61b814daa32b1c60306af5def
-SHA1: 4a3b721e55b33b9eaa7b52a70566b452f1860503
-MD5sum: 85b012e30f4c1d12c589e988e688263f
+Size: 22775676
+SHA256: 8931aa724db7ec2906e723baef109bbb07e6bc9b07c72dadd2e0dcb9976ae688
+SHA1: 30f2f0e27229be0a11402dfafe28fe65a1318921
+MD5sum: 8d5ffc6c907cad4c2cc2b07c71808fe7
 Description: Package update and recovery service for pi-Stomp
  Recovery service that provides LCD-based factory reset, package rollback,
  and OTA update management. Runs as a systemd service triggered on
