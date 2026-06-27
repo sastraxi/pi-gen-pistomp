@@ -1,8 +1,21 @@
-mod-ui (3.0-6) trixie; urgency=medium
+mod-ui (3.0-7) trixie; urgency=medium
 
-  * Bump to track upstream branch HEAD.
+  * Cut web UI startup time from ~7s to under 2s to interactive.
+  * Bulk-fetch plugin metadata on pedalboard load: buffer plugins between
+    loading_start and loading_end and request them in one POST /effect/bulk/
+    call (run in parallel with /snapshot/name) instead of one serial
+    GET /effect/get per plugin.
+  * Gate non-forced scheduleAdapt calls during pedalboard load so the per-knob
+    getAndSetSize bumps can no longer saturate the adapt drain timer, which had
+    been delaying /effect/list by ~5s.
+  * Drop the "Loading pedalboard..." overlay as soon as the pedalboard is laid
+    out, instead of chaining it behind the plugin-browser search render.
+  * Cache the EffectList / get_all_plugins() result server-side, invalidated on
+    plugin install and removal.
+  * Lazy-load plugin thumbnails via IntersectionObserver so the browser no
+    longer fetches the entire catalog of PNGs on load.
 
- -- pi-gen-pistomp <noreply@github.com>  Sat, 27 Jun 2026 04:19:45 +0000
+ -- Cam Gorrie <sastraxi@gmail.com>  Sat, 27 Jun 2026 04:42:52 +0000
 
 mod-ui (3.0-5) trixie; urgency=medium
 
