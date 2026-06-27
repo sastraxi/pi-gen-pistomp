@@ -176,9 +176,9 @@ Priority: optional
 Section: misc
 Filename: pool/main/l/lcd-splash/lcd-splash_1.0-17_arm64.deb
 Size: 12092
-SHA256: ca94b3c319ecbae654c8f79a88e9f50fe54e8b878c25f6a7a2a01bc0b39e2f72
-SHA1: 29f08050b7a8e19233389262d1044e98639f7678
-MD5sum: fabf2ae570f23a1aaa0a930ff0495a28
+SHA256: 922f2f069d26ac5b367877286c104d0550b60ada9064ab2a3f2b42da8e0034ed
+SHA1: 5f3ca9481814329518c602c53fca9135e53cd8f3
+MD5sum: d7b9d2484a4c6aa6289be70230776f92
 Description: Fast ILI9341 LCD boot splash for pi-Stomp
  Drives the 320x240 SPI LCD directly (spidev + lgpio) with no
  Python/interpreter overhead. Displays a pre-converted RGB565 image
@@ -232,9 +232,9 @@ Priority: optional
 Section: libs
 Filename: pool/main/libf/libfluidsynth2-compat/libfluidsynth2-compat_2.3.4-3_arm64.deb
 Size: 1092
-SHA256: 5a26e53c13854d87dc176c46dc10829603a8d9baf11fedb14f436b89da62cae3
-SHA1: 4eddf23ce05d8ec67ce0135283d084fa765590c3
-MD5sum: dd818e8016670e666deb7c33a351ef30
+SHA256: 93e55069d808bf405a94cfa9b0373bf83212ef3af017f9e25444631d8e703eb1
+SHA1: e0c718f3b531a69b05fc7ad00ec7a77f32f3208e
+MD5sum: 1208c339bac25b35aeb0edb877917289
 Description: FluidSynth .so.2 compatibility shim for prebuilt LV2 plugins
  Creates a libfluidsynth.so.2 symlink pointing to the real .so.3 library
  (shipped by fluidsynth-headless) so that prebuilt LV2 plugins compiled
@@ -302,10 +302,10 @@ Depends: python3, jack2-pistomp, mod-host-pistomp
 Priority: optional
 Section: web
 Filename: pool/main/m/mod-ui/mod-ui_3.0-8_arm64.deb
-Size: 48516936
-SHA256: cf8b7a090937e357434d35d348ec6359a59a151157d89238013008f640669f9c
-SHA1: e50d1925c5c86b5ade1aac05d6db7cdd73cbde1d
-MD5sum: dbe6f4fbced8a4cdb43dc05a70f25109
+Size: 48518484
+SHA256: f6291fb9fa72b4a19c8186d1109d53eca502a4d684c96957f4d0fcf05e715a0e
+SHA1: 63b5559604e33e652e937df9fe4e89ebc15a2dec
+MD5sum: 778f567111ab9357060e3f29800c7646
 Description: MOD Web UI — web-based pedalboard interface for pi-Stomp
  MOD UI is a web-based interface for managing pedalboards on MOD
  devices. This build runs in a Python 3.11 venv (required by
@@ -320,10 +320,10 @@ Depends: python3, lg-pistomp, python3-lilv, mod-host-pistomp, mod-ui, mod-midi-m
 Priority: optional
 Section: sound
 Filename: pool/main/p/pi-stomp/pi-stomp_3.0-11_arm64.deb
-Size: 33793228
-SHA256: 420c750449780e68738d3a9815f9df6dcddb994a4b309405f5d0a7335b16a3da
-SHA1: 0b238bd953580054ac096b06b365b0ad7f12728f
-MD5sum: c959619a71fd81d8b8afccef5d622aee
+Size: 33792388
+SHA256: 6248e35e683d529130c68da3b6ad587f52df52c49e078ec9b69c5ff6f3861e0a
+SHA1: 0f339c7eff2be21d3ccdbdbc680c73fe4e97cadd
+MD5sum: abc574a4fafb7509262da5ffb9894441
 Description: pi-Stomp application — guitar effects pedalboard software
  The pi-Stomp application code, uv-managed venv, and systemd service.
  Installs to /opt/pistomp/pi-stomp/ with a symlink at
@@ -338,10 +338,10 @@ Depends: python3, jack2-pistomp, lg-pistomp, libasound2, libfreetype6
 Priority: optional
 Section: utils
 Filename: pool/main/p/pistomp-recovery/pistomp-recovery_0.1.0-17_arm64.deb
-Size: 22776896
-SHA256: 8a3f35f838aa980ecb410f9fa51c90c328b426a6c5579299397c6f265718943c
-SHA1: 7fe5e8343ad87afb55ee6926b1136514d04c560a
-MD5sum: 848bf33440be9cd275b175f25ca31dca
+Size: 22777524
+SHA256: e9adb867f8e595b7b4f80aa7034b24c492951ab6a544d71eba1e9c59271f54db
+SHA1: d54dbcfa9712a742bc3247475747f3efffc548f7
+MD5sum: 604c9a415927519382724165ef413163
 Description: Package update and recovery service for pi-Stomp
  Recovery service that provides LCD-based factory reset, package rollback,
  and OTA update management. Runs as a systemd service triggered on
@@ -378,11 +378,48 @@ Depends: python3, python3-venv
 Priority: optional
 Section: sound
 Filename: pool/main/t/touchosc2midi/touchosc2midi_1.0-4_arm64.deb
-Size: 5792036
-SHA256: 0ac90a1443252b6bb505340ab94423a1aee7776608615f0ee2706fd5ee997486
-SHA1: c44b873c3de86fd02c93202127ebfa33b303baa5
-MD5sum: f1eb3462eec89fedc880d032cafc768a
+Size: 5792048
+SHA256: ec33f9d890adac398e7ecd3f0158726b69f31508f36abd1a2bfbb5a9ffc0f9cd
+SHA1: 7db12a71dad7c3181712c30580529e65f1aa03fb
+MD5sum: 5bca3e916bd20414ae1ac901fa808357
 Description: TouchOSC to MIDI bridge
  Bridges TouchOSC (iOS/Android) OSC messages to ALSA/JACK MIDI.
  Installed in an isolated venv at /opt/pistomp/venvs/touchosc2midi.
+
+Package: veja-1960-cab-lv2
+Version: 1.0-1
+Architecture: arm64
+Maintainer: pistomp <pistomp@example.com>
+Installed-Size: 3657
+Depends: libc6 (>= 2.27), libfftw3-single3 (>= 3.3.10), libsndfile1 (>= 1.0.20)
+Priority: optional
+Section: sound
+Filename: pool/main/v/veja-1960-cab-lv2/veja-1960-cab-lv2_1.0-1_arm64.deb
+Size: 2761804
+SHA256: db44978c7d8e3ba6f0ee5f2c43664d5879caf90025a65867ee4f4f12b20636f9
+SHA1: a55be22a104b3e3c2db92fdc460fa6a612b71895
+MD5sum: ff1eba7058a8dee61aea0bc055e783cf
+Description: VeJa Marshall 1960 Cabinet LV2 plugin (pistomp fork)
+ Marshall 1960A guitar cabinet convolver that loads IR .wav files from
+ the bundle directory at runtime. Patched to support arbitrary JACK
+ period sizes and to use bundle_path instead of a hardcoded /root/.lv2/
+ prefix so the plugin works when installed anywhere.
+
+Package: veja-bass-cab-lv2
+Version: 1.0-1
+Architecture: arm64
+Maintainer: pistomp <pistomp@example.com>
+Installed-Size: 450
+Depends: libc6 (>= 2.27), libfftw3-single3 (>= 3.3.10)
+Priority: optional
+Section: sound
+Filename: pool/main/v/veja-bass-cab-lv2/veja-bass-cab-lv2_1.0-1_arm64.deb
+Size: 328856
+SHA256: a74ede2fdf8d00b4e5971f1c630ef22e436af7a2ed48662130e4ae8e7682d730
+SHA1: 213e0d39ba04370b358fbd044b6afa649d841bf3
+MD5sum: c4de44da13a3953d79025d6ff31bb8ee
+Description: VeJa Bass Cabinets LV2 plugin (pistomp fork)
+ Bass guitar cabinet impulse response convolver with multiple speaker
+ models embedded as compiled data. Patched to support arbitrary JACK
+ period sizes (64, 128, 256+) via a generalized overlap-add implementation.
 
