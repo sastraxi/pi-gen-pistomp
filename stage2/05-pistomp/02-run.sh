@@ -28,7 +28,8 @@ apt-get install -y -qq \
     pi-stomp \
     pistomp-recovery \
     jackbridge \
-    ffmpeg-pistomp
+    ffmpeg-pistomp \
+    cabsim-lv2
 
 # ps-record-lcd: convenience symlink so record_lcd.py is on PATH.
 # pi-stomp.deb postinst creates /home/pistomp/pi-stomp → /opt/pistomp/pi-stomp.
