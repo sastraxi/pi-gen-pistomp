@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 # Developer opt-in staleness check for the git-backed packages discovered by
 # scripts/pkg-sources.sh (branch- and commit-pinned; tag-pinned are skipped).
-# Compares the latest commit on the upstream branch/ref against the most
-# recently published GitHub Release for each package.
+#
+# For each package it compares the current upstream branch/ref tip against the
+# commit the latest published GitHub Release was actually built from. That
+# commit is read from the release's <pkg>.built-sha asset, which build-deb.yml
+# uploads alongside the .deb (written by record_upstream_sha at build time).
+# When upstream has moved past the released commit, the package is STALE and
+# needs a debian/changelog bump + rebuild.
+#
 # Does NOT fail the build. Run manually before cutting new .deb releases.
 #
 # Usage: ./scripts/check-upstream-staleness.sh
@@ -18,44 +24,61 @@ source "${ROOT_DIR}/scripts/pkg-sources.sh"
 
 REPO_OWNER="${GH_REPO_OWNER:-sastraxi}"
 REPO_NAME="${GH_REPO_NAME:-pi-gen-pistomp}"
-GH_API="https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}"
+REPO_SLUG="${REPO_OWNER}/${REPO_NAME}"
 
-warn=0
+for tool in gh jq git; do
+    command -v "$tool" >/dev/null || { echo "ERROR: this script requires '${tool}'." >&2; exit 1; }
+done
+
+# Pull the package releases once (newest first) so each check is a local jq query
+# rather than a fresh API round-trip.
+releases_json="$(gh api "repos/${REPO_SLUG}/releases?per_page=100" 2>/dev/null || echo '[]')"
+
+stale=0      # upstream moved past the released commit
+warn=0       # no release, or no sidecar to compare against
 
 check_pkg() {
-    local pkg="$1"
-    local repo="$2"
-    local ref="$3"
+    local pkg="$1" repo="$2" ref="$3"
+    local upstream_sha tag built_sha
 
-    # Get the current HEAD SHA of the upstream branch/ref
-    local upstream_sha
-    upstream_sha="$(git ls-remote "${repo}" "${ref}" 2>/dev/null | awk '{print $1}' | head -1)"
+    # Current tip of the upstream branch/ref.
+    upstream_sha="$(git ls-remote "${repo}" "${ref}" 2>/dev/null | awk 'NR==1 {print $1}')"
     if [[ -z "${upstream_sha}" ]]; then
         echo "  SKIP  ${pkg}: could not resolve ${ref} on ${repo}"
         return
     fi
 
-    # Get the latest published release tag for this package
-    local latest_tag
-    latest_tag="$(curl -fsSL "${GH_API}/releases" 2>/dev/null \
-        | grep '"tag_name"' \
-        | grep "\"debpkg/${pkg}/" \
-        | head -1 \
-        | sed 's/.*"debpkg\/[^/]*\/\([^"]*\)".*/\1/')"
-    if [[ -z "${latest_tag}" ]]; then
+    # Most recent published release for this package (releases come back newest first).
+    tag="$(jq -r --arg p "${pkg}" \
+        '[.[] | select(.tag_name | startswith("debpkg/\($p)/"))][0].tag_name // empty' \
+        <<<"${releases_json}")"
+    if [[ -z "${tag}" ]]; then
         echo "  WARN  ${pkg}: no published release found — never built?"
         warn=1
         return
     fi
 
-    # Get the release body to look for a commit reference (informational only).
-    # We can't reliably determine which upstream commit a release was built from
-    # without a sidecar, so we just report the upstream tip and the latest version.
-    echo "  OK    ${pkg}: upstream ${ref} is at ${upstream_sha:0:12}, latest release is ${latest_tag}"
+    # The commit that release was built from, recorded in its .built-sha sidecar.
+    built_sha="$(gh release download "${tag}" --repo "${REPO_SLUG}" \
+        --pattern "${pkg}.built-sha" --output - 2>/dev/null || true)"
+    built_sha="${built_sha//[$'\n\r\t ']/}"
+
+    if [[ -z "${built_sha}" ]]; then
+        echo "  WARN  ${pkg}: release ${tag} has no .built-sha sidecar — upstream ${ref} at ${upstream_sha:0:12} (rebuild to attach one)"
+        warn=1
+        return
+    fi
+
+    if [[ "${built_sha}" == "${upstream_sha}" ]]; then
+        echo "  OK    ${pkg}: release ${tag} is current (${ref} @ ${upstream_sha:0:12})"
+    else
+        echo "  STALE ${pkg}: ${ref} moved to ${upstream_sha:0:12}; release ${tag} built from ${built_sha:0:12} — bump changelog & rebuild"
+        stale=1
+    fi
 }
 
 echo "==> Checking upstream staleness for git-backed packages..."
-echo "    (This is informational only — it does not update or build anything.)"
+echo "    (Informational only — it does not update or build anything.)"
 echo ""
 
 # Branch- and commit-pinned packages are worth checking; tag-pinned ones move
@@ -66,8 +89,10 @@ while IFS='|' read -r pkg repo ref kind; do
 done < <(pkg_sources)
 
 echo ""
-if [[ "${warn}" -eq 1 ]]; then
-    echo "==> Some packages have warnings. Review above and consider cutting a new release."
+if [[ "${stale}" -eq 1 ]]; then
+    echo "==> STALE packages above need a debian/changelog bump + rebuild."
+elif [[ "${warn}" -eq 1 ]]; then
+    echo "==> Some packages couldn't be compared (no release or no sidecar). Review above."
 else
-    echo "==> Done."
+    echo "==> All published releases are current with upstream."
 fi

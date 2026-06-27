@@ -189,7 +189,14 @@ jobs:
           tag_name: debpkg/${{ inputs.pkg }}/${{ steps.version.outputs.version }}
           name: "${{ inputs.pkg }} ${{ steps.version.outputs.version }}"
           body: ${{ steps.changelog.outputs.body }}
-          files: ${{ github.workspace }}/cache/${{ inputs.pkg }}_*_arm64.deb
+          # The .built-sha sidecar records which upstream commit this release was
+          # built from, so check-upstream-staleness.sh can compare it against the
+          # current branch tip. Only git-backed packages produce one (via
+          # record_upstream_sha); fail_on_unmatched_files=false skips the rest.
+          files: |
+            ${{ github.workspace }}/cache/${{ inputs.pkg }}_*_arm64.deb
+            ${{ github.workspace }}/cache/${{ inputs.pkg }}.built-sha
+          fail_on_unmatched_files: false
           draft: false
           prerelease: false
         env:
