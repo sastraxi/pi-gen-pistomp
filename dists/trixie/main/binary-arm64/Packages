@@ -157,10 +157,10 @@ Depends: lg-pistomp
 Priority: optional
 Section: misc
 Filename: pool/main/l/lcd-splash/lcd-splash_1.0-15_arm64.deb
-Size: 11756
-SHA256: aa2bb1719c4e3a499983ee0c0cac6e0eab5d875ea482602e12c28cb01a34035e
-SHA1: 544318b4f3ae932fad2c64a60dc093b27ffb5421
-MD5sum: fd29e07a914c346bae94cbd9eb2d9d59
+Size: 11760
+SHA256: 59a7cd75559d15c1f59852b785e5975a51f32bae341eb6a5c70809bb86eeb146
+SHA1: 5b8cf07433ff5b5a1327f6a427f1329b0c363843
+MD5sum: 32c90c4b8d02b6dbeacf9de793d3fc3d
 Description: Fast ILI9341 LCD boot splash for pi-Stomp
  Drives the 320x240 SPI LCD directly (spidev + lgpio) with no
  Python/interpreter overhead. Displays a pre-converted RGB565 image
@@ -214,9 +214,9 @@ Priority: optional
 Section: libs
 Filename: pool/main/libf/libfluidsynth2-compat/libfluidsynth2-compat_2.3.4-3_arm64.deb
 Size: 1092
-SHA256: 50dd259be2dce0b7935a6579953e3d5c6549575994f8c8712f259d249a5bdc55
-SHA1: b5c6161a15a07eaa5a067da7c9bac18176d8ca88
-MD5sum: aa45acb75b0389c7397f0033c3589f8a
+SHA256: 268e6a0f35f8593a956144a0ad8a1acc972d9568f929613d1c21d4e2dd05aa9d
+SHA1: cf5c477c6211a621034a725aed287d072cc216f1
+MD5sum: 6fb48b2251bd40b60c624fbed130105f
 Description: FluidSynth .so.2 compatibility shim for prebuilt LV2 plugins
  Creates a libfluidsynth.so.2 symlink pointing to the real .so.3 library
  (shipped by fluidsynth-headless) so that prebuilt LV2 plugins compiled
