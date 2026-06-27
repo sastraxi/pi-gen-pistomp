@@ -150,17 +150,17 @@ Description: netJACK2 client for DAW recording over Ethernet
  starts/stops it via systemctl.
 
 Package: lcd-splash
-Version: 1.0-15
+Version: 1.0-16
 Architecture: arm64
 Maintainer: pistomp <pistomp@example.com>
 Depends: lg-pistomp
 Priority: optional
 Section: misc
-Filename: pool/main/l/lcd-splash/lcd-splash_1.0-15_arm64.deb
-Size: 11760
-SHA256: 59a7cd75559d15c1f59852b785e5975a51f32bae341eb6a5c70809bb86eeb146
-SHA1: 5b8cf07433ff5b5a1327f6a427f1329b0c363843
-MD5sum: 32c90c4b8d02b6dbeacf9de793d3fc3d
+Filename: pool/main/l/lcd-splash/lcd-splash_1.0-16_arm64.deb
+Size: 11952
+SHA256: 17d8847efababe56e7872fc88535496c4a769620dba79894e3a295265781e6b0
+SHA1: ab8421500aadbde2c4cb5538328beafdde2dd0d6
+MD5sum: 6af4d4bbade626dea5cda4249780fbc6
 Description: Fast ILI9341 LCD boot splash for pi-Stomp
  Drives the 320x240 SPI LCD directly (spidev + lgpio) with no
  Python/interpreter overhead. Displays a pre-converted RGB565 image
