@@ -175,10 +175,10 @@ Depends: lg-pistomp
 Priority: optional
 Section: misc
 Filename: pool/main/l/lcd-splash/lcd-splash_1.0-17_arm64.deb
-Size: 12060
-SHA256: 981866cb4e36ee881f69f6433fd44200cefe6905fad790209dba84a2f7ac81e7
-SHA1: dd40702af052e04a91c2c502d932df45626060c8
-MD5sum: 40f912ac9b47b6c7a3a6f17627b8f3ea
+Size: 12092
+SHA256: ca94b3c319ecbae654c8f79a88e9f50fe54e8b878c25f6a7a2a01bc0b39e2f72
+SHA1: 29f08050b7a8e19233389262d1044e98639f7678
+MD5sum: fabf2ae570f23a1aaa0a930ff0495a28
 Description: Fast ILI9341 LCD boot splash for pi-Stomp
  Drives the 320x240 SPI LCD directly (spidev + lgpio) with no
  Python/interpreter overhead. Displays a pre-converted RGB565 image
@@ -232,9 +232,9 @@ Priority: optional
 Section: libs
 Filename: pool/main/libf/libfluidsynth2-compat/libfluidsynth2-compat_2.3.4-3_arm64.deb
 Size: 1092
-SHA256: aca2aaf093aaf13893ba40eb54092c87b7e8f7f2babeef2970fb544faad8ce6b
-SHA1: e09d0f8e354324c886e1be01740d6b3a049bf067
-MD5sum: cdac472d4779dcee490e407f16f28e48
+SHA256: 5a26e53c13854d87dc176c46dc10829603a8d9baf11fedb14f436b89da62cae3
+SHA1: 4eddf23ce05d8ec67ce0135283d084fa765590c3
+MD5sum: dd818e8016670e666deb7c33a351ef30
 Description: FluidSynth .so.2 compatibility shim for prebuilt LV2 plugins
  Creates a libfluidsynth.so.2 symlink pointing to the real .so.3 library
  (shipped by fluidsynth-headless) so that prebuilt LV2 plugins compiled
@@ -338,10 +338,10 @@ Depends: python3, jack2-pistomp, lg-pistomp, libasound2, libfreetype6
 Priority: optional
 Section: utils
 Filename: pool/main/p/pistomp-recovery/pistomp-recovery_0.1.0-16_arm64.deb
-Size: 22781532
-SHA256: 50b37375ddd0cd11a81499eedb6a0b0fc0b1ad6f162ba51881cd1821f5c5f114
-SHA1: 354413848d9bbc5a77c6c22b7394de4c0a9fd3ec
-MD5sum: b9417a367b8a558e18605f3907c870c0
+Size: 22780552
+SHA256: fff5d3ffd39a884f88f68c08f4e9186292bece22df0f915821b2b18ed4b28c69
+SHA1: b521b7e37fb76a90805a6bbfc06e5b7abb897f48
+MD5sum: fe222297e4140a5f7ec7e38b3ef739ca
 Description: Package update and recovery service for pi-Stomp
  Recovery service that provides LCD-based factory reset, package rollback,
  and OTA update management. Runs as a systemd service triggered on
@@ -378,10 +378,10 @@ Depends: python3, python3-venv
 Priority: optional
 Section: sound
 Filename: pool/main/t/touchosc2midi/touchosc2midi_1.0-4_arm64.deb
-Size: 5791896
-SHA256: 9bf03f245309f3d0ff546c06a8d2f3300a64d107b3eb0c17d189f90e8900dadd
-SHA1: 5b00c27f6ceec9bfc96de4f1b54552bcd1fc97c7
-MD5sum: 50156430ff214fbd70a7ea7b47c0e29a
+Size: 5792036
+SHA256: 0ac90a1443252b6bb505340ab94423a1aee7776608615f0ee2706fd5ee997486
+SHA1: c44b873c3de86fd02c93202127ebfa33b303baa5
+MD5sum: f1eb3462eec89fedc880d032cafc768a
 Description: TouchOSC to MIDI bridge
  Bridges TouchOSC (iOS/Android) OSC messages to ALSA/JACK MIDI.
  Installed in an isolated venv at /opt/pistomp/venvs/touchosc2midi.
