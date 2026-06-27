@@ -1,3 +1,11 @@
+pistomp-recovery (0.1.0-15) trixie; urgency=medium
+
+  * Fix package update discovery when the pistomp apt repo is configured with
+    [trusted=yes]: discover_packages() now checks plain Release files in
+    addition to InRelease files, since trusted repos only produce Release.
+
+ -- pistomp <pistomp@example.com>  Thu, 26 Jun 2026 00:00:00 +0000
+
 pistomp-recovery (0.1.0-14) trixie; urgency=medium
 
   * Rename lg package to lg-pistomp in PISTOMP_PACKAGES and PACKAGE_SERVICES.
