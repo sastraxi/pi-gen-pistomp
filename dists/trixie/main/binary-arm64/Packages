@@ -31,6 +31,24 @@ Description: File browser for pi-Stomp user files
  A simple web-based file browser for browsing and uploading user files
  on pi-Stomp. Runs on port 8081, serving /home/pistomp/data/user-files.
 
+Package: cabsim-lv2
+Version: 1.1.1-pistomp2
+Architecture: arm64
+Maintainer: pistomp <pistomp@example.com>
+Installed-Size: 82
+Depends: libc6 (>= 2.27), libfftw3-single3 (>= 3.3.10), libsndfile1, libsamplerate0
+Priority: optional
+Section: sound
+Filename: pool/main/c/cabsim-lv2/cabsim-lv2_1.1.1-pistomp2_arm64.deb
+Size: 37648
+SHA256: 137ffc12b067fab417da9a694f480620a6ff19c9dd744e8a54403da1a468072e
+SHA1: 397a4c9f0182bb688aefaf0f166d7f635f884bae
+MD5sum: 44df799f052bf2caf6c315f53c1bf77d
+Description: VeJa Cabinet Simulator LV2 plugin (pistomp fork)
+ Guitar cabinet impulse response convolver with 13 speaker models
+ embedded as compiled data. Patched to support arbitrary JACK period
+ sizes (64, 128, 256+) via a generalized overlap-add implementation.
+
 Package: ffmpeg-pistomp
 Version: 7.1.1-2
 Architecture: arm64
@@ -150,17 +168,17 @@ Description: netJACK2 client for DAW recording over Ethernet
  starts/stops it via systemctl.
 
 Package: lcd-splash
-Version: 1.0-16
+Version: 1.0-17
 Architecture: arm64
 Maintainer: pistomp <pistomp@example.com>
 Depends: lg-pistomp
 Priority: optional
 Section: misc
-Filename: pool/main/l/lcd-splash/lcd-splash_1.0-16_arm64.deb
-Size: 12012
-SHA256: cbe93e4505252ebcacef87f2ece5a176cf287d52c0b5d64c47a61e5aa6d08024
-SHA1: 298506664fc15a1c369c372a939887311235be89
-MD5sum: 517631e73a3740ff9e792ae1b031229f
+Filename: pool/main/l/lcd-splash/lcd-splash_1.0-17_arm64.deb
+Size: 12060
+SHA256: 981866cb4e36ee881f69f6433fd44200cefe6905fad790209dba84a2f7ac81e7
+SHA1: dd40702af052e04a91c2c502d932df45626060c8
+MD5sum: 40f912ac9b47b6c7a3a6f17627b8f3ea
 Description: Fast ILI9341 LCD boot splash for pi-Stomp
  Drives the 320x240 SPI LCD directly (spidev + lgpio) with no
  Python/interpreter overhead. Displays a pre-converted RGB565 image
