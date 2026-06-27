@@ -37,7 +37,7 @@
      cabsim->prev_model = 999;
      cabsim->prev_mode = 999;
 
-@@ -126,13 +117,8 @@ void run(LV2_Handle instance, uint32_t n_samples)
+@@ -126,28 +117,19 @@ void run(LV2_Handle instance, uint32_t n_samples)
      float *IR = cabsim->IR;
      float *overlap = cabsim->overlap;
 -    float *oA = cabsim->oA;
@@ -70,7 +70,7 @@
          {
              inbuf[i] = (i < n_samples) ? (in[i] * coef * 0.2f): 0.0f;
              IR[i] = (i < n_samples) ? convolK(model,i) : 0.0f;
-@@ -146,35 +132,24 @@ void run(LV2_Handle instance, uint32_t n_samples)
+@@ -154,55 +136,39 @@ void run(LV2_Handle instance, uint32_t n_samples)
      else
      {
 -        for ( i = 0; i < n_samples * cabsim->multiplier; i++)
