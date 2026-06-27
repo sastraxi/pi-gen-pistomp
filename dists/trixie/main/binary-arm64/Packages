@@ -32,18 +32,18 @@ Description: File browser for pi-Stomp user files
  on pi-Stomp. Runs on port 8081, serving /home/pistomp/data/user-files.
 
 Package: cabsim-lv2
-Version: 1.1.1-3
+Version: 1.1.1-4
 Architecture: arm64
 Maintainer: pistomp <pistomp@example.com>
-Installed-Size: 82
+Installed-Size: 409
 Depends: libc6 (>= 2.27), libfftw3-single3 (>= 3.3.10), libsndfile1, libsamplerate0
 Priority: optional
 Section: sound
-Filename: pool/main/c/cabsim-lv2/cabsim-lv2_1.1.1-3_arm64.deb
-Size: 37692
-SHA256: b913b83af5f6f34d45590a56232ae06cc1fa9a1c634bc5edafb962001b8dfcdb
-SHA1: 6a350718b3cbe5959eae6627390eb75ad6d8d020
-MD5sum: fec68055f6515637a82edf48f7fe5438
+Filename: pool/main/c/cabsim-lv2/cabsim-lv2_1.1.1-4_arm64.deb
+Size: 359252
+SHA256: f26120fe7377832f8fcac6df8ada50edc073926fbd3e72efd13bc9c426c03187
+SHA1: d04ed3589939c145a155850ebc04fcedef1cf324
+MD5sum: 41e2b39bb92bdaac5c1a7477e88695e4
 Description: VeJa Cabinet Simulator LV2 plugin (pistomp fork)
  Guitar cabinet impulse response convolver with 13 speaker models
  embedded as compiled data. Patched to support arbitrary JACK period
@@ -294,18 +294,18 @@ Description: MOD ttymidi — serial MIDI bridge
  A simple serial port to ALSA/JACK MIDI bridge, part of the MOD ecosystem.
 
 Package: mod-ui
-Version: 3.0-7
+Version: 3.0-8
 Architecture: arm64
 Maintainer: pistomp <pistomp@example.com>
-Installed-Size: 177218
+Installed-Size: 177219
 Depends: python3, jack2-pistomp, mod-host-pistomp
 Priority: optional
 Section: web
-Filename: pool/main/m/mod-ui/mod-ui_3.0-7_arm64.deb
-Size: 48519380
-SHA256: 92f265599c91728976953baffcc1fa985ac5c80ad1c9d87ec9c1ffc81cbbf4bb
-SHA1: edcb29d3bdf3a04d681edb74a1e27073df689a37
-MD5sum: d5f4cd150997f9d505555458074df0e3
+Filename: pool/main/m/mod-ui/mod-ui_3.0-8_arm64.deb
+Size: 48516936
+SHA256: cf8b7a090937e357434d35d348ec6359a59a151157d89238013008f640669f9c
+SHA1: e50d1925c5c86b5ade1aac05d6db7cdd73cbde1d
+MD5sum: dbe6f4fbced8a4cdb43dc05a70f25109
 Description: MOD Web UI — web-based pedalboard interface for pi-Stomp
  MOD UI is a web-based interface for managing pedalboards on MOD
  devices. This build runs in a Python 3.11 venv (required by
