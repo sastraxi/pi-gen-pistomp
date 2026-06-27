@@ -14,6 +14,7 @@ override_dh_auto_install:
 	$(MAKE) -C source install \
 		DESTDIR=$(CURDIR)/debian/veja-1960-cab-lv2 \
 		PREFIX=/usr
+	install -m 644 debian/cabsim.wisdom $(CURDIR)/debian/veja-1960-cab-lv2/usr/lib/lv2/veja-1960-cab.lv2/
 	cp -r source/veja-1960-cab.lv2/modgui \
 		$(CURDIR)/debian/veja-1960-cab-lv2/usr/lib/lv2/veja-1960-cab.lv2/
 
