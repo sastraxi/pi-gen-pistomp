@@ -15,18 +15,18 @@ Description: ALSA MIDI thru tool
  A simple ALSA MIDI thru utility that routes MIDI input to output.
 
 Package: browsepy
-Version: 0.5.6-1
+Version: 0.5.6-2
 Architecture: arm64
 Maintainer: pistomp <pistomp@example.com>
 Installed-Size: 31553
 Depends: python3
 Priority: optional
 Section: web
-Filename: pool/main/b/browsepy/browsepy_0.5.6-1_arm64.deb
-Size: 4980488
-SHA256: 301c4a34205ec42da3e8b240df2c4f32b5b7a305617d291c7af52d7a447492b2
-SHA1: 1a50cf1d39ac435254f8e680a0bfd2b077ec6faf
-MD5sum: e2cf1038663456f161f766905504d20d
+Filename: pool/main/b/browsepy/browsepy_0.5.6-2_arm64.deb
+Size: 4980008
+SHA256: 0e41c81cab0037c4c2b66a64f21bc53fc7a0957d1b45077cc11c629742ec9bf9
+SHA1: 643d00d3c2ce56aebf4ef26517ec61aa355f9788
+MD5sum: c075b8cacd683e3096c6fc93963b87b6
 Description: File browser for pi-Stomp user files
  A simple web-based file browser for browsing and uploading user files
  on pi-Stomp. Runs on port 8081, serving /home/pistomp/data/user-files.
@@ -294,54 +294,54 @@ Description: MOD ttymidi — serial MIDI bridge
  A simple serial port to ALSA/JACK MIDI bridge, part of the MOD ecosystem.
 
 Package: mod-ui
-Version: 3.0-5
+Version: 3.0-6
 Architecture: arm64
 Maintainer: pistomp <pistomp@example.com>
 Installed-Size: 177205
 Depends: python3, jack2-pistomp, mod-host-pistomp
 Priority: optional
 Section: web
-Filename: pool/main/m/mod-ui/mod-ui_3.0-5_arm64.deb
-Size: 48521288
-SHA256: db3491ee1f438599cd6665c3797f0c2139fd3aac28f8fd2ad20f5dbcab8d397f
-SHA1: 75169605d69336568ae7d2ac38d1565d3177580d
-MD5sum: c71216af7a7448f0e8d10d5604e83217
+Filename: pool/main/m/mod-ui/mod-ui_3.0-6_arm64.deb
+Size: 48519136
+SHA256: 251b97507932a6b21a967e5e75543f0437dd7dba17591e7d9252d2eab773224c
+SHA1: d0c9c03d0088f299553c4a60a7ce0495c8fe2677
+MD5sum: cb7d75e61ae1ce8f0506c0d52804dbcf
 Description: MOD Web UI — web-based pedalboard interface for pi-Stomp
  MOD UI is a web-based interface for managing pedalboards on MOD
  devices. This build runs in a Python 3.11 venv (required by
  tornado==4.3) and is configured for pi-Stomp.
 
 Package: pi-stomp
-Version: 3.0-8
+Version: 3.0-9
 Architecture: arm64
 Maintainer: pistomp <pistomp@example.com>
 Installed-Size: 168500
 Depends: python3, lg-pistomp, python3-lilv, mod-host-pistomp, mod-ui, mod-midi-merger, mod-ttymidi, amidithru, jack2-pistomp, hylia, sfizz-pistomp, lcd-splash, jack-capture
 Priority: optional
 Section: sound
-Filename: pool/main/p/pi-stomp/pi-stomp_3.0-8_arm64.deb
-Size: 33793732
-SHA256: 093749f67dbbce21eb903d20208e389ec49a2585769c1280780c7f9323acaf7b
-SHA1: 67eca4537747647e2fd6f8cb465267e3b6ae0496
-MD5sum: c13de4d63e8c67df155b0994c14a6981
+Filename: pool/main/p/pi-stomp/pi-stomp_3.0-9_arm64.deb
+Size: 33789976
+SHA256: 2724feadf4977a55d22f9a9ff00dc1ea211204f0b82349e4afd5d336093b5228
+SHA1: 923a90bdb2b9d94a38350cc3f03fb9fd360232cd
+MD5sum: e6c424d2ac9632628888a14c7e57f63e
 Description: pi-Stomp application — guitar effects pedalboard software
  The pi-Stomp application code, uv-managed venv, and systemd service.
  Installs to /opt/pistomp/pi-stomp/ with a symlink at
  /home/pistomp/pi-stomp for deploy.sh compatibility.
 
 Package: pistomp-recovery
-Version: 0.1.0-15
+Version: 0.1.0-16
 Architecture: arm64
 Maintainer: pistomp <pistomp@example.com>
-Installed-Size: 118993
+Installed-Size: 118997
 Depends: python3, jack2-pistomp, lg-pistomp, libasound2, libfreetype6
 Priority: optional
 Section: utils
-Filename: pool/main/p/pistomp-recovery/pistomp-recovery_0.1.0-15_arm64.deb
-Size: 22774268
-SHA256: 584e96dada7b5fba74f9744285b879eb0784ea95eda74a62a09b11f1a52c3ac9
-SHA1: 352b58eee12f21ba6d1a0484ad5b5e4aa150ead0
-MD5sum: b3069708532757b3ad521fcb73853da2
+Filename: pool/main/p/pistomp-recovery/pistomp-recovery_0.1.0-16_arm64.deb
+Size: 22781532
+SHA256: 50b37375ddd0cd11a81499eedb6a0b0fc0b1ad6f162ba51881cd1821f5c5f114
+SHA1: 354413848d9bbc5a77c6c22b7394de4c0a9fd3ec
+MD5sum: b9417a367b8a558e18605f3907c870c0
 Description: Package update and recovery service for pi-Stomp
  Recovery service that provides LCD-based factory reset, package rollback,
  and OTA update management. Runs as a systemd service triggered on
