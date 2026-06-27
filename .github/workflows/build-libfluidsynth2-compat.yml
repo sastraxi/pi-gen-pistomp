@@ -5,11 +5,9 @@ on:
     branches: [main]
     paths:
       - 'debpkgs/libfluidsynth2-compat/**'
-      - 'config.sh'
   pull_request:
     paths:
       - 'debpkgs/libfluidsynth2-compat/**'
-      - 'config.sh'
   workflow_dispatch:
 
 jobs:

@@ -5,11 +5,9 @@ on:
     branches: [main]
     paths:
       - 'debpkgs/pi-stomp/**'
-      - 'config.sh'
   pull_request:
     paths:
       - 'debpkgs/pi-stomp/**'
-      - 'config.sh'
   workflow_dispatch:
 
 jobs:

@@ -5,11 +5,9 @@ on:
     branches: [main]
     paths:
       - 'debpkgs/sfizz-pistomp/**'
-      - 'config.sh'
   pull_request:
     paths:
       - 'debpkgs/sfizz-pistomp/**'
-      - 'config.sh'
   workflow_dispatch:
 
 jobs:

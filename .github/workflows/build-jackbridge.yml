@@ -5,11 +5,9 @@ on:
     branches: [main]
     paths:
       - 'debpkgs/jackbridge/**'
-      - 'config.sh'
   pull_request:
     paths:
       - 'debpkgs/jackbridge/**'
-      - 'config.sh'
   workflow_dispatch:
 
 jobs:

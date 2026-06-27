@@ -5,11 +5,9 @@ on:
     branches: [main]
     paths:
       - 'debpkgs/lcd-splash/**'
-      - 'config.sh'
   pull_request:
     paths:
       - 'debpkgs/lcd-splash/**'
-      - 'config.sh'
   workflow_dispatch:
 
 jobs:

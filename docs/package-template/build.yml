@@ -15,11 +15,9 @@ on:
     branches: [main]
     paths:
       - 'debpkgs/<pkg>/**'
-      - 'config.sh'
   pull_request:
     paths:
       - 'debpkgs/<pkg>/**'
-      - 'config.sh'
   workflow_dispatch:
 
 jobs:
