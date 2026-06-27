@@ -43,6 +43,15 @@ jobs:
         echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
         echo "Image version: ${VERSION}"
 
+    # Gate: the image installs custom packages from the published apt repo, so a
+    # package whose upstream has moved past its last release would silently ship
+    # stale. Fail the build (exit 2) until the missing .deb release is cut.
+    # WARN states (no release / no sidecar yet) are non-fatal and pass through.
+    - name: Staleness gate (fail on STALE)
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: ./scripts/check-upstream-staleness.sh
+
     - name: Run build-docker.sh
       env:
         IMG_VERSION: ${{ steps.version.outputs.version }}

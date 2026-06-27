@@ -9,7 +9,12 @@
 # When upstream has moved past the released commit, the package is STALE and
 # needs a debian/changelog bump + rebuild.
 #
-# Does NOT fail the build. Run manually before cutting new .deb releases.
+# Exit status: 0 = all comparable packages current (WARN states — no release or
+# no sidecar — are non-fatal); 2 = at least one STALE package (so this can gate
+# an image release in CI); 1 = the script itself failed (missing tool, etc.).
+#
+# Run manually before cutting .deb releases, or as a CI pre-flight before
+# building an image.
 #
 # Usage: ./scripts/check-upstream-staleness.sh
 set -euo pipefail
@@ -91,6 +96,10 @@ done < <(pkg_sources)
 echo ""
 if [[ "${stale}" -eq 1 ]]; then
     echo "==> STALE packages above need a debian/changelog bump + rebuild."
+    # Exit non-zero so this can gate an image release in CI. WARN states
+    # (no release / no sidecar) are intentionally NOT fatal — only a proven
+    # upstream-moved-past-release is.
+    exit 2
 elif [[ "${warn}" -eq 1 ]]; then
     echo "==> Some packages couldn't be compared (no release or no sidecar). Review above."
 else
