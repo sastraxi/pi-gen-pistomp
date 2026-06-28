@@ -1,3 +1,9 @@
+pi-stomp (3.0-12) trixie; urgency=medium
+
+  * Fix inverted Q value visualization in x42 eq panel
+
+ -- Cam Gorrie <sastraxi@gmail.com>  Sat, 28 Jun 2026 00:00:00 +0000
+
 pi-stomp (3.0-11) trixie; urgency=medium
 
   * Prefix notes plugins with ✎ on the pedalboard grid.
