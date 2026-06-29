@@ -12,8 +12,8 @@ KERNEL_LOCALVERSION="-rpi-v8-rt"  # suffix in uname -r; must contain -rpi- so ra
 LINUX_RPI_COMMIT="954341c412dd48b7c7f8125d81212ec4c0e42ed3"
 
 # --- JACK2 ---
-JACK2_REPO="https://github.com/jackaudio/jack2.git"
-JACK2_TAG="v1.9.22"
+JACK2_REPO="https://github.com/sastraxi/jack2.git"
+JACK2_TAG="main"
 
 # --- lg (lgpio — GPIO library used by lcd-splash) ---
 LG_REPO="https://github.com/joan2937/lg.git"
