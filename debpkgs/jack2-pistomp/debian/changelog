@@ -1,3 +1,36 @@
+jack2-pistomp (1.9.22-3) trixie; urgency=medium
+
+  * Switch to sastraxi/jack2 fork at branch main. The fork carries all
+    pi-stomp/JackBridge fixes on top of upstream v1.9.22 + the WAF backport
+    from 1.9.23 (so Python 3.12 + Trixie waf work out of the box):
+      - commit 3a2f2488: netadapter — clear PI controller integrator on
+        ringbuffer reset (was the local pi-controller-reset quilt patch,
+        now redundant).
+      - commit 719d833a: netJACK2 — pin multicast group JOIN to a specific
+        interface via JACK_NETJACK_MULTICAST_IF. Master-side fix for hosts
+        with multiple routes to the multicast group, where
+        IP_ADD_MEMBERSHIP + INADDR_ANY picks the wrong interface (en0
+        wifi instead of en7 wired on the Mac).
+      - commit b3bfc408: netadapter — pin multicast OUTGOING interface for
+        the slave's sendto() to the same env var. Slave-side fix: hosts
+        whose default route is on the wrong iface (wlan0 on the pi) but
+        whose netJACK2 link is on a different one (eth0) need this so
+        discovery packets leave on the cable, not wifi. Adds
+        JackNetSocket::SetMulticastIF (IP_BOUND_IF on macOS, ip_mreqn
+        imr_ifindex on Linux).
+  * jackbridge-pi-up: drop the `-a ${JACKBRIDGE_MASTER:-169.254.125.10}`
+    unicast-IP workaround; we now rely on the multicast pin above.
+    Read /run/jackbridge.iface (set by jackbridge-pin-route's
+    ExecStartPre=+ auto-detect) as the source of truth for the iface
+    name, with $JACKBRIDGE_IFACE and finally eth0 as fallbacks. Avoids
+    hardcoding eth0 on boards with multiple wired NICs.
+  * Drop local patches now subsumed by the fork:
+    - pi-controller-reset.patch (commit 3a2f2488).
+    - waflib-imp-to-types.patch (the 1.9.23 WAF backport in the fork
+      already wraps imp.new_module as types.ModuleType for Python 3.4+).
+
+ -- pistomp <pistomp@example.com>  Sun, 28 Jun 2026 00:00:00 +0000
+
 jack2-pistomp (1.9.22-2) trixie; urgency=medium
 
   * Conflicts/Replaces/versioned-Provides libjack-jackd2-0 so Debian's stock
