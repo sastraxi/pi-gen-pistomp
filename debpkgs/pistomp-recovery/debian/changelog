@@ -1,3 +1,16 @@
+pistomp-recovery (0.1.0-18) trixie; urgency=medium
+
+  * Fix crash recovery going unnoticed: _service_crashed only checked systemd's
+    Result property when ActiveState was "inactive", but OnFailure fires
+    immediately on a crash and Restart=always has usually moved the unit back to
+    "activating" or "active" by the time recovery's Python runs. Result persists
+    across all ActiveState transitions (reset only on a successful start), so
+    it is now checked regardless of state. Verified against exit-code, signal
+    (SIGKILL/SEGV), ImportError, and SyntaxError crashes — all now correctly
+    show the CrashScreen with the traceback instead of the main menu.
+
+ -- Cam Gorrie <sastraxi@gmail.com>  Wed, 01 Jul 2026 00:00:00 +0000
+
 pistomp-recovery (0.1.0-17) trixie; urgency=medium
 
   * Skip package-delivered LV2 bundles when performing a factory plugin reset
